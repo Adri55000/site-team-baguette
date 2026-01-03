@@ -30,32 +30,39 @@
     {% endif %}
 
     <section class="profile-section">
-		<h2>Liens & contacts</h2>
+	  <h2>Liens & contacts</h2>
 
-		{% if links %}
-			<div class="profile-socials">
+	  {% if links %}
+		<div class="profile-socials profile-socials--buttons">
 
-			{# --- Liens externes --- #}
-			{% for key in ["racetime", "twitch", "youtube"] %}
-				{% if links.get(key) %}
-					<a href="{{ links[key] }}" target="_blank" rel="noopener">
-						{{ key | capitalize }}
-					</a>
-				{% endif %}
-			{% endfor %}
-
-			{# --- Discord (texte) --- #}
-			{% if links.get("discord") %}
-				<div class="profile-social-text">
-					<strong>Discord :</strong> {{ links["discord"] }}
-				</div>
+		  {# --- Liens externes (boutons cliquables) --- #}
+		  {% for key in ["racetime", "twitch", "youtube"] %}
+			{% if links.get(key) %}
+			  <a
+				class="social-btn"
+				href="{{ links[key] }}"
+				target="_blank"
+				rel="noopener"
+			  >
+				{{ key | capitalize }}
+			  </a>
 			{% endif %}
+		  {% endfor %}
 
-			</div>
-		{% else %}
-			<p>Aucun lien externe.</p>
-		{% endif %}
+		  {# --- Discord (bouton non cliquable) --- #}
+		  {% if links.get("discord") %}
+			<span class="social-btn social-btn--static">
+			  Discord · {{ links["discord"] }}
+			</span>
+		  {% endif %}
+
+		</div>
+	  {% else %}
+		<p>Aucun lien externe.</p>
+	  {% endif %}
 	</section>
+
+
 
     <div class="profile-actions">
       <a href="{{ url_for('main.home') }}" class="btn btn-secondary">

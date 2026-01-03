@@ -98,6 +98,10 @@
   color: var(--accent-primary);
 }
 
+.profile-socials a.social-btn {
+  color: var(--text-main);
+}
+
 .profile-socials a:hover {
   text-decoration: underline;
 }
@@ -111,6 +115,78 @@
   gap: 0.6rem;
 }
 
-.profile-social-text {
-  padding: 0.25rem 0;
+.profile-socials--pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Style commun (liens + texte) */
+.contact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+
+  background: var(--surface-2);
+  color: var(--text-main);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.contact-pill:hover {
+  background: var(--surface-3);
+  transform: translateY(-1px);
+}
+
+.contact-pill--static {
+  cursor: default;
+}
+
+.contact-pill--static:hover {
+  transform: none;
+}
+
+.profile-socials--buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  border: 1px solid var(--card-subtle-bg);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.social-btn:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.social-btn--static {
+  cursor: default;
+}
+
+.social-btn--static:hover {
+  transform: none;
 }
