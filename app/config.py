@@ -1,20 +1,74 @@
 TOURNAMENTS = [
     {
-        "slug": "cup-2023",
-        "name": "Placeholder for Coop S2",
-        "type": "external",
-        "status": "finished",
-        "links": [
-            {
-                "label": "Bracket Challonge",
-                "url": "https://challonge.com/yyyy"
-            },
-            {
-                "label": "Google Doc résultats",
-                "url": "https://docs.google.com/zzzz"
-            }
-        ]
+    "slug": "ssr-coop-S2",
+    "name": "Tournoi Coop S2",
+    "year": 2025,
+    "type": "external",
+    "status": "finished",
+
+    "summary": (
+        "La suite tant attendu du tournoi en coopération déjà mis en avant 3 ans plus tôt en printemps 2022.\n"
+        "Cette édition changera radicalement avec 4 donjons à terminé avec leurs entrées rendues aléatoire, Morcego avec ses récompenses à 70 cristaux activés, les psysalis ont désormais 7 objets à l'intérieur (La récompense final ainsi que 6 items aléatoires). La communication sera de mise afin de venir à bout de l'Avatar du Néant en équipe !\n"
+        "Le format du tournoi sera en double élimination Best of 1.\n"
+    ),
+
+    "organizers": [
+        "Staff SSR Racing",
+    ],
+
+    "links": [
+        {
+            "label": "Bracket Challonge",
+            "url": "https://challonge.com/fr/SSR_Coop_S2"
+       
+        },
+	{
+            "label": "Document du tournoi",
+            "url": "https://docs.google.com/document/d/17mWU2s2tSXRD10vHZBncVXhAj3ZDlxgrGONv8Gt5gUc/edit?tab=t.0#heading=h.y6vfuc85ddnl"
+       
+        },
+	{
+            "label": "Playlist des rediffusions ZSR",
+            "url": "https://www.youtube.com/playlist?list=PLoBQgkYcUe0VXst0tTLf7fF8tg4QdCbz3"
+       
+        }
+    ],
+	"participants": [
+    "Sledgen",
+    "CubeDavid",
+    "Lyric",
+    "Tweety",
+    "gymnast86",
+    "PippyInATopHat",
+    "goldendevil1711",
+    "picks",
+    "Adri00",
+    "Oni",
+    "Clemstyle55",
+    "Echo"
+	],
+	
+	"results": [
+    {
+        "player": "gymnast86",
+        "result": "Vainqueur du tournoi"
     },
+    {
+        "player": "PippyInATopHat",
+        "result": "Vainqueur du tournoi"
+    },
+    {
+        "player": "CubeDavid",
+        "result": "Finaliste"
+    },
+    {
+        "player": "Sledgen",
+        "result": "Finaliste"
+    }
+	]
+
+
+},
     {
     "slug": "off-S3",
     "name": "Tournoi SSR Saison 3",
