@@ -49,6 +49,8 @@ instance/*.sqlite3
 instance/*.log
 instance/__pycache__/
 
+# Avatars utilisateurs (runtime, liés à la BDD)
+app/static/avatars/*
 
 # Variables d'environnement (secrets)
 .env
