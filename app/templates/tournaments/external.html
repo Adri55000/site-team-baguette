@@ -1,0 +1,21 @@
+{% extends "tournaments/archive_base.html" %}
+
+{% block archive_content %}
+
+<h2>Ressources</h2>
+
+{% if tournament.links %}
+  <ul class="tournament-links">
+    {% for link in tournament.links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+          {{ link.label }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Aucune ressource n’est disponible pour ce tournoi.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Modifier le jeu{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-games-page">
+
+    <h1>Modifier un jeu</h1>
+
+    <div class="admin-card">
+
+        <form method="POST" class="admin-form">
+
+            <div class="form-group">
+                <label for="full_name">Nom complet</label>
+                <input type="text"
+                       id="full_name"
+                       name="full_name"
+                       required
+                       value="{{ game.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="short_name">Abréviation</label>
+                <input type="text"
+                       id="short_name"
+                       name="short_name"
+                       required
+                       value="{{ game.short_name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="color">Couleur</label>
+
+                <div class="color-picker-wrapper">
+                    <div id="colorPreview" class="color-preview"></div>
+                    <input type="color"
+                           id="color"
+                           name="color"
+                           value="{{ game.color or '#888888' }}">
+                </div>
+            </div>
+
+            <div class="edit-game-actions">
+                <button type="submit" class="btn-primary">Enregistrer</button>
+
+                <a href="{{ url_for('admin.games_list') }}" class="btn-secondary">
+                    Annuler
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const picker = document.getElementById("color");
+    const preview = document.getElementById("colorPreview");
+
+    // Mise à jour initiale
+    preview.style.backgroundColor = picker.value;
+
+    // Mise à jour dynamique
+    picker.addEventListener("input", () => {
+        preview.style.backgroundColor = picker.value;
+    });
+
+    // Permettre de cliquer sur la pastille
+    preview.addEventListener("click", () => picker.click());
+});
+</script>
+{% endblock %}

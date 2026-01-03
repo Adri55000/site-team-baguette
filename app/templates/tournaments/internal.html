@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ tournament.name }}
+{% endblock %}
+
+{% block content %}
+
+<header class="tournament-header">
+
+    <div class="tournament-header-left">
+        <h1 class="tournament-title">
+            {{ tournament.name }}
+            {% if metadata.edition %}
+                <span class="tournament-edition">
+                    {{ metadata.edition }}
+                </span>
+            {% endif %}
+        </h1>
+
+        {% if tournament.game_name %}
+            <div class="tournament-game">
+                {{ tournament.game_name }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tournament-header-right">
+        <div class="tournament-status tournament-status--{{ public_status }}">
+            {% if public_status == "upcoming" %}
+				À venir
+			{% elif public_status == "active" %}
+				En cours
+			{% elif public_status == "finished" %}
+				Terminé
+			{% endif %}
+
+        </div>
+    </div>
+
+</header>
+
+<!-- ========================= -->
+<!-- Présentation -->
+<!-- ========================= -->
+{% if metadata.description %}
+<section class="tournament-section tournament-summary">
+    <p>
+        {{ metadata.description | replace('\n', '<br>') | safe }}
+    </p>
+</section>
+{% endif %}
+
+<!-- ========================= -->
+<!-- Informations générales -->
+<!-- ========================= -->
+{% if metadata.organizers %}
+<section class="tournament-section tournament-infos">
+
+    <h2>Organisateurs</h2>
+
+    <ul class="tournament-info-list">
+
+            <li>
+                {{ metadata.organizers | join(", ") }}
+            </li>
+
+    </ul>
+
+</section>
+{% endif %}
+
+<!-- ========================= -->
+<!-- Participants -->
+<!-- ========================= -->
+<section class="tournament-section tournament-participants">
+
+    <h2>Participants</h2>
+
+    {% if teams %}
+        <div class="class=tournament-list tournament-participants-grid">
+
+			{% for team in teams %}
+				<li>
+					{{ team.name | team_name}}
+				</li>
+			{% endfor %}
+
+		</div>
+
+    {% else %}
+        <p class="tournament-placeholder">
+            Les participants seront affichés prochainement.
+        </p>
+    {% endif %}
+
+</section>
+
+<!-- ========================= -->
+<!-- Résultats marquants -->
+<!-- ========================= -->
+{% if metadata.highlights %}
+<section class="tournament-section tournament-results">
+
+    <h2>Résultats marquants</h2>
+
+    <ul class="tournament-results-list">
+        {% for h in metadata.highlights %}
+            <li>
+                <strong>{{ h.entity }}</strong> : {{ h.result }}
+            </li>
+        {% endfor %}
+    </ul>
+
+</section>
+{% endif %}
+
+
+<!-- ========================= -->
+<!-- Accès aux données -->
+<!-- ========================= -->
+<section class="tournament-section tournament-links">
+
+    <h2>Consulter le tournoi</h2>
+
+    <div class="tournament-links-actions">
+
+        <a
+            href="{{ url_for('main.tournament_results', slug=tournament.slug) }}"
+            class="btn"
+        >
+            📊 Résultats complets
+        </a>
+
+        <a
+            href="{{ url_for('main.tournament_bracket', slug=tournament.slug) }}"
+            class="btn"
+        >
+            🧩 Bracket & groupes
+        </a>
+
+    </div>
+
+</section>
+
+<!-- ========================= -->
+<!-- Liens externes -->
+<!-- ========================= -->
+{% if metadata.external_links %}
+<section class="tournament-section tournament-content">
+
+    <h2>Liens externes</h2>
+
+    <ul class="tournament-links">
+        {% for label, url in metadata.external_links.items() %}
+            <li>
+                <a href="{{ url }}" target="_blank" rel="noopener">
+                    {{ label | capitalize }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+</section>
+{% endif %}
+
+{% endblock %}

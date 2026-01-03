@@ -1,0 +1,635 @@
+/* =========================================================
+   TOURNAMENT – FEATURE
+========================================================= */
+
+.tournament-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   SPACING
+========================= */
+
+.tournament-header,
+.tournament-section {
+  margin-bottom: 1.6rem;
+}
+
+.tournament-page > *:last-child {
+  margin-bottom: 0;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.tournament-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 1.4rem 1.6rem;
+
+  background: linear-gradient(
+    180deg,
+    var(--overlay-light-1),
+    var(--overlay-light-2)
+  );
+
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.tournament-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tournament-title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.tournament-edition {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.tournament-header-right {
+  margin-left: 1rem;
+}
+
+.tournament-status {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.tournament-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.tournament-section h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.1rem;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.tournament-summary-text {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* =========================
+   LISTS
+========================= */
+
+.tournament-list {
+  padding-left: 1.2rem;
+  margin: 0.4rem 0;
+}
+
+.tournament-list li {
+  margin-bottom: 0.3rem;
+}
+
+/* =========================
+   PARTICIPANTS
+========================= */
+
+.tournament-participants-grid {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem 0.8rem;
+}
+
+.tournament-participants-grid li {
+  background: var(--card-subtle-bg);
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+}
+
+/* =========================
+   RESULTS
+========================= */
+
+.tournament-results-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.tournament-results-list li {
+  margin-bottom: 0.4rem;
+}
+
+.tournament-result {
+  margin-left: 0.4rem;
+  color: var(--text-muted);
+}
+
+/* =========================
+   LINKS
+========================= */
+
+.tournament-links {
+  padding-left: 1.2rem;
+}
+
+.tournament-links li {
+  margin-bottom: 0.4rem;
+}
+
+.tournament-links a {
+  color: var(--link-color);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tournament-links a::after {
+  content: "↗";
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.tournament-links a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  .tournament-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+
+  .tournament-header-right {
+    align-self: flex-end;
+  }
+}
+
+/* =========================
+   PHASES (GROUPS / BRACKET)
+========================= */
+
+.tournament-bracket {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tournament-phase {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.tournament-phase-title {
+  margin: 0 0 0.9rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tournament-phase-title::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--text-muted);
+  opacity: 0.8;
+}
+
+/* =========================
+   GROUPS GRID
+========================= */
+
+.groups-grid {
+  display: grid;
+  gap: 0.9rem;
+
+  /* 1 colonne mobile, 2 colonnes dès que possible, puis + sur large écran */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+}
+
+/* =========================
+   GROUP CARD
+========================= */
+
+.group-card {
+  background: linear-gradient(
+    180deg,
+    var(--overlay-light-1),
+    var(--overlay-light-2)
+  );
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.group-card-header {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* =========================
+   GROUP TABLE
+========================= */
+
+.group-table-wrap {
+  padding: 0.6rem 0.75rem;
+  overflow-x: auto;
+}
+
+.group-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.group-table thead th {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.group-col-team {
+  width: 100%;
+}
+
+.group-col-num {
+  width: 3rem;
+  text-align: center;
+}
+
+.group-table tbody td {
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.group-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.group-team {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-num {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Alternance par ligne (autorisé et cohérent avec vos règles) */
+.group-table tbody tr:nth-child(even) {
+  background: var(--card-subtle-bg);
+}
+
+/* Hover léger */
+.group-table tbody tr:hover {
+  background: var(--overlay-light-1);
+}
+
+/* =========================
+   RESPONSIVE TWEAKS
+========================= */
+
+@media (max-width: 600px) {
+  .groups-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .group-table {
+    font-size: 0.92rem;
+  }
+}
+
+.group-row--qualified td:first-child {
+  position: relative;
+}
+
+.group-row--qualified td:first-child::before {
+  content: "";
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--primary);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.group-meta {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Bordure légèrement plus marquée sous le dernier qualifié */
+.group-row--cut td {
+  border-bottom: 2px solid var(--border-color);
+}
+
+
+.phase-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.phase-badge {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--overlay-light-1);
+  white-space: nowrap;
+}
+
+.group-table tbody tr.group-row--cut td {
+  box-shadow: inset 0 -2px 0 0 var(--border-color);
+}
+
+/* =========================================
+   TB BRACKET – hardcoded sizes (Challonge-like)
+   - placement grid basé sur --m et --step
+   - hauteurs FIXES (comme challonge)
+   - texte contraint (pas de débordement)
+   Namespace: .tb-bracket
+========================================= */
+
+.tb-bracket .bracket{
+  /* largeur colonne + espace entre colonnes */
+  --tb-round-width: 20rem;
+  --tb-round-gap: 3rem;
+
+  /* >>> HARD CODED (tailles) <<< */
+  --tb-slot: 5.5rem;       /* hauteur d’1 slot grille */
+  --tb-card-h: 9.5rem;     /* hauteur d’une carte série (fixe) */
+  --tb-match-h: 5rem;      /* hauteur du bloc "match" (2 lignes) */
+
+  /* règle d’or : 2*slot >= card-h (Round 1 span=2) */
+  /* ici : 2*5.5=11rem >= 9.5rem ✅ */
+
+  display: flex;
+  gap: var(--tb-round-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1rem 1.125rem;
+
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.tb-bracket .bracket-round{
+  flex: 0 0 var(--tb-round-width);
+}
+
+.tb-bracket .bracket-round-title{
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+/* grille verticale du round */
+.tb-bracket .bracket-round-series{
+  display: grid;
+  grid-auto-rows: var(--tb-slot);
+  padding: 0.25rem 0;
+}
+
+/* carte (fixe) */
+.tb-bracket .bracket-series{
+  --tb-span: calc(2 * var(--step));
+
+  /* placement par match */
+  grid-row: calc(var(--m) * var(--tb-span) + 1) / span var(--tb-span);
+  align-self: center;
+
+  height: var(--tb-card-h);
+
+  border-radius: var(--border-radius-lg);
+  padding: 0.75rem;
+
+  background: var(--card-subtle-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* label / teams / BO */
+  gap: 0.5rem;
+}
+
+/* label : 1 ligne max */
+.tb-bracket .bracket-series-label{
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  opacity: 0.9;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* match box (hauteur fixée pour garantir 2 lignes visibles) */
+.tb-bracket .bracket-series-match{
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--card-bg);
+
+  height: var(--tb-match-h);
+}
+
+/* teams : 2 lignes fixes */
+.tb-bracket .bracket-team{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+
+  /* stabilité verticale */
+  min-height: 2.25rem;  /* un peu plus safe que 1.75rem */
+  padding: 0.45rem 0.6rem;
+  line-height: 1.1;
+}
+
+.tb-bracket .bracket-team + .bracket-team{
+  border-top: 1px solid var(--border-color);
+}
+
+.tb-bracket .bracket-team-name{
+  min-width: 0;
+  font-size: 0.92rem;
+  line-height: 1.1;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tb-bracket .bracket-team-score{
+  min-width: 2.25rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+
+  border-radius: var(--border-radius-sm);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+
+  background: var(--card-subtle-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* BO : 1 ligne max */
+.tb-bracket .bracket-series-meta{
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* responsive */
+@media (max-width: 700px){
+  .tb-bracket .bracket{
+    --tb-round-width: 18rem;
+    --tb-round-gap: 2rem;
+
+    /* typo corrigée */
+    --tb-slot: 5.5rem;
+    --tb-card-h: 9.25rem;
+    --tb-match-h: 4.9rem;
+  }
+}
+
+
+/* ================================
+   TB BRACKET – Connecteurs (overlay grid-stable)
+================================== */
+
+.tb-bracket .bracket{
+  --tb-pipe: 1.5rem;                 /* longueur horizontale */
+  --tb-axis: 2px;                  /* épaisseur verticale */
+  --tb-line: var(--border-color);  /* pas de couleur hardcodée */
+  --tb-join: 0.2rem;               /* petite "entrée" dans la carte */
+}
+
+/* base : la grille devient le référentiel */
+.tb-bracket .bracket-round-series{
+  position: relative;
+}
+
+/* un connecteur = un petit segment H placé au CENTRE du match (calculé) */
+.tb-bracket .bracket-conn{
+  position: absolute;
+
+  /* X : on part du bord droit de la colonne (légère entrée dans la carte) */
+  left: calc(100% - var(--tb-join));
+
+  /* Y : centre du match m
+     match m commence à row = m*(2*step) ; centre = + step
+     => (m*2*step + step) * slot
+  */
+  top: calc( ( (var(--m) * 2 * var(--step)) + var(--step) ) * var(--tb-slot) );
+
+  width: calc(var(--tb-pipe) + var(--tb-join));
+  height: 2px;
+  background: var(--tb-line);
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+/* le vertical + le "dernier trait à droite" seulement pour le match du haut (m pair) */
+.tb-bracket .bracket-conn.is-merge::before{
+  content: "";
+  position: absolute;
+
+  /* axe vertical à l'extrémité du H */
+  left: calc(var(--tb-pipe) + var(--tb-join));
+  top: 0;
+
+  width: var(--tb-axis);
+  height: calc(2 * var(--step) * var(--tb-slot)); /* centre(m) -> centre(m+1) */
+  background: var(--tb-line);
+  opacity: 0.9;
+}
+
+/* le trait manquant : H au milieu du vertical vers la colonne suivante */
+.tb-bracket .bracket-conn.is-merge::after{
+  content: "";
+  position: absolute;
+
+  left: calc(var(--tb-pipe) + var(--tb-join));
+  top: calc(var(--step) * var(--tb-slot)); /* milieu entre les 2 matchs */
+  width: var(--tb-pipe);
+  height: 2px;
+
+  background: var(--tb-line);
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+/* dernière colonne : pas de connecteurs sortants */
+.tb-bracket .bracket-round:last-child .bracket-conn{
+  display: none;
+}
+

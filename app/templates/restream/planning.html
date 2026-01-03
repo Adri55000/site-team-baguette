@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}
+Planning des matchs
+{% endblock %}
+
+{% block content %}
+<div class="restream-planning">
+
+    <h1>Planning des matchs</h1>
+
+    <!-- ========================= -->
+    <!-- Filtres -->
+    <!-- ========================= -->
+    <form method="get" class="restream-planning-filters">
+
+        <div class="restream-planning-filters-group">
+            <label for="tournament">Tournoi</label>
+            <select name="tournament" id="tournament">
+                <option value="">Tous les tournois</option>
+                {% for t in tournaments %}
+                    <option
+                        value="{{ t.id }}"
+                        {% if request.args.get("tournament") == t.id|string %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ t.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="restream-planning-filters-group">
+            <label>
+                <input
+                    type="checkbox"
+                    name="show_past"
+                    value="1"
+                    {% if request.args.get("show_past") %}
+                        checked
+                    {% endif %}
+                >
+                Afficher les matchs passés
+            </label>
+        </div>
+
+        <div class="restream-planning-filters-actions">
+            <button type="submit">
+                Appliquer
+            </button>
+        </div>
+
+    </form>
+
+    <!-- ========================= -->
+    <!-- Liste des matchs -->
+    <!-- ========================= -->
+    <div class="restream-planning-list">
+
+        {% if not matches %}
+            <div class="restream-planning-empty">
+                Aucun match à afficher.
+            </div>
+        {% else %}
+
+            {% for m in matches %}
+                <div class="restream-planning-item">
+
+                    <!-- Date / heure -->
+                    <div class="restream-planning-item-datetime">
+                        {{ (m.scheduled_at | replace("T", " "))[:16] }}
+                    </div>
+
+                    <!-- Contenu principal -->
+                    <div class="restream-planning-item-main">
+
+                        <div class="restream-planning-item-teams">
+
+                            <span class="restream-planning-item-stage">
+                                {{ m.stage_label }}
+                            </span>
+
+                            <span class="restream-planning-item-teams-names">
+                                {% for team in m.teams %}
+                                    {{ team | team_name }}{% if not loop.last %} vs {% endif %}
+                                {% endfor %}
+                            </span>
+							
+							{% if m.game_number %}
+							<span class="restream-planning-item-game">
+								Game {{ m.game_number }}
+							</span>
+							{% endif %}
+							
+                        </div>
+
+                        <div class="restream-planning-item-meta">
+                            <span class="restream-planning-item-tournament">
+                                {{ m.tournament_name }}
+                            </span>
+
+                            {% if m.phase_name %}
+                                <span class="restream-planning-item-phase">
+                                    — {{ m.phase_name }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <!-- Statuts -->
+                    <div class="restream-planning-item-status">
+
+                        {% if m.is_completed %}
+                            <span class="restream-planning-badge restream-planning-badge--done">
+                                Terminé
+                            </span>
+                        {% else %}
+                            <span class="restream-planning-badge restream-planning-badge--upcoming">
+                                À venir
+                            </span>
+                        {% endif %}
+
+                        {% if m.restream_slug %}
+                            <a
+                                href="{{ url_for('restream.view', slug=m.restream_slug) }}"
+                                class="restream-planning-badge restream-planning-badge--restream"
+                            >
+                                Restream prévu
+                            </a>
+                        {% else %}
+                            <span class="restream-planning-badge restream-planning-badge--none">
+                                Pas de restream
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        {% endif %}
+    </div>
+
+    <!-- ========================= -->
+    <!-- Pagination -->
+    <!-- ========================= -->
+    {% if total_pages > 1 %}
+        <div class="restream-planning-pagination">
+
+            {% if page > 1 %}
+                <a
+                    href="{{ url_for(
+                        'restream.planning',
+                        page=page-1,
+                        tournament=request.args.get('tournament'),
+                        show_past=request.args.get('show_past')
+                    ) }}"
+                >
+                    ← Précédent
+                </a>
+            {% endif %}
+
+            <span class="restream-planning-pagination-info">
+                Page {{ page }} / {{ total_pages }}
+            </span>
+
+            {% if page < total_pages %}
+                <a
+                    href="{{ url_for(
+                        'restream.planning',
+                        page=page+1,
+                        tournament=request.args.get('tournament'),
+                        show_past=request.args.get('show_past')
+                    ) }}"
+                >
+                    Suivant →
+                </a>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

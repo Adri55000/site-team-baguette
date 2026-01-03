@@ -1,0 +1,119 @@
+/* =========================================================
+   FORMS – COMPOSANT GLOBAL
+========================================================= */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.form-input,
+.form-textarea,
+.form-select {
+  background: var(--input-bg);
+  color: var(--input-text);
+
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius-sm);
+
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.3;
+
+  transition: border-color 0.15s ease,
+              background-color 0.15s ease;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* =========================================================
+   CHECKBOX / RADIO
+========================================================= */
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.form-check input {
+  accent-color: var(--accent-primary);
+}
+
+/* =========================================================
+   HELP / ERRORS / MESSAGES
+========================================================= */
+
+.form-help {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--msg-error-text);
+  background: var(--msg-error-bg);
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+}
+
+.form-success {
+  font-size: 0.8rem;
+  color: var(--msg-success-text);
+  background: var(--msg-success-bg);
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}

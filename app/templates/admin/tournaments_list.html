@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Gestion des tournois{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% set STATUS_LABELS = {
+    "draft": "Brouillon",
+    "active": "En cours",
+    "finished": "Terminé"
+} %}
+
+{% block content %}
+<div class="admin-dashboard">
+
+<h1>Gestion des tournois</h1>
+
+<!-- TOOLBAR -->
+<div class="admin-card admin-user-toolbar">
+    <form method="get" action="{{ url_for('admin.tournaments_list') }}">
+        <input type="text"
+               name="q"
+               placeholder="Rechercher un tournoi…"
+               value="{{ search or '' }}">
+
+        <select name="status">
+            <option value="">Tous les statuts</option>
+            <option value="draft" {{ 'selected' if status == 'draft' }}>Brouillon</option>
+            <option value="active" {{ 'selected' if status == 'active' }}>En cours</option>
+            <option value="finished" {{ 'selected' if status == 'finished' }}>Terminé</option>
+        </select>
+
+        <button type="submit" class="btn">Filtrer</button>
+    </form>
+
+    <div class="admin-toolbar-actions">
+        <a href="{{ url_for('admin.tournaments_create') }}"
+           class="btn btn-primary">
+            Ajouter
+        </a>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="admin-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th class="col-name">Nom</th>
+                <th>Jeu</th>
+				<th>Équipes</th>
+                <th>Statut</th>
+                <th>Source</th>
+                <th>Créé le</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in tournaments %}
+            <tr>
+                <td class="col-name">{{ t.name }}</td>
+                <td>{{ t.game_name or "—" }}</td>
+				<td>
+					{{ t.team_count }} équipe{{ 's' if t.team_count != 1 }}
+				</td>
+                <td>{{ STATUS_LABELS.get(t.status, t.status) }}</td>
+                <td>{{ t.source }}</td>
+                <td>{{ t.created_at[:16].replace("T", " ") }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.admin_tournament_edit', tournament_id=t.id) }}"
+                       class="btn btn-secondary-small">
+                        Gérer les infos
+                    </a>
+
+                    <a href="{{ url_for('admin.admin_tournament_teams', tournament_id=t.id) }}"
+                       class="btn btn-secondary-small">
+                        Gérer les inscriptions
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="empty">
+                    Aucun tournoi trouvé.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGINATION -->
+{% if total_pages > 1 %}
+<div class="admin-pagination">
+    {% if page > 1 %}
+        <a class="btn"
+           href="{{ url_for('admin.tournaments_list',
+                            page=page-1,
+                            q=search,
+                            status=status) }}">
+            ← Précédent
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+
+    <span class="admin-pagination-info">
+        Page {{ page }} / {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+        <a class="btn"
+           href="{{ url_for('admin.tournaments_list',
+                            page=page+1,
+                            q=search,
+                            status=status) }}">
+            Suivant →
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

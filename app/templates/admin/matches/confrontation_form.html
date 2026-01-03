@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Confrontation{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+{% block content %}
+<div class="admin-dashboard">
+
+<h1>
+    {% if series %}Modifier{% else %}Nouvelle{% endif %} confrontation
+</h1>
+
+<p class="admin-subtitle">
+    Tournoi : {{ tournament.name }}
+</p>
+
+<form method="post" class="admin-card admin-form">
+    <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
+
+    <!-- Phase -->
+    <label>Phase du tournoi</label>
+    <select name="phase_id" required {% if teams_locked %}disabled{% endif %}>
+        <option value="">— Sélectionner une phase —</option>
+        {% for p in phases %}
+            <option value="{{ p.id }}"
+                {% if (series and series.phase_id == p.id)
+                      or (not series and selected_phase_id and selected_phase_id == p.id) %}
+                    selected
+                {% endif %}>
+                {{ p.position }}. {{ p.name }}
+            </option>
+        {% endfor %}
+    </select>
+	{% if teams_locked %}
+		<input type="hidden" name="phase_id" value="{{ series.phase_id }}">
+	{% endif %}
+
+    <label>Équipe A</label>
+    <select name="team1_id" {% if teams_locked %}disabled{% endif %}>
+        <option value="">— À déterminer —</option>
+        {% for t in teams %}
+            <option value="{{ t.id }}"
+                {% if series and t.id == series.team1_id %}selected{% endif %}>
+                {{ t.name | team_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Équipe B</label>
+    <select name="team2_id" {% if teams_locked %}disabled{% endif %}>
+        <option value="">— À déterminer —</option>
+        {% for t in teams %}
+            <option value="{{ t.id }}"
+                {% if series and t.id == series.team2_id %}selected{% endif %}>
+                {{ t.name | team_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Stage / contexte</label>
+    <input type="text" name="stage"
+           value="{{ series.stage if series else '' }}">
+
+    {# --- Détection phase bracket --- #}
+    {% set current_phase_id = (series.phase_id if series else selected_phase_id) %}
+    {% set current_phase_id = (current_phase_id | int) if current_phase_id else None %}
+    {% set ns = namespace(is_bracket=false) %}
+
+    {% if current_phase_id %}
+        {% for p in phases %}
+            {% if p.id == current_phase_id and p.type in ['bracket_simple_elim', 'bracket_double_elim'] %}
+                {% set ns.is_bracket = true %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <label>
+        Round <span class="text-muted">(bracket uniquement)</span>
+    </label>
+    <input type="number" name="round" min="1"
+           value="{{ series.round if series else '' }}"
+           {% if not ns.is_bracket or teams_locked %}disabled{% endif %}
+           placeholder="Ex: 1, 2, 3…">
+
+    {% if not ns.is_bracket %}
+        <small class="text-muted">
+            Le champ “round” est utilisé uniquement pour les phases de type bracket.
+        </small>
+    {% endif %}
+
+    {# =======================
+       PROGRESSION BRACKET
+       ======================= #}
+
+    {% if ns.is_bracket %}
+        <hr>
+        <h3>Progression du bracket</h3>
+        <p class="text-muted">
+            Pour chaque côté, choisissez soit une équipe directe, soit une source (vainqueur / perdant d’une autre confrontation), soit laissez vide.
+        </p>
+
+        <label>Source Équipe A</label>
+        <select name="source_team1_series_id" {% if teams_locked %}disabled{% endif %}>
+            <option value="">— Aucune —</option>
+            {% for s in source_candidates %}
+                <option value="{{ s.id }}"
+                    {% if series and s.id == series.source_team1_series_id %}selected{% endif %}>
+                    #{{ s.id }}
+                    {% if s.round %} — R{{ s.round }}{% endif %}
+                    {% if s.stage %} — {{ s.stage }}{% endif %}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Type source Équipe A</label>
+        <select name="source_team1_type" {% if teams_locked %}disabled{% endif %}>
+            <option value="">—</option>
+            <option value="winner" {% if series and series.source_team1_type == 'winner' %}selected{% endif %}>Vainqueur</option>
+            <option value="loser" {% if series and series.source_team1_type == 'loser' %}selected{% endif %}>Perdant</option>
+        </select>
+
+        <label>Source Équipe B</label>
+        <select name="source_team2_series_id" {% if teams_locked %}disabled{% endif %}>
+            <option value="">— Aucune —</option>
+            {% for s in source_candidates %}
+                <option value="{{ s.id }}"
+                    {% if series and s.id == series.source_team2_series_id %}selected{% endif %}>
+                    #{{ s.id }}
+                    {% if s.round %} — R{{ s.round }}{% endif %}
+                    {% if s.stage %} — {{ s.stage }}{% endif %}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Type source Équipe B</label>
+        <select name="source_team2_type" {% if teams_locked %}disabled{% endif %}>
+            <option value="">—</option>
+            <option value="winner" {% if series and series.source_team2_type == 'winner' %}selected{% endif %}>Vainqueur</option>
+            <option value="loser" {% if series and series.source_team2_type == 'loser' %}selected{% endif %}>Perdant</option>
+        </select>
+    {% endif %}
+
+    <label>Best of</label>
+    <input type="number" name="best_of" min="1"
+           value="{{ series.best_of if series else 1 }}">
+
+    <div class="admin-actions-footer">
+        <button class="btn btn-primary">
+            Enregistrer
+        </button>
+
+        {% set cancel_phase_id = (series.phase_id if series else selected_phase_id) %}
+        <a href="{{ url_for('admin.admin_matches',
+                             tournament_id=tournament.id,
+                             phase_id=cancel_phase_id) }}"
+           class="btn btn-secondary">
+            Annuler
+        </a>
+    </div>
+</form>
+
+</div>
+{% endblock %}

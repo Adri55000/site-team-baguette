@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Team Baguette{% endblock %}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+	{% block head %}{% endblock %}
+</head>
+
+<body class="{% if session.get('darkmode') %}dark-mode{% endif %}">
+
+<header>
+    <div class="left-zone">
+        <h1><a href="{{ url_for('main.home') }}">Team Baguette</a></h1>
+    </div>
+
+	<nav class="navbar">
+
+    
+
+    <ul class="nav-links">
+
+
+        <li class="nav-dropdown">
+    <span>Tournois SSR▾</span>
+    <ul class="dropdown-menu">
+
+        {% if tournaments_active %}
+            <li class="dropdown-title">En cours</li>
+            {% for t in tournaments_active %}
+                <li>
+                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
+                        {{ t.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        {% endif %}
+
+        {% if tournaments_upcoming %}
+            <li class="dropdown-title">À venir</li>
+            {% for t in tournaments_upcoming %}
+                <li>
+                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
+                        {{ t.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        {% endif %}
+
+        {% if tournaments_finished %}
+            <li class="dropdown-separator"></li>
+            <li class="dropdown-title">Archives</li>
+            {% for t in tournaments_finished %}
+                <li>
+                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
+                        {{ t.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        {% endif %}
+
+    </ul>
+	<li class="nav-dropdown">
+    <span class="nav-link">Restream ▾</span>
+
+    <div class="dropdown-menu">
+
+        <span class="dropdown-title">Restream</span>
+
+        <ul>
+            <!-- Planning (placeholder) -->
+            <li>
+                <a href="{{ url_for('restream.planning') }}">
+                    Planning
+                </a>
+            </li>
+
+            {% if restreams %}
+                <li class="dropdown-divider"></li>
+
+                {% for r in restreams %}
+                    <li>
+                        <a href="{{ url_for('restream.view', slug=r['slug']) }}">
+                            {{ r['title'] }}
+                        </a>
+                    </li>
+                {% endfor %}
+            {% endif %}
+
+            {% if has_role("restreamer") %}
+                <li class="dropdown-divider"></li>
+
+                <li>
+                    <a href="{{ url_for('restream.manage') }}">
+                        ⚙ Gérer les restreams
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+
+    </div>
+</li>
+
+</li>
+
+</li>
+
+</nav>
+
+
+
+<div class="right-zone">
+{% if current_user.is_authenticated and current_user.role == "admin" %}
+    <a href="{{ url_for('admin.dashboard') }}" class="btn admin-btn">Admin</a>
+{% endif %}
+
+    {% if current_user.is_authenticated %}
+        <div class="user-info">
+            <a href="{{ url_for('main.profile') }}" class="avatar-link">
+                <img src="{{ url_for('static',
+                    filename='avatars/' + (current_user.avatar or 'default.png')) }}"
+                    class="avatar">
+            </a>
+
+            <span class="status">
+                <b>{{ current_user.username }}</b>
+            </span>
+
+            <a href="{{ url_for('auth.logout') }}" class="btn">Déconnexion</a>
+        </div>
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn">Connexion</a>
+        <a href="{{ url_for('auth.register') }}" class="btn">S'inscrire</a>
+    {% endif %}
+
+    <!-- Bouton thème -->
+    <button id="theme-toggle" class="theme-btn">☀</button>
+
+</div>
+
+
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Gestion des équipes{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+<h1>Gestion des équipes</h1>
+
+<!-- TOOLBAR -->
+<div class="admin-card admin-user-toolbar">
+    <form method="get" action="{{ url_for('admin.teams_list') }}">
+        <input type="text"
+               name="q"
+               placeholder="Rechercher une équipe…"
+               value="{{ search or '' }}">
+        <button type="submit" class="btn">
+            Rechercher
+        </button>
+    </form>
+
+    <a href="{{ url_for('admin.teams_create') }}"
+       class="btn btn-primary">
+        Ajouter
+    </a>
+</div>
+
+<!-- TABLE -->
+<div class="admin-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+				<th>Joueurs</th>
+                <th>Taille</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in teams %}
+            <tr>
+                <td>{{ t.name }}</td>
+				<td title="{{ t.players }}">{{ t.players }}</td>
+                <td>{{ t.size }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.teams_edit', team_id=t.id) }}"
+                       class="btn btn-secondary-small">
+                        Modifier
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="empty">
+                    Aucune équipe trouvée.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGINATION -->
+{% if total_pages > 1 %}
+<div class="admin-pagination">
+    {% if page > 1 %}
+        <a class="btn"
+           href="{{ url_for('admin.teams_list', page=page-1, q=search) }}">
+            ← Précédent
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+
+    <span class="admin-pagination-info">
+        Page {{ page }} / {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+        <a class="btn"
+           href="{{ url_for('admin.teams_list', page=page+1, q=search) }}">
+            Suivant →
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+</div>
+{% endif %}
+</div>
+{% endblock %}

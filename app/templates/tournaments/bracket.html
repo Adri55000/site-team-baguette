@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ tournament.name }} – Groupes & Bracket
+{% endblock %}
+
+{% block content %}
+
+<!-- ========================= -->
+<!-- Header tournoi -->
+<!-- ========================= -->
+<header class="tournament-header">
+
+    <div class="tournament-header-left">
+        <h1 class="tournament-title">
+            {{ tournament.name }}
+            {% if metadata.edition %}
+                <span class="tournament-edition">
+                    {{ metadata.edition }}
+                </span>
+            {% endif %}
+        </h1>
+
+        {% if tournament.game_name %}
+            <div class="tournament-game">
+                {{ tournament.game_name }}
+            </div>
+        {% endif %}
+    </div>
+
+</header>
+
+<section class="tournament-section">
+    <a href="{{ url_for('main.tournament', slug=tournament.slug) }}">
+        ← Retour au tournoi
+    </a>
+</section>
+
+<!-- ========================= -->
+<!-- Phases -->
+<!-- ========================= -->
+<section class="tournament-section tournament-bracket">
+
+    {% if not phases %}
+        <p class="tournament-placeholder">
+            Aucune phase à afficher pour ce tournoi.
+        </p>
+    {% endif %}
+
+    {% for phase in phases %}
+        <div class="tournament-phase">
+
+            <div class="phase-header">
+				<h2 class="tournament-phase-title">{{ phase.name }}</h2>
+
+				{% if phase.data.qualifiers_per_group %}
+					<span class="phase-badge">
+					Les {{ phase.data.qualifiers_per_group }} premiers se qualifient
+					</span>
+				{% endif %}
+			</div>
+
+			
+            {% if phase.display_type == "groups" %}
+                {% include "tournaments/phases/groups.html" %}
+            {% elif phase.display_type == "bracket_simple_elim" and phase.data.bracket is defined %}
+                {% include "tournaments/phases/bracket_simple_elim.html" %}
+            {% else %}
+                <p class="tournament-placeholder">
+                    Type de phase non supporté.
+                </p>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,204 @@
+/* =========================================================
+   INDICES – BASE
+========================================================= */
+
+.restream-indices-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.restream-indices-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.restream-indices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+/* =========================================================
+   CARTE CATÉGORIE
+========================================================= */
+
+.restream-indices-category {
+  position: relative;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 6px;
+
+  background: var(--indices-card-bg);
+  border: 1px solid var(--indices-card-border);
+  box-shadow: var(--indices-shadow);
+}
+
+/* =========================================================
+   HEADER CATÉGORIE
+========================================================= */
+
+.restream-indices-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+
+  border-bottom: 1px solid var(--indices-header-border);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.restream-indices-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.restream-indices-table td {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+  vertical-align: top;
+  word-break: break-word;
+
+  background: var(--indices-table-bg);
+  color: var(--indices-table-text);
+  border-top: 1px solid var(--indices-header-border);
+}
+
+.restream-indices-table tr:nth-child(even) td {
+  background: var(--indices-table-bg-alt);
+}
+
+/* Séparateur vertical */
+.restream-indices-table td + td {
+  border-left: 2px solid var(--indices-col-separator);
+}
+
+/* =========================================================
+   CELLULE VIDE
+========================================================= */
+
+.restream-indices-empty {
+  text-align: center;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   ACTIONS GLOBALES
+========================================================= */
+
+.restream-indices-global-actions {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+/* =========================================================
+   ARC COLORÉ (IDENTITÉ)
+========================================================= */
+
+.restream-indices-category::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: -6px;
+  width: 6px;
+  height: calc(100% - 20px);
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 0 8px var(--indices-shadow-accent);
+}
+
+/* =========================================================
+   TITRES PAR CATÉGORIE
+========================================================= */
+
+.restream-indices-category[data-category="path"] h3 {
+  color: var(--indices-cat-path);
+}
+.restream-indices-category[data-category="always"] h3 {
+  color: var(--indices-cat-always);
+}
+.restream-indices-category[data-category="sometimes"] h3 {
+  color: var(--indices-cat-sometimes);
+}
+.restream-indices-category[data-category="triforce"] h3 {
+  color: var(--indices-cat-triforce);
+}
+.restream-indices-category[data-category="barren"] h3 {
+  color: var(--indices-cat-barren);
+}
+.restream-indices-category[data-category="chants"] h3 {
+  color: var(--indices-cat-chants);
+}
+
+/* =========================================================
+   DÉGRADÉS ARC PAR CATÉGORIE
+========================================================= */
+
+.restream-indices-category[data-category="path"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-path),
+    var(--indices-cat-path-dark)
+  );
+}
+
+.restream-indices-category[data-category="always"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-always),
+    var(--indices-cat-always-dark)
+  );
+}
+
+.restream-indices-category[data-category="sometimes"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-sometimes),
+    var(--indices-cat-sometimes-dark)
+  );
+}
+
+.restream-indices-category[data-category="triforce"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-triforce),
+    var(--indices-cat-triforce-dark)
+  );
+}
+
+.restream-indices-category[data-category="barren"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-barren),
+    var(--indices-cat-barren-dark)
+  );
+}
+
+.restream-indices-category[data-category="chants"]::before {
+  background: linear-gradient(
+    to bottom,
+    var(--indices-cat-chants),
+    var(--indices-cat-chants-dark)
+  );
+}
+
+/* =========================================================
+   CLIP CONTENU
+========================================================= */
+
+.restream-indices-content {
+  overflow: hidden;
+  border-radius: 0 0 14px 14px;
+}

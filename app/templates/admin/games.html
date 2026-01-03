@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Gérer les jeux{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-games-page">
+
+    <h1>Gestion des jeux</h1>
+
+    <div class="admin-card">
+        <h2>Ajouter un jeu</h2>
+
+        <form method="POST" action="{{ url_for('admin.games_add') }}" class="admin-form">
+
+            <div class="form-group">
+                <label for="name">Nom complet</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="short_name">Abréviation</label>
+                <input type="text" id="short_name" name="short_name" required>
+            </div>
+
+            <div class="form-group">
+			<label for="color">Couleur (optionnel)</label>
+
+				<div class="color-picker-wrapper">
+					<div id="colorPreview" class="color-preview"></div>
+					<input type="color" id="color" name="color" value="#888888">
+				</div>
+
+			</div>
+
+
+            <div class="admin-actions-footer">
+				<button type="submit" class="btn-primary">
+					Ajouter
+				</button>
+			</div>
+
+        </form>
+    </div>
+
+    <section class="admin-card">
+    <h2>Liste des jeux</h2>
+
+    {% if games %}
+        <ul class="game-list">
+            {% for g in games %}
+                <li class="game-item">
+
+                    <div class="game-left">
+                        {% if g.color %}
+                            <span class="color-dot" style="background: {{ g.color }}"></span>
+                        {% endif %}
+
+                         <span class="game-name">
+							{{ g.short_name }} — {{ g.name }}
+						</span>
+                    </div>
+
+                     <div class="game-right">
+						<a class="btn-secondary-small"
+							href="{{ url_for('admin.game_edit', game_id=g.id) }}">
+							Modifier
+						</a>
+					</div>
+
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p>Aucun jeu enregistré.</p>
+    {% endif %}
+</section>
+
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const picker = document.getElementById("color");
+    const preview = document.getElementById("colorPreview");
+
+    // Mise à jour initiale
+    preview.style.backgroundColor = picker.value;
+
+    // Mise à jour dynamique
+    picker.addEventListener("input", () => {
+        preview.style.backgroundColor = picker.value;
+    });
+
+    // Rendre la pastille cliquable → ouvre le color picker
+    preview.addEventListener("click", () => picker.click());
+});
+</script>
+
+{% endblock %}
+

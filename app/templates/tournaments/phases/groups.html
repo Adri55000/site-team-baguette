@@ -1,0 +1,48 @@
+{% if phase.data.groups %}
+
+<div class="groups-grid">
+	{% set q = phase.data.qualifiers_per_group or 0 %}
+
+    {% for group in phase.data.groups %}
+        <section class="group-card">
+
+            <header class="group-card-header">
+                <h3 class="group-title">{{ group.name }}</h3>
+            </header>
+
+            <div class="group-table-wrap">
+                <table class="group-table">
+                    <thead>
+                        <tr>
+                            <th class="group-col-team">Équipe</th>
+                            <th class="group-col-num">J</th>
+                            <th class="group-col-num">V</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group.standings %}
+                            <tr class="{% if q and loop.index0 < q %}group-row--qualified{% endif %} {% if q and loop.index == q %}group-row--cut{% endif %}">
+                                <td class="group-team">
+                                    {{ row.team | team_name }}
+                                </td>
+                                <td class="group-num">
+                                    {{ row.played }}
+                                </td>
+                                <td class="group-num">
+                                    {{ row.wins }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endfor %}
+
+</div>
+
+{% else %}
+    <p class="tournament-placeholder">
+        Aucun groupe à afficher pour cette phase.
+    </p>
+{% endif %}

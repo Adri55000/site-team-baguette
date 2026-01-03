@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <h1>Connexion</h1>
+
+    <!-- ===== Messages ===== -->
+    <div class="auth-messages">
+      {% if error %}
+        <div class="form-error">{{ error }}</div>
+      {% endif %}
+    </div>
+
+    <!-- ===== Formulaire ===== -->
+    <form method="POST"
+          action="{{ url_for('auth.login') }}"
+          class="form">
+
+      <div class="form-group">
+        <label for="username" class="form-label">
+          Nom d'utilisateur
+        </label>
+        <input type="text"
+               id="username"
+               name="username"
+               required
+               class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">
+          Mot de passe
+        </label>
+        <input type="password"
+               id="password"
+               name="password"
+               required
+               class="form-input">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          Se connecter
+        </button>
+      </div>
+
+    </form>
+
+    <div class="auth-links">
+      <a href="{{ url_for('auth.register') }}">
+        Créer un compte
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}
+Gérer les restreams
+{% endblock %}
+
+{% block content %}
+
+<div class="restream-manage-page">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+    <div class="restream-manage-header">
+        <h1>Gérer les restreams</h1>
+
+        <a href="{{ url_for('restream.create') }}" class="btn btn-primary">
+            + Créer un restream
+        </a>
+    </div>
+
+    <!-- ========================= -->
+    <!-- LISTE DES RESTREAMS -->
+    <!-- ========================= -->
+    {% if restreams_manage %}
+        <div class="restream-manage-list">
+
+            {% for r in restreams_manage %}
+                <div class="restream-manage-card restream-manage-card--{{ r.status }}">
+
+                    <!-- ========================= -->
+                    <!-- INFOS PRINCIPALES -->
+                    <!-- ========================= -->
+                    <div class="restream-manage-info">
+                        <h3 class="restream-manage-title">
+                            {{ r.title }}
+                        </h3>
+
+                        <p class="restream-manage-meta">
+                            <strong>{{ r.tournament_name }}</strong>
+                            · {{ r.teams_display }}
+                        </p>
+
+                        <p class="restream-manage-meta">
+                            Match :
+                            {{ r.scheduled_at | format_datetime }}
+                        </p>
+
+                        <!-- ========================= -->
+                        <!-- STATUT -->
+                        <!-- ========================= -->
+                        <p class="restream-manage-status">
+                            {% if r.status == "upcoming" %}
+                                <span class="badge badge-upcoming">
+                                    À venir
+                                </span>
+                            {% elif r.status == "past" %}
+                                <span class="badge badge-past">
+                                    Passé
+                                </span>
+                            {% else %}
+                                <span class="badge badge-inactive">
+                                    Inactif
+                                </span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- ========================= -->
+                    <!-- ACTIONS -->
+                    <!-- ========================= -->
+                    <div class="restream-manage-actions">
+
+                        <!-- Voir page publique -->
+                        <a href="{{ url_for('restream.view', slug=r.slug) }}"
+                           class="btn btn-secondary">
+                            Voir
+                        </a>
+						
+						<a href="{{ url_for('restream.edit', slug=r.slug) }}"
+							class="btn btn-secondary btn-sm">
+							Modifier
+						</a>
+
+
+                        <!-- Accès aux indices -->
+                        <a href="{{ url_for('restream.restream_indices', slug=r.slug) }}"
+                           class="btn btn-primary">
+                            Indices
+                        </a>
+
+                        {% if r.is_active %}
+                            <!-- ========================= -->
+                            <!-- DÉSACTIVATION -->
+                            <!-- ========================= -->
+                            <form method="post"
+                                  action="{{ url_for('restream.disable_restream', slug=r.slug) }}"
+                                  onsubmit="return confirm(
+                                    'Supprimer ce restream du site public ?\n\nIl pourra être réactivé plus tard.'
+                                  );"
+                                  style="display:inline;">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
+                                    Désactiver
+                                </button>
+                            </form>
+                        {% else %}
+                            <!-- ========================= -->
+                            <!-- RÉACTIVATION -->
+                            <!-- ========================= -->
+                            <form method="post"
+                                  action="{{ url_for('restream.enable_restream', slug=r.slug) }}"
+                                  style="display:inline;">
+                                <button type="submit"
+                                        class="btn btn-success btn-sm">
+                                    Réactiver
+                                </button>
+                            </form>
+                        {% endif %}
+
+
+                    </div>
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <p class="empty-state">
+            Aucun restream n’a encore été créé.
+        </p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

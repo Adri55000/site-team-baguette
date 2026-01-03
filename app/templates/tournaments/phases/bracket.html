@@ -1,0 +1,62 @@
+{% if phase.data.rounds %}
+
+<div class="bracket-container">
+
+    {% for round in phase.data.rounds %}
+        <div class="bracket-round">
+
+
+
+            <!-- Liste des confrontations -->
+            <div class="bracket-matches">
+
+                {% for match in round.matches %}
+                    <div class="bracket-match">
+
+                        {% if match.label %}
+                            <div class="bracket-match-label">
+                                {{ match.label }}
+                            </div>
+                        {% endif %}
+
+                        <div class="bracket-teams">
+
+                            {% for team in match.teams %}
+                                <div class="bracket-team
+                                    {% if team == match.winner %}
+                                        bracket-team-winner
+                                    {% endif %}
+                                ">
+                                    {{ team | team_name }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="bracket-match-footer">
+                            {% if match.score %}
+                                <span class="bracket-score">
+                                    {{ match.score }}
+                                </span>
+                            {% else %}
+                                <span class="bracket-score bracket-muted">
+                                    —
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+    {% endfor %}
+
+</div>
+
+{% else %}
+    <p class="tournament-placeholder">
+        Aucun bracket à afficher pour cette phase.
+    </p>
+{% endif %}

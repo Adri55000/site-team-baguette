@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ restream.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="restream-view-page">
+
+  <!-- HEADER -->
+  <header class="restream-view-header">
+    <h1 class="restream-title">{{ restream.title }}</h1>
+
+    <div class="restream-meta">
+      Créé par <b>{{ restream.creator }}</b>
+      · {{ restream.created_at }}
+    </div>
+  </header>
+
+  <!-- ACTIONS PRINCIPALES -->
+  <section class="restream-view-main">
+
+    <a href="{{ url_for('restream.restream_indices', slug=restream.slug) }}"
+       class="btn btn-primary btn-large restream-indices-cta">
+      🔎 Accéder aux indices
+    </a>
+
+    {% if restream.twitch_url %}
+      <a href="{{ restream.twitch_url }}"
+         target="_blank"
+         class="btn btn-secondary">
+        📺 Chaîne Twitch
+      </a>
+    {% endif %}
+
+  </section>
+
+	{% if restream.restreamer_name
+	or restream.commentator_name
+	or restream.tracker_name %}
+
+		<section class="restream-view-staff">
+			<h2>Équipe du restream</h2>
+
+			<ul class="restream-staff-list">
+				{% if restream.restreamer_name %}
+					<li><strong>Restream :</strong> {{ restream.restreamer_name }}</li>
+				{% endif %}
+
+				{% if restream.commentator_name %}
+					<li><strong>Commentaires :</strong> {{ restream.commentator_name }}</li>
+				{% endif %}
+
+				{% if restream.tracker_name %}
+					<li><strong>Tracking :</strong> {{ restream.tracker_name }}</li>
+				{% endif %}
+			</ul>
+		</section>
+
+	{% endif %}
+
+
+  <!-- INFOS / EXTENSIONS FUTURES -->
+  <section class="restream-view-info">
+    <p class="restream-hint">
+      Cette page sert de point d’accès au restream.
+      Les indices sont mis à jour en temps réel.
+    </p>
+  </section>
+
+</div>
+
+{% endblock %}

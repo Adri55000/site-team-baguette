@@ -1,0 +1,59 @@
+/* =========================================================
+   LAYOUT GLOBAL
+========================================================= */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 1.2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Zones du header */
+header .left-zone,
+header .right-zone {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main {
+  padding: 1.5rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+/* Bouton Admin (navbar) */
+.admin-btn {
+  background: var(--primary);
+  color: var(--text-inverse);
+  border-radius: var(--border-radius-sm);
+  padding: 0.4rem 0.8rem;
+}
+
+.admin-btn:hover {
+  background: var(--primary-hover);
+}

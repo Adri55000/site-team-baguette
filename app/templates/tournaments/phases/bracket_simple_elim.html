@@ -1,0 +1,93 @@
+<section class="tournament-phase tournament-phase--bracket">
+	<div class="tb-bracket">
+    <div class="bracket">
+
+        {% for round in phase.data.bracket.rounds %}
+			{% set r_idx = loop.index0 %}
+			{% set step = 2 ** r_idx %}
+            <div class="bracket-round" style="--r: {{ r_idx }}; --step: {{ step }};">
+                <h3 class="bracket-round-title">
+                    Round {{ round.round }}
+                </h3>
+
+                <div class="bracket-round-series">
+
+                    {% for s in round.series %}
+						{% set m_idx = loop.index0 %}
+                        <div class="bracket-series {% if m_idx % 2 == 0 %}bracket-series--merge{% endif %}"
+							style="--m: {{ m_idx }}; ">
+							<span class="bracket-conn {% if m_idx % 2 == 0 %}is-merge{% endif %}" style="--m: {{ m_idx }};"></span>
+
+
+                            {% if s.label %}
+                                <div class="bracket-series-label">
+                                    {{ s.label }}
+                                </div>
+                            {% endif %}
+
+                            <div class="bracket-series-match">
+
+                                <!-- Team 1 -->
+                                <div class="bracket-team">
+                                    <span class="bracket-team-name">
+                                        {% set t = s.team1 %}
+										{% if t.id and t.name and t.name != "À déterminer" %}
+										  {{ t.name | team_name }}
+										{% elif t.source_series_id %}
+										  {% if t.source_type == "winner" %}
+											Vainqueur de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% elif t.source_type == "loser" %}
+											Perdant de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% else %}
+											De {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% endif %}
+										{% else %}
+										  {{ t.name | team_name }}
+										{% endif %}
+                                    </span>
+
+                                    <span class="bracket-team-score">
+                                        {{ s.team1.wins }}
+                                    </span>
+                                </div>
+
+                                <!-- Team 2 -->
+                                <div class="bracket-team">
+                                    <span class="bracket-team-name">
+                                        {% set t = s.team2 %}
+										{% if t.id and t.name and t.name != "À déterminer" %}
+										  {{ t.name | team_name }}
+										{% elif t.source_series_id %}
+										  {% if t.source_type == "winner" %}
+											Vainqueur de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% elif t.source_type == "loser" %}
+											Perdant de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% else %}
+											De {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+										  {% endif %}
+										{% else %}
+										  {{ t.name | team_name }}
+										{% endif %}
+                                    </span>
+
+                                    <span class="bracket-team-score">
+                                        {{ s.team2.wins }}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="bracket-series-meta">
+                                BO{{ s.best_of }}
+                            </div>
+
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+	</div>
+</section>

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+Résultats – {{ tournament.name }}
+{% endblock %}
+
+{% block content %}
+
+<header class="tournament-header">
+    <h1>
+        {{ tournament.name }}
+        {% if metadata.edition %}
+            <span class="tournament-edition">{{ metadata.edition }}</span>
+        {% endif %}
+    </h1>
+</header>
+
+<section class="tournament-section">
+    <a href="{{ url_for('main.tournament', slug=tournament.slug) }}">← Retour au tournoi</a>
+</section>
+
+<section class="tournament-section">
+
+    <h2>Résultats</h2>
+
+    {% for phase in phases %}
+        <div class="tournament-phase">
+
+            <h3>{{ phase.name }}</h3>
+
+            {% set series_list = series_by_phase.get(phase.id, []) %}
+
+            {% if not series_list %}
+                <p class="tournament-placeholder">
+                    Aucune confrontation dans cette phase.
+                </p>
+            {% else %}
+                <ul class="tournament-series-list">
+                    {% for s in series_list %}
+                        <li class="tournament-series-line">
+
+							<span class="tournament-series-stage">
+								{{ s.stage }}
+							</span>
+
+                            {# Équipes #}
+                            <span class="tournament-series-teams">
+                                {% for team in s.teams %}
+                                    {% if team == s.winner_name %}
+                                        <strong>{{ team | team_name }}</strong>
+                                    {% else %}
+                                        {{ team | team_name }}
+                                    {% endif %}
+                                    {% if not loop.last %} vs {% endif %}
+                                {% endfor %}
+                            </span>
+
+                            {# Score BO #}
+                            {% if s.score %}
+                                <span class="tournament-series-score">
+                                    {{ s.score }}
+                                </span>
+                            {% else %}
+                                <span class="tournament-series-score tournament-muted">
+                                    —
+                                </span>
+                            {% endif %}
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</section>
+
+{% if tiebreaks %}
+<section class="tournament-section">
+
+    <h2>Tie-breaks</h2>
+
+    <ul class="tournament-series-list">
+        {% for m in tiebreaks %}
+            <li class="tournament-series-line">
+
+                <span class="tournament-series-teams">
+                    {% for team in m.teams %}
+                        {{ team | team_name }}
+                        {% if m.positions %}
+                            ({{ m.positions[loop.index0] }})
+                        {% endif %}
+                        {% if not loop.last %} vs {% endif %}
+                    {% endfor %}
+                </span>
+
+                <span class="tournament-series-score tournament-muted">
+                    {% if m.is_completed %}
+                        Terminé
+                    {% else %}
+                        À venir
+                    {% endif %}
+                </span>
+
+            </li>
+        {% endfor %}
+    </ul>
+
+</section>
+{% endif %}
+
+{% endblock %}

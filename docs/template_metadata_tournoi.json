@@ -1,0 +1,21 @@
+{
+  "edition": "2025",
+  "description": "Tournoi officiel Team Baguette de la saison 2025.",
+
+  "organizers": [
+    "Team Baguette",
+    "SSR France"
+  ],
+
+  "highlights": [
+    "Victoire surprise de l'équipe Alpha en finale",
+    "Record de participation avec 16 équipes",
+    "Première diffusion en restream officiel"
+  ],
+
+  "external_links": {
+    "vod": "https://example.com/vod",
+    "rules": "https://example.com/rules",
+    "liquipedia": "https://liquipedia.net/..."
+  }
+}

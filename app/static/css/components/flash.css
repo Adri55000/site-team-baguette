@@ -1,0 +1,30 @@
+.flash-container {
+  max-width: 1100px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.flash {
+  padding: 0.8rem 1rem;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 0.5rem;
+}
+
+.flash-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.flash-error {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.flash-warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.flash-info {
+  background: var(--bg-secondary);
+}

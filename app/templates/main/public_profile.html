@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Profil de {{ user["username"] }}{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="profile-header">
+    <img
+      class="profile-avatar"
+      src="{{ url_for('static', filename='avatars/' ~ (user["avatar_filename"] or 'default.png')) }}"
+      alt="Avatar">
+
+    <div class="profile-header-info">
+      <h1 class="profile-username">{{ user["username"] }}</h1>
+      <div class="profile-role">{{ user["role"] | capitalize }}</div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+
+    {% if user["description"] %}
+    <section class="profile-section">
+      <h2>À propos</h2>
+      <div class="profile-description">
+        {{ user["description"] }}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="profile-section">
+		<h2>Liens & contacts</h2>
+
+		{% if links %}
+			<div class="profile-socials">
+
+			{# --- Liens externes --- #}
+			{% for key in ["racetime", "twitch", "youtube"] %}
+				{% if links.get(key) %}
+					<a href="{{ links[key] }}" target="_blank" rel="noopener">
+						{{ key | capitalize }}
+					</a>
+				{% endif %}
+			{% endfor %}
+
+			{# --- Discord (texte) --- #}
+			{% if links.get("discord") %}
+				<div class="profile-social-text">
+					<strong>Discord :</strong> {{ links["discord"] }}
+				</div>
+			{% endif %}
+
+			</div>
+		{% else %}
+			<p>Aucun lien externe.</p>
+		{% endif %}
+	</section>
+
+    <div class="profile-actions">
+      <a href="{{ url_for('main.home') }}" class="btn btn-secondary">
+        Retour
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

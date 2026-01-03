@@ -1,0 +1,116 @@
+/* =========================================================
+   PROFILE – PAGE UTILISATEUR
+========================================================= */
+
+.profile-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Avatar */
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Infos */
+.profile-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.profile-username {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.profile-role {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.profile-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-section h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.1rem;
+}
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.profile-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+/* =========================
+   SOCIAL LINKS
+========================= */
+
+.profile-socials {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.profile-socials a {
+  font-size: 0.85rem;
+  color: var(--accent-primary);
+}
+
+.profile-socials a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.profile-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.profile-social-text {
+  padding: 0.25rem 0;
+}

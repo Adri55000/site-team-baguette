@@ -1,0 +1,146 @@
+/* =========================================================
+   NAVBAR & HEADER
+========================================================= */
+
+/* ===== NAV ===== */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.2rem;
+  color: var(--text-primary);
+}
+
+/* ===== DROPDOWN ===== */
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown > span,
+.nav-dropdown > .nav-link {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+}
+
+.nav-dropdown > span:hover,
+.nav-dropdown > .nav-link:hover {
+  background: var(--bg-hover);
+}
+
+/* ===== MENU ===== */
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 220px;
+
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+
+  display: none;
+  padding: 0.4rem 0;
+
+  z-index: 1000;
+}
+
+.nav-dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+/* ===== MENU CONTENT ===== */
+
+.dropdown-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dropdown-menu li {
+  padding: 0;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.dropdown-menu a:hover {
+  background: var(--bg-hover);
+}
+
+/* ===== TITRES & SÉPARATEURS ===== */
+
+.dropdown-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.dropdown-divider,
+.dropdown-separator {
+  margin: 0.35rem 0;
+  height: 1px;
+  background: var(--border-color);
+}
+
+/* =========================================================
+   RIGHT ZONE / USER
+========================================================= */
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.status {
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* ===== AVATAR ===== */
+
+.avatar-link {
+  display: block;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  object-fit: cover;
+}
+
+/* ===== THEME BUTTON ===== */
+
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 0.25rem 0.45rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.theme-btn:hover {
+  background: var(--bg-hover);
+}

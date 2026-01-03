@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+Indices – {{ restream.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="restream-indices-page">
+
+  <h1 class="restream-indices-title">
+    Indices – {{ restream.title }}
+  </h1>
+
+  <div class="restream-indices-grid">
+
+    {% for key, category in indices["categories"].items() %}
+    <section
+      class="restream-indices-category"
+      data-category="{{ key }}"
+    >
+
+      <!-- HEADER -->
+      <div class="restream-indices-category-header">
+        <h3>{{ category["label"] }}</h3>
+
+        {% if current_user.is_authenticated and has_role("éditeur") %}
+          <button class="edit-btn" data-category="{{ key }}">
+            Éditer
+          </button>
+        {% endif %}
+      </div>
+
+      <!-- TABLE LECTURE -->
+	  <div class="restream-indices-content">
+      <table class="restream-indices-table columns-{{ category['columns'] }}">
+        <tbody>
+        {% if category["items"] %}
+          {% for row in category["items"] %}
+          <tr>
+            {% for cell in row %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="{{ category['columns'] }}" class="restream-indices-empty">
+              —
+            </td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+	  </div>
+
+      <!-- FORMULAIRE ÉDITION -->
+      {% if current_user.is_authenticated and has_role("éditeur") %}
+      <form class="edit-form hidden" data-category="{{ key }}">
+
+        <textarea rows="6" spellcheck="false">
+{% for row in category["items"] -%}
+{% if category["columns"] == 2 -%}
+{{ row[0] }} | {{ row[1] }}
+{% else -%}
+{{ row[0] }}
+{% endif -%}
+{% endfor %}
+        </textarea>
+
+        <div class="edit-actions">
+          <button type="submit" class="btn btn-primary">
+            Enregistrer
+          </button>
+          <button type="button" class="btn btn-secondary cancel-btn">
+            Annuler
+          </button>
+        </div>
+
+      </form>
+      {% endif %}
+
+    </section>
+    {% endfor %}
+
+  </div>
+
+  {% if current_user.is_authenticated and has_role("restreamer") %}
+  <div class="restream-indices-global-actions">
+    <button id="reset-all-btn" class="btn btn-danger">
+      Réinitialiser tous les indices
+    </button>
+    <p class="restream-indices-warning">
+      Action réservée aux restreamers. Cette opération est irréversible.
+    </p>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/indices.js') }}"></script>
+{% endblock %}

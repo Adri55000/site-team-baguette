@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ "Modifier" if tournament else "Créer" }} un tournoi
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>
+    {{ "Modifier" if tournament else "Créer" }} un tournoi
+</h1>
+
+<!-- ========================= -->
+<!-- Infos du tournoi -->
+<!-- ========================= -->
+<div class="admin-card admin-section">
+
+<form method="post" class="admin-form">
+
+    <div class="admin-form-group">
+        <label for="name">Nom du tournoi</label>
+        <input type="text"
+               name="name"
+               id="name"
+               class="admin-input"
+               value="{{ tournament.name if tournament else '' }}"
+               required>
+        {% if errors.name %}
+            <p class="form-error">{{ errors.name }}</p>
+        {% endif %}
+    </div>
+
+    <div class="admin-form-group">
+        <label for="game_id">Jeu</label>
+        <select name="game_id" id="game_id" class="admin-input" required>
+            <option value="">— Sélectionner —</option>
+            {% for g in games %}
+                <option value="{{ g.id }}"
+                    {% if tournament and g.id == tournament.game_id %}selected{% endif %}>
+                    {{ g.name }}
+                </option>
+            {% endfor %}
+        </select>
+        {% if errors.game_id %}
+            <p class="form-error">{{ errors.game_id }}</p>
+        {% endif %}
+    </div>
+
+    <div class="admin-form-group">
+        <label for="status">Statut</label>
+        <select name="status" id="status" class="admin-input">
+            <option value="draft" {{ 'selected' if tournament and tournament.status == 'draft' }}>Brouillon</option>
+            <option value="active" {{ 'selected' if tournament and tournament.status == 'active' }}>En cours</option>
+            <option value="finished" {{ 'selected' if tournament and tournament.status == 'finished' }}>Terminé</option>
+        </select>
+    </div>
+
+    <div class="admin-form-group">
+        <label for="metadata">Informations complémentaires</label>
+        <p class="admin-form-help">
+            Informations libres (joueurs marquants, contexte, lien externe, etc.)
+        </p>
+        <textarea name="metadata"
+                  id="metadata"
+                  class="admin-input"
+                  rows="4">{{ tournament.metadata if tournament else '' }}</textarea>
+    </div>
+
+    <div class="admin-form-actions">
+        <button type="submit" class="btn btn-primary">
+            Enregistrer
+        </button>
+
+        <a href="{{ url_for('admin.tournaments_list') }}"
+           class="btn btn-secondary">
+            Annuler
+        </a>
+    </div>
+
+</form>
+
+</div>
+
+<!-- ========================= -->
+<!-- Phases du tournoi -->
+<!-- ========================= -->
+{% if tournament %}
+<div class="admin-card admin-section">
+
+<h2>Structure du tournoi</h2>
+
+{% if not phases %}
+    <p class="text-warning">
+        Aucune phase définie.  
+        Le tournoi ne pourra pas être activé tant qu'au moins une phase n'est pas créée.
+    </p>
+{% endif %}
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Ordre</th>
+            <th>Nom</th>
+            <th>Type</th>
+			<th>Qualifiés / groupe</th>
+            <th class="actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in phases %}
+        <tr>
+            <form method="post"
+                  action="{{ url_for('admin.admin_tournament_phase_edit',
+                                     tournament_id=tournament.id,
+                                     phase_id=p.id) }}">
+                <td>
+                    <input type="number"
+                           name="position"
+                           value="{{ p.position }}"
+                           min="1"
+                           class="admin-input admin-input-small">
+                </td>
+                <td>
+                    <input type="text"
+                           name="name"
+                           value="{{ p.name }}"
+                           class="admin-input">
+                </td>
+                <td>
+                    <select name="type" class="admin-input" data-phase-type>
+                        {% for t in ["groups", "bracket_simple_elim", "bracket_double_elim", "custom"] %}
+                            <option value="{{ t }}"
+                                {% if p.type == t %}selected{% endif %}>
+                                {{ t }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+				<td>
+					<input type="number"
+						name="qualifiers_per_group"
+						min="1"
+						class="admin-input admin-input-small"
+						value="{% if p.type == 'groups' %}{{ p.qualifiers_per_group or '' }}{% endif %}"
+						{% if p.type != 'groups' %}readonly{% endif %}>
+				</td>
+
+                <td class="actions">
+                    <button class="btn btn-secondary-small">
+                        Modifier
+                    </button>
+            </form>
+
+            <form method="post"
+                  action="{{ url_for('admin.admin_tournament_phase_delete',
+                                     tournament_id=tournament.id,
+                                     phase_id=p.id) }}"
+                  class="inline-form">
+                <button class="btn btn-danger-small"
+                        onclick="return confirm('Supprimer cette phase ?')">
+                    Supprimer
+                </button>
+            </form>
+                </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Ajouter une phase</h3>
+
+<form method="post"
+      action="{{ url_for('admin.admin_tournament_phase_create',
+                         tournament_id=tournament.id) }}"
+      class="admin-form admin-form-inline">
+
+    <input type="number"
+           name="position"
+           placeholder="Ordre"
+           min="1"
+           class="admin-input admin-input-small"
+           required>
+
+    <input type="text"
+           name="name"
+           placeholder="Nom de la phase"
+           class="admin-input"
+           required>
+
+    <select name="type" class="admin-input" data-phase-type>
+        {% for t in ["groups", "bracket_simple_elim", "bracket_double_elim", "custom"] %}
+            <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+    </select>
+	
+	<input type="number"
+       name="qualifiers_per_group"
+       placeholder="Qualifiés"
+       min="1"
+       class="admin-input admin-input-small"
+       data-qualifiers-input>
+
+
+    <button class="btn btn-primary-small">
+        Ajouter
+    </button>
+
+</form>
+
+</div>
+{% endif %}
+
+
+
+<script>
+(function () {
+  function syncQualifiers(root) {
+    const typeSelect = root.querySelector('[data-phase-type]');
+    const qInput = root.querySelector('[data-qualifiers-input]');
+    if (!typeSelect || !qInput) return;
+
+    const isGroups = (typeSelect.value || '').toLowerCase() === 'groups';
+    qInput.disabled = !isGroups;
+
+    // Optionnel : si on quitte "groups", on vide pour éviter d’envoyer une valeur inutile
+    if (!isGroups) qInput.value = '';
+  }
+
+  // Pour chaque form inline (édition)
+  document.querySelectorAll('form').forEach(form => {
+    if (form.querySelector('[data-phase-type]') && form.querySelector('[data-qualifiers-input]')) {
+      syncQualifiers(form);
+      form.addEventListener('change', (e) => {
+        if (e.target && e.target.matches('[data-phase-type]')) syncQualifiers(form);
+      });
+    }
+  });
+})();
+</script>
+
+
+{% endblock %}

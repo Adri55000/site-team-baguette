@@ -1,0 +1,367 @@
+/* =========================================================
+   ADMIN – BASE
+========================================================= */
+
+.admin-dashboard,
+.admin-games-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* =========================================================
+   LAYOUT ADMIN – ESPACEMENTS
+========================================================= */
+
+.admin-dashboard,
+.admin-games-page,
+.admin-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+	margin-bottom: 2.5rem;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.admin-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 1.8rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* Séparateurs */
+.admin-card hr,
+.admin-separator {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 2rem 0;
+}
+
+/* =========================================================
+   FORMULAIRES
+========================================================= */
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    max-width: 600px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="color"],
+.admin-user-toolbar input,
+.admin-user-toolbar select,
+.admin-input,
+.selected-list {
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius-sm);
+    padding: 0.6rem 0.8rem;
+}
+
+.admin-form input:focus,
+.admin-user-toolbar input:focus,
+.admin-user-toolbar select:focus,
+.admin-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Placeholder */
+.admin-user-toolbar input::placeholder {
+    color: var(--text-muted);
+}
+
+.admin-user-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-user-toolbar form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-toolbar-actions {
+    margin-left: auto;
+}
+
+
+/* =========================================================
+   BOUTONS
+========================================================= */
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--text-inverse);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-secondary,
+.btn-secondary-small,
+.btn-small {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-radius: var(--border-radius-sm);
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-secondary:hover,
+.btn-secondary-small:hover,
+.btn-small:hover {
+    background: var(--border-color);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-inverse);
+}
+
+.btn-warning:hover {
+    background: var(--warning-hover);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--text-inverse);
+}
+
+.btn-danger:hover {
+    background: var(--danger-hover);
+}
+
+/* =========================================================
+   TABLES ADMIN
+========================================================= */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.6rem;
+    text-align: left;
+    vertical-align: middle;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table th.actions,
+.admin-table td.actions {
+    text-align: right;
+}
+
+/* =========================================================
+   DASHBOARD – TUILES
+========================================================= */
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+}
+
+.admin-tile {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 1.4rem;
+    text-align: center;
+    color: var(--text-primary);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.admin-tile:hover:not(.disabled) {
+    transform: translateY(-3px);
+    background: var(--bg-hover);
+}
+
+.admin-tile.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.tile-icon {
+    font-size: 2rem;
+}
+
+.tile-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tile-coming {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge-active {
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-inactive {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.8rem;
+}
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.admin-pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+
+.user-avatar-small {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.avatar-admin {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.admin-table .col-name {
+    min-width: 220px;
+	max-width: 320px;
+    font-weight: 500;
+}
+
+.admin-actions-footer {
+    margin-top: 2rem;
+}
+
+.admin-info-banner {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--primary);
+    color: var(--text-secondary);
+}
+
+.game-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.game-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.game-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.game-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-right {
+    flex-shrink: 0;
+}
+
+/* --- Game color picker --- */
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.color-picker-wrapper input[type="color"] {
+    width: 42px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-dot {
+	display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}

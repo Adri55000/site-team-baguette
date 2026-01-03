@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="profile-header">
+    <img
+      class="profile-avatar"
+      src="{{ url_for('static', filename='avatars/' ~ (user['avatar_filename'] or 'default.png')) }}?v={{ session.get('avatar') }}"
+      alt="Avatar">
+
+    <div class="profile-header-info">
+      <h1 class="profile-username">{{ user["username"] }}</h1>
+      <div class="profile-role">{{ user["role"] | capitalize }}</div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+
+    <!-- ===== INFOS ===== -->
+    <section class="profile-section">
+      <p>
+        <strong>Créé le :</strong>
+        {{ user["created_at"] | format_datetime }}
+      </p>
+
+      <p>
+        <strong>Dernière connexion :</strong>
+        {% if user["last_login"] %}
+          {{ user["last_login"] | format_datetime }}
+        {% else %}
+          Jamais
+        {% endif %}
+      </p>
+    </section>
+
+    <!-- ===== DESCRIPTION & LIENS ===== -->
+    <section class="profile-section">
+      <h2>À propos</h2>
+
+      <form method="POST" class="form">
+
+        <div class="form-group">
+          <label for="description" class="form-label">
+            Description
+          </label>
+          <textarea
+            name="description"
+            id="description"
+            class="form-textarea"
+            placeholder="Parlez un peu de vous…"
+          >{{ user["description"] or ""}}</textarea>
+        </div>
+
+        <h3>Liens & contacts</h3>
+
+        {% for key, label in {
+          "racetime": "Racetime",
+          "twitch": "Twitch",
+          "youtube": "YouTube",
+        }.items() %}
+
+        <div class="form-group">
+          <label class="form-label">{{ label }}</label>
+          <input
+            type="url"
+            name="link_{{ key }}"
+            class="form-input"
+            value="{{ links.get(key, '') }}"
+            placeholder="https://{{ key }}.com/…">
+        </div>
+
+        {% endfor %}
+
+		<div class="form-group">
+			<label class="form-label">Discord</label>
+			<input
+				type="text"
+				name="discord_handle"
+				class="form-input"
+				value="{{ links.get('discord', '') }}"
+				placeholder="ex: TeamBaguette ou TeamBaguette#1234">
+			<small class="form-hint">
+			Pseudo ou identifiant Discord (pas un lien)
+			</small>
+		</div>
+
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            Enregistrer les changements
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- ===== AVATAR ===== -->
+    <section class="profile-section">
+      <h2>Avatar</h2>
+
+      <form
+        action="{{ url_for('auth.upload_avatar') }}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="form">
+
+        <div class="form-group">
+          <input type="file" name="avatar" accept="image/*" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-secondary">
+            Changer l’avatar
+          </button>
+        </div>
+      </form>
+    </section>
+	
+	<!-- ===== SECURITE ===== -->
+	<section class="profile-section">
+	<h2>Sécurité</h2>
+
+	<p class="profile-role">
+		Paramètres sensibles de votre compte.
+	</p>
+
+	<div class="profile-actions">
+		<a href="{{ url_for('main.change_password') }}"
+			class="btn btn-secondary">
+			Modifier mon mot de passe
+		</a>
+	</div>
+	</section>
+
+
+    <!-- ===== ACTIONS ===== -->
+    <div class="profile-actions">
+	<a href="{{ url_for('main.public_profile', user_id=user_id) }}"
+		class="btn btn-secondary">
+		Voir mon profil public
+	</a>
+
+	<a href="{{ url_for('main.home') }}" class="btn btn-secondary">
+		Retour
+	</a>
+	</div>
+
+
+  </div>
+
+</div>
+
+{% endblock %}

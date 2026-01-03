@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ tournament.name }} — {{ tournament.year }}
+{% endblock %}
+
+{% block content %}
+
+<header class="tournament-header">
+
+  <div class="tournament-header-left">
+    <h1 class="tournament-title">
+      {{ tournament.name }}
+    </h1>
+
+    {% if tournament.year %}
+      <div class="tournament-edition">
+        Édition {{ tournament.year }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="tournament-header-right">
+    <div class="tournament-status">
+      Terminé
+    </div>
+  </div>
+
+</header>
+
+
+
+  {% if tournament.summary %}
+    <section class="tournament-section tournament-summary">
+		<p class="tournament-summary-text">{{ tournament.summary }}</p>
+    </section>
+  {% endif %}
+
+  {% if tournament.organizers %}
+    <section class="tournament-section tournament-organizers">
+      <h2>Organisateurs</h2>
+      <ul>
+        {% for organizer in tournament.organizers %}
+          <li>{{ organizer }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if tournament.participants %}
+    <section class="tournament-section tournament-participants">
+      <h2>Participants</h2>
+		<ul class="tournament-list tournament-participants-grid">
+			{% for participant in tournament.participants %}
+			<li>{{ participant }}</li>
+			{% endfor %}
+		</ul>
+
+    </section>
+  {% endif %}
+
+  {% if tournament.results %}
+    <section class="tournament-section tournament-results">
+      <h2>Résultats marquants</h2>
+      <ul class="tournament-results-list">
+        {% for item in tournament.results %}
+          <li>
+            <strong>{{ item.player }}</strong>
+            <span class="tournament-result">{{ item.result }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <section class="tournament-section tournament-content">
+    {% block archive_content %}{% endblock %}
+  </section>
+
+</div>
+
+{% endblock %}

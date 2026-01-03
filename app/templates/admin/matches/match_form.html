@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Match{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+
+<h1>Créer un match</h1>
+
+<form method="post" class="admin-card admin-form">
+
+    {% if series %}
+        <input type="hidden" name="series_id" value="{{ series.id }}">
+        <p class="admin-subtitle">
+            Confrontation : {{ series['team1_name'] | team_name  }} vs {{ series['team2_name'] | team_name  }}
+        </p>
+    {% else %}
+        <p class="admin-subtitle">
+            Tie-break — sélection des équipes
+        </p>
+
+        <label>Équipes participantes</label>
+
+<input type="text"
+       placeholder="Rechercher une équipe…"
+       class="admin-search"
+       onkeyup="filterTeams(this.value)">
+
+<div class="admin-checkbox-list" id="team-list">
+    {% for t in teams %}
+        <label data-name="{{ t['name'] | lower }}">
+            <input type="checkbox" name="team_ids" value="{{ t['id'] }}">
+            {{ t['name'] | team_name }}
+        </label>
+    {% endfor %}
+</div>
+
+    {% endif %}
+
+    <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
+
+    <label>Date / heure prévue</label>
+    <input type="datetime-local" name="scheduled_at">
+
+    <div class="admin-actions-footer">
+        <button class="btn btn-primary">
+            Enregistrer
+        </button>
+
+        <a href="{{ url_for('admin.admin_matches',
+                             tournament_id=tournament.id) }}"
+           class="btn btn-secondary">
+            Annuler
+        </a>
+    </div>
+
+</form>
+
+</div>
+
+<script>
+function filterTeams(query) {
+    query = query.toLowerCase();
+    document.querySelectorAll('#team-list label').forEach(label => {
+        label.style.display =
+            label.dataset.name.includes(query) ? '' : 'none';
+    });
+}
+</script>
+
+{% endblock %}

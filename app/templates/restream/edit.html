@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+Modifier le restream
+{% endblock %}
+
+{% block content %}
+
+<div class="restream-edit-page">
+
+  <h1>Modifier le restream</h1>
+
+  <form method="post" class="restream-edit-form">
+
+    <div class="form-group">
+      <label for="title">Titre du restream</label>
+      <input
+        type="text"
+        name="title"
+        id="title"
+        value="{{ restream.title }}"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="twitch_url">Lien Twitch</label>
+      <input
+        type="url"
+        name="twitch_url"
+        id="twitch_url"
+        value="{{ restream.twitch_url or '' }}"
+        placeholder="https://twitch.tv/…"
+      >
+    </div>
+
+    <h2>Équipe du restream</h2>
+
+    <div class="form-group">
+      <label for="restreamer_name">Restream</label>
+      <input
+        type="text"
+        name="restreamer_name"
+        id="restreamer_name"
+        value="{{ restream.restreamer_name or '' }}"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="commentator_name">Commentaires</label>
+      <input
+        type="text"
+        name="commentator_name"
+        id="commentator_name"
+        value="{{ restream.commentator_name or '' }}"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="tracker_name">Tracking</label>
+      <input
+        type="text"
+        name="tracker_name"
+        id="tracker_name"
+        value="{{ restream.tracker_name or '' }}"
+      >
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        Enregistrer
+      </button>
+
+      <a href="{{ url_for('restream.manage') }}" class="btn btn-secondary">
+        Annuler
+      </a>
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}
+Modifier l’équipe
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>Modifier l’équipe</h1>
+
+<div class="admin-card">
+
+    <form method="post" class="admin-form">
+
+        <!-- Nom -->
+        <div class="admin-form-group">
+            <label for="name">Nom de l’équipe</label>
+            <input type="text"
+                   id="name"
+                   name="name"
+                   class="admin-input"
+                   value="{{ team.name if team else '' }}"
+                   required>
+        </div>
+
+        <!-- Filtre -->
+        <div class="admin-form-group">
+            <label for="player-filter">Filtrer les joueurs</label>
+            <input type="text"
+                   id="player-filter"
+                   class="admin-input"
+                   placeholder="Rechercher un joueur…">
+        </div>
+
+        <div class="admin-form-group two-columns">
+
+    <!-- MULTI SELECT -->
+    <div>
+        <label for="players">Joueurs (2 minimum)</label>
+        <select name="players"
+                id="players"
+                class="admin-input"
+                multiple
+                size="10">
+            {% for p in players %}
+                <option value="{{ p.id }}"
+                    {% if current_ids and p.id in current_ids %}selected{% endif %}>
+                    {{ p.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- SÉLECTION -->
+    <div>
+        <label>Joueurs sélectionnés</label>
+        <ul id="selected-players" class="selected-list"></ul>
+    </div>
+
+</div>
+
+
+        <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">
+                Enregistrer
+            </button>
+
+            <a href="{{ url_for('admin.teams_list') }}"
+               class="btn btn-secondary">
+                Annuler
+            </a>
+        </div>
+
+    </form>
+
+    {% if can_delete %}
+    <hr>
+    <h3>Suppression</h3>
+    <form method="post"
+          action="{{ url_for('admin.teams_delete', team_id=team.id) }}"
+          onsubmit="return confirm('Supprimer définitivement cette équipe ?');">
+        <button class="btn btn-danger">
+            Supprimer l’équipe
+        </button>
+    </form>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const filter = document.getElementById('player-filter');
+const select = document.getElementById('players');
+
+filter.addEventListener('input', () => {
+    const q = filter.value.toLowerCase();
+    for (const opt of select.options) {
+        opt.hidden = !opt.text.toLowerCase().includes(q);
+    }
+});
+
+const list = document.getElementById('selected-players');
+
+function updateSelected() {
+    list.innerHTML = '';
+    for (const opt of select.selectedOptions) {
+        const li = document.createElement('li');
+        li.textContent = opt.text;
+        list.appendChild(li);
+    }
+}
+
+select.addEventListener('change', updateSelected);
+updateSelected(); // au chargement (édition)
+</script>
+
+{% endblock %}

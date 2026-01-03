@@ -1,0 +1,167 @@
+/* =========================================================
+   VARIABLES GLOBALES – LIGHT MODE
+========================================================= */
+:root {
+  /* Backgrounds */
+  --bg-primary: #f2f2f7;
+  --bg-secondary: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: rgba(0, 0, 0, 0.05);
+
+  /* Text */
+  --text-primary: #222;
+  --text-secondary: #555;
+  --text-muted: #777;
+  --text-inverse: #ffffff;
+
+  /* Accents */
+  --accent-primary: #0078ff;
+  --accent-secondary: #3483fa;
+
+  /* Borders & shadows */
+  --border-color: #ddd;
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 14px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.12);
+
+  /* Forms */
+  --input-bg: #ffffff;
+  --input-border: #ccc;
+  --input-text: #222;
+
+  /* State messages */
+  --msg-success-bg: #e9ffe9;
+  --msg-success-text: #006600;
+  --msg-error-bg: #ffefef;
+  --msg-error-text: #b30000;
+
+  /* Cards */
+  --card-bg: var(--bg-secondary);
+
+  /* === RESTREAM TOKENS === */
+  --restream-accent: #7dd3fc;
+  --restream-danger: #ef4444;
+  --restream-bg: var(--card-bg);
+  --restream-border: var(--border-color);
+  --restream-muted: var(--text-muted);
+  
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  
+  --success-bg: #e9ffe9;
+  --success-text: #006600;
+
+  --danger-bg: #ffefef;
+  --danger-text: #b30000;
+
+  --warning: #e9a742;
+  --warning-hover: #d18f32;
+  
+  /* Overlays / gradients doux */
+  --overlay-light-1: rgba(255, 255, 255, 0.05);
+  --overlay-light-2: rgba(255, 255, 255, 0.02);
+
+  /* Cards alternatives / sub-sections */
+  --card-subtle-bg: rgba(255, 255, 255, 0.04);
+
+  /* Shadows fortes (headers, hero cards) */
+  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.6);
+  
+  /* Indices – catégories */
+  --indices-cat-path: #7dd37a;
+  --indices-cat-path-dark: #4dab5c;
+
+  --indices-cat-always: #f0c24b;
+  --indices-cat-always-dark: #d6a62e;
+
+  --indices-cat-sometimes: #6ea8fe;
+  --indices-cat-sometimes-dark: #4c7ddc;
+
+  --indices-cat-triforce: #b084f7;
+  --indices-cat-triforce-dark: #8f63d8;
+
+  --indices-cat-barren: #f07676;
+  --indices-cat-barren-dark: #cf4b4b;
+
+  --indices-cat-chants: #ff9f43;
+  --indices-cat-chants-dark: #e07f1f;
+  
+
+  /* Indices – surfaces */
+  --indices-card-bg: var(--card-bg);
+  --indices-card-border: var(--border-color);
+
+  --indices-header-border: var(--border-color);
+
+  --indices-table-bg: var(--bg-secondary);
+  --indices-table-bg-alt: var(--bg-hover);
+  --indices-table-text: var(--text-primary);
+
+  --indices-col-separator: var(--border-color);
+
+  --indices-shadow: var(--shadow-md);
+  --indices-shadow-accent: rgba(0, 0, 0, 0.35);
+  
+  --indices-col-overlay: rgba(0, 0, 0, 0.03);
+
+
+}
+
+/* =========================================================
+   DARK MODE (variables uniquement)
+========================================================= */
+.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-elevated: #1f1f1f;
+  --bg-hover: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #e8e8e8;
+  --text-secondary: #b3b3b3;
+  --text-muted: #999;
+  --text-inverse: #000000;
+
+  --border-color: #333;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 20px rgba(0,0,0,0.5);
+
+  --input-bg: #2a2a2a;
+  --input-border: #555;
+  --input-text: #eee;
+
+  --msg-success-bg: #0b2e0b;
+  --msg-success-text: #8aff8a;
+  --msg-error-bg: #3b0000;
+  --msg-error-text: #ff6b6b;
+  
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+
+  --danger: #f87171;
+  --danger-hover: #ef4444;
+  
+  --success-bg: #0b2e0b;
+  --success-text: #8aff8a;
+
+  --danger-bg: #3b0000;
+  --danger-text: #ff6b6b;
+
+  --warning: #fbbf24;
+  --warning-hover: #f59e0b;
+  
+  --overlay-light-1: rgba(255, 255, 255, 0.05);
+  --overlay-light-2: rgba(255, 255, 255, 0.02);
+
+  --card-subtle-bg: rgba(255, 255, 255, 0.03);
+
+  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.6);
+  
+  --indices-col-overlay: rgba(255, 255, 255, 0.04);
+}
+
+

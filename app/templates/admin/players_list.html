@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Gestion des joueurs{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+<h1>Gestion des joueurs</h1>
+
+<div class="admin-card admin-user-toolbar">
+    <form method="get" action="{{ url_for('admin.players_list') }}">
+	<input type="text" name="q" value="{{ search or '' }}" placeholder="Rechercher un joueur...">
+	<button type="submit" class="btn">Rechercher</button>
+	</form>
+
+
+    <a href="{{ url_for('admin.players_create') }}"
+       class="btn btn-primary">
+        Ajouter
+    </a>
+</div>
+
+
+<!-- TABLE -->
+<div class="admin-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Créé le</th>
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in players %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td>{{ p.created_at }}</td>
+                <td class="actions">
+					<a href="{{ url_for('admin.players_edit', player_id=p.id) }}"
+						class="btn">
+						Modifier
+					</a>
+				</td>
+
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3" class="empty">
+                    Aucun joueur trouvé.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGINATION (copie stricte de users_list) -->
+{% if total_pages > 1 %}
+<div class="admin-pagination">
+    {% if page > 1 %}
+        <a class="btn"
+           href="{{ url_for('admin.players_list', page=page-1, q=search) }}">
+            ← Précédent
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+
+    <span>
+        Page {{ page }} / {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+        <a class="btn"
+           href="{{ url_for('admin.players_list', page=page+1, q=search) }}">
+            Suivant →
+        </a>
+    {% else %}
+        <span></span>
+    {% endif %}
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

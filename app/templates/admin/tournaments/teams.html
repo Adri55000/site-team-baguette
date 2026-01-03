@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}Équipes du tournoi{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+
+    <h1>Équipes du tournoi</h1>
+    <p class="admin-subtitle">{{ tournament.name }}</p>
+
+	{% if tournament.status != "draft" %}
+	<div class="admin-info-banner">
+		Les inscriptions sont verrouillées car le tournoi est terminé.
+	</div>
+	{% endif %}
+
+	<datalist id="group-names">
+		{% for g in existing_groups %}
+			<option value="{{ g }}"></option>
+		{% endfor %}
+	</datalist>
+
+
+
+    <!-- ========================= -->
+    <!-- ÉQUIPES INSCRITES -->
+    <!-- ========================= -->
+    <div class="admin-card">
+        <h2>Équipes inscrites</h2>
+		<form method="post" action="{{ url_for('admin.admin_tournament_teams_update_groups', tournament_id=tournament.id) }}">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Équipe</th>
+                    <th>Joueurs</th>
+                    <th>Groupe</th>
+					<th>Position</th>
+                    <th>Seed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if registered_teams %}
+                {% for team in registered_teams %}
+                <tr>
+                    <td>{{ team.name | team_name }}</td>
+                    <td class="text-muted">{{ team.players }}</td>
+                    <td>
+						<input
+							type="text"
+							name="group_name_{{ team.id }}"
+							value="{{ team.group_name or '' }}"
+							list="group-names"
+							placeholder="Ex: Groupe A"
+							class="input"
+						>
+					</td>
+
+					<td>
+						<input
+							type="number"
+							name="position_{{ team.id }}"
+							value="{{ team.position if team.position is not none else '' }}"
+							placeholder="(tie-break)"
+							class="input input--sm"
+							min="1"
+						>			
+					</td>
+                    <td>{{ team.seed or "—" }}</td>
+                    <td>
+                        {% if tournament.status == "draft" %}
+                        <form method="post"
+                              action="{{ url_for(
+                                'admin.admin_tournament_remove_team',
+                                tournament_id=tournament.id,
+                                team_id=team.id
+                              ) }}">
+                            <button class="btn-secondary-small">Retirer</button>
+                        </form>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="admin-empty">
+                        Aucune équipe inscrite.
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+		<button type="submit" class="btn btn-primary">Enregistrer groupes</button>
+		</form>
+    </div>
+
+    <!-- ========================= -->
+    <!-- BARRE DE FILTRES -->
+    <!-- ========================= -->
+    {% if tournament.status == "draft" %}
+    <div class="admin-card admin-user-toolbar">
+        <form method="get"
+              action="{{ url_for('admin.admin_tournament_teams', tournament_id=tournament.id) }}">
+
+            <input type="text"
+                   name="q"
+                   placeholder="Rechercher une équipe…"
+                   value="{{ search or '' }}">
+
+            <select name="team_size">
+                <option value="all">Toutes les équipes</option>
+                <option value="solo" {{ 'selected' if team_size == 'solo' }}>Solo</option>
+                <option value="multi" {{ 'selected' if team_size == 'multi' }}>Multi</option>
+                <option value="2" {{ 'selected' if team_size == '2' }}>Exactement 2</option>
+                <option value="3" {{ 'selected' if team_size == '3' }}>Exactement 3</option>
+            </select>
+
+            <button class="btn">Rechercher</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- INFOS FILTRES -->
+    <!-- ========================= -->
+    {% if search or team_size != 'all' %}
+    <p class="admin-filter-info">
+        Filtres actifs :
+        {% if search %} recherche = “{{ search }}” {% endif %}
+        {% if team_size != 'all' %} taille = {{ team_size }} {% endif %}
+    </p>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- ÉQUIPES DISPONIBLES -->
+    <!-- ========================= -->
+    {% if tournament.status == "draft" %}
+    <div class="admin-card">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Équipe</th>
+                    <th>Joueurs</th>
+                    <th>Nb</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if available_teams %}
+                {% for team in available_teams %}
+                <tr>
+                    <td>{{ team.name | team_name }}</td>
+                    <td class="text-muted">{{ team.players }}</td>
+                    <td>{{ team.size }}</td>
+                    <td>
+                        <form method="post"
+                              action="{{ url_for(
+                                'admin.admin_tournament_add_team',
+                                tournament_id=tournament.id
+                              ) }}">
+                            <input type="hidden" name="team_id" value="{{ team.id }}">
+                            <button class="btn-secondary-small">
+                                Inscrire
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="admin-empty">
+                        Aucune équipe disponible avec ces filtres.
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- PAGINATION -->
+    <!-- ========================= -->
+    {% if total_pages > 1 %}
+    <div class="admin-pagination">
+        {% if page > 1 %}
+            <a class="btn"
+               href="{{ url_for(
+                    'admin.admin_tournament_teams',
+                    tournament_id=tournament.id,
+                    page=page-1,
+                    q=search,
+                    team_size=team_size
+               ) }}">
+                ← Précédent
+            </a>
+        {% else %}
+            <span></span>
+        {% endif %}
+
+        <span class="admin-pagination-info">
+            Page {{ page }} / {{ total_pages }}
+        </span>
+
+        {% if page < total_pages %}
+            <a class="btn"
+               href="{{ url_for(
+                    'admin.admin_tournament_teams',
+                    tournament_id=tournament.id,
+                    page=page+1,
+                    q=search,
+                    team_size=team_size
+               ) }}">
+                Suivant →
+            </a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="admin-actions-footer">
+    <a href="{{ url_for('admin.tournaments_list') }}"
+       class="btn btn-secondary">
+        ← Retour au tournoi
+    </a>
+</div>
+
+{% endblock %}

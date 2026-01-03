@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ "Modifier" if player else "Ajouter" }} un joueur
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>
+    {{ "Modifier" if player else "Ajouter" }} un joueur
+</h1>
+
+<div class="admin-card">
+
+    <!-- FORMULAIRE PRINCIPAL -->
+    <form method="post" class="admin-form">
+
+        <div class="admin-form-group">
+            <label for="name">Nom du joueur</label>
+            <input type="text"
+                   id="name"
+                   name="name"
+                   class="admin-input"
+                   value="{{ player.name if player else '' }}"
+                   required>
+        </div>
+
+        <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">
+                Enregistrer
+            </button>
+
+            <a href="{{ url_for('admin.players_list') }}"
+               class="btn btn-secondary">
+                Annuler
+            </a>
+        </div>
+
+    </form>
+
+    {% if player %}
+    <hr>
+
+    <!-- SUPPRESSION -->
+    <h3>Suppression</h3>
+
+    {% if can_delete %}
+        <p class="admin-warning">
+            Cette action est définitive.
+        </p>
+
+        <form method="post"
+              action="{{ url_for('admin.players_delete', player_id=player.id) }}"
+              onsubmit="return confirm('Supprimer définitivement ce joueur ?');">
+
+            <button type="submit" class="btn btn-danger">
+                Supprimer le joueur
+            </button>
+        </form>
+    {% else %}
+        <p class="admin-info">
+            Ce joueur est utilisé dans des équipes, tournois ou matchs.
+            La suppression est impossible.
+        </p>
+    {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}

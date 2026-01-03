@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+Créer un restream
+{% endblock %}
+
+{% block content %}
+
+<div class="restream-create-page">
+
+    <h1>Créer un restream</h1>
+
+    {% if not matches %}
+        <p class="empty-state">
+            Aucun match à venir éligible pour un restream.
+        </p>
+    {% else %}
+
+    <form method="post" class="restream-create-form">
+
+        <div class="form-group">
+            <label for="match_id">Match à restreamer</label>
+            <select name="match_id" id="match_id" required>
+                <option value="">— Sélectionner un match —</option>
+
+                {% for m in matches %}
+                    <option value="{{ m.id }}">
+                        {{ m.scheduled_at[:16] }}
+                        · {{ m.tournament_name }}
+                        · {{ m.teams_display }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Titre du restream</label>
+            <input
+                type="text"
+                name="title"
+                id="title"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="indices_template">Template d’indices</label>
+            <select name="indices_template" id="indices_template" required>
+                <option value="ssr-s4">SSR — Saison 4</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="twitch_url">Lien Twitch</label>
+            <input
+                type="url"
+                name="twitch_url"
+                id="twitch_url"
+                placeholder="https://twitch.tv/…"
+            >
+        </div>
+		
+		<div class="form-group">
+			<label for="restreamer_name">Restream</label>
+			<input
+				type="text"
+				name="restreamer_name"
+				id="restreamer_name"
+				placeholder="ex: Alice"
+			>
+		</div>
+
+		<div class="form-group">
+			<label for="commentator_name">Commentaires</label>
+			<input
+				type="text"
+				name="commentator_name"
+				id="commentator_name"
+				placeholder="ex: Bob & Charlie"
+			>
+		</div>
+
+		<div class="form-group">
+			<label for="tracker_name">Tracking</label>
+			<input
+				type="text"
+				name="tracker_name"
+				id="tracker_name"
+				placeholder="ex: Dave"
+			>
+		</div>
+
+
+        <div class="restream-create-actions">
+            <button type="submit" class="btn btn-primary">
+                Créer le restream
+            </button>
+
+            <a href="{{ url_for('restream.manage') }}" class="btn btn-secondary">
+                Annuler
+            </a>
+        </div>
+
+    </form>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
