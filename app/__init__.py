@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from .database import close_db, get_db
 from app.jinja_filters import display_team_name
 from app.errors import register_error_handlers
+from pathlib import Path
 
 login_manager = LoginManager()
 
@@ -23,6 +24,9 @@ def create_app():
 
     register_error_handlers(app)
     # Chemin vers la base de données
+    
+    instance_base = Path(app.instance_path)
+    (instance_base / "indices" / "sessions").mkdir(parents=True, exist_ok=True)
     app.config["DATABASE"] = os.path.join(app.instance_path, "database.db")
     
     app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 Mo
