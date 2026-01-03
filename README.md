@@ -1,104 +1,141 @@
-# 🥖 Team Baguette — Plateforme de compétitions & restream SSR
+# Team Baguette
 
-**Team Baguette** est une plateforme communautaire dédiée à l’organisation,
-au suivi et à la mise en valeur de compétitions de randomizer (SSR principalement,
-mais pensée pour être extensible).
+Team Baguette est une application web permettant de **gérer et suivre des compétitions**  
+(tournois, phases, groupes, brackets, résultats) avec un **module de restream** intégré.
 
-Le projet vise à centraliser :
+Le projet est aujourd’hui en **version 1**, considérée comme **stable et utilisable en conditions réelles**.
 
-- la gestion des compétitions
-- les joueurs et équipes
-- les matchs et résultats
-- le restream et ses outils (indices, overlays, planning)
-
-L’objectif est de fournir une base **cohérente, durable et maintenable**
-pour remplacer progressivement les outils externes (Google Docs, feuilles manuelles, etc.).
+Ce dépôt contient le **code source** et la **documentation de référence**.
 
 ---
 
-## 🎯 Objectifs du projet
+## Objectif du projet
 
-- Centraliser la gestion des compétitions SSR
-- Uniformiser les concepts (équipes, matchs, résultats)
-- Fournir un panel admin clair et robuste
-- Faciliter le travail des restreamers (indices, visibilité, planning)
-- Préserver **l’historique** des compétitions sur le long terme
+Team Baguette vise à fournir un outil :
+- fiable et maîtrisé,
+- lisible dans son fonctionnement,
+- orienté données plutôt qu’automatisation opaque.
 
-Le projet privilégie :
-- la clarté fonctionnelle
-- la cohérence métier
-- la stabilité avant l’automatisation avancée
+La v1 privilégie la **clarté**, la **stabilité** et la **maîtrise manuelle** des compétitions.
+Les automatisations avancées et nouveaux formats sont envisagés **post-v1**.
 
 ---
 
-## 🧱 Architecture générale
+## Fonctionnalités principales (v1)
 
-- **Backend** : Flask (Blueprints)
+- Gestion des comptes et rôles
+- Panel d’administration complet
+- Gestion des joueurs, équipes et tournois
+- Phases multiples par tournoi
+- Groupes (round robin)
+- Bracket simple élimination
+  - gestion des byes
+  - calcul des qualifiés
+  - propagation automatique du vainqueur au round suivant (si existant)
+- Séries et matchs avec résultats
+- Calcul automatique du gagnant d’une série
+- Module **Restream**
+  - 1 restream ↔ 1 match
+  - indices basés sur templates
+  - activation / désactivation propre
+- Conservation de l’historique (peu de suppressions destructrices)
+
+➡️ Le périmètre exact de la v1 est détaillé dans la documentation dédiée.
+
+---
+
+## Hors périmètre v1 (exemples)
+
+- Automatisation complète entre phases
+- Double élimination / Swiss
+- Statistiques avancées
+- API publique
+- Refonte graphique majeure
+
+Ces points sont abordés dans la roadmap post-v1.
+
+---
+
+## Stack technique
+
+- **Backend** : Python / Flask
+- **Frontend** : Jinja, HTML, CSS
 - **Base de données** : SQLite
-- **Frontend** : HTML / Jinja + CSS modulaire
-- **Déploiement cible** : Raspberry Pi (gunicorn + nginx)
-
-### Organisation par modules
-
-Chaque fonctionnalité est isolée dans son propre module :
-
-- `auth` : authentification et comptes utilisateurs
-- `admin` : panel d’administration
-- `main` : pages publiques
-- `restream` : restreams et indices
-- `tournaments` : tournois internes
-- `matches` : matchs, planning et résultats
+- **Temps réel** : SSE (restream)
+- **Déploiement** : environnement Linux (prod manuelle)
 
 ---
 
-## 🎥 Module Restream (V1-ready)
+## Installation locale (développement)
 
-- Restream lié obligatoirement à un match
-- Un match = 0 ou 1 restream
-- Gestion par rôles (éditeur / restreamer / admin)
-- Indices en temps réel basés sur templates
-- Désactivation réversible (suppression logique)
-- Navbar dynamique des restreams à venir
+Prérequis :
+- Python 3.10+ recommandé
+- Environnement virtuel (venv)
 
----
+### 1. Cloner le dépôt
+```bash
+git clone <repo-url>
+cd team-baguette
+```
 
-## 🎨 UX & CSS
+### 2. Créer un environnement virtuel
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux / macOS
+venv\Scripts\activate    # Windows
+```
 
-- Variables CSS centralisées
-- Light / dark mode natif
-- Aucune valeur codée en dur
-- Design system stable et documenté
+### 3. Installer les dépendances
+```bash
+pip install -r requirements.txt
+```
 
----
+### 4. Lancer l’application
 
-## 📚 Documentation
+Le projet est prévu pour être lancé via **Gunicorn**, avec l’application exposée dans `app.app:app`.
 
-La documentation détaillée est disponible dans le dossier `docs/` :
+Exemple (développement ou production simple) :
+```bash
+gunicorn app.app:app
+```
 
-- `database.md`
-- `roadmap.md`
-- `v1.md`
-- `structure.md`
-- `conventions.md`
-- `admin.md`
-- `philosophie.md`
-
----
-
-## 🗺️ État du projet
-
-Le projet est en **pré-v1 avancée**.
-
-- Fondations solides
-- Module Restream terminé et validé
-- Affichages groupes / bracket fonctionnels mais perfectibles
-- Base de données proche d’un état figé
+Selon la configuration, certaines données runtime sont créées dans le dossier `instance/`.
 
 ---
 
-## 🧭 Philosophie
+## Documentation
 
-- Clarté > astuce
-- Uniformité > exceptions
-- Historique > suppression
-- Lisibilité > optimisation prématurée
+La documentation du projet est structurée et fait foi :
+
+- `v1.md` — périmètre fonctionnel de la v1
+- `structure.md` — structure du projet
+- `database.md` — base de données et schéma
+- `admin.md` — panel d’administration
+- `conventions.md` — règles de développement
+- `css-ux-validation.md` — décisions UX / CSS
+- `git.md` — organisation Git et workflow
+- `roadmap_post_v1.md` — évolutions envisagées post-v1
+
+---
+
+## Bugs et retours
+
+Les retours et bugs peuvent être signalés via les **issues GitHub**.
+Aucune promesse de support ou de contribution externe n’est faite à ce stade.
+
+---
+
+## Statut
+
+- Version : **v1**
+- État : **stable**
+- Évolutions : prévues post-v1, voir roadmap
+
+---
+
+## Licence
+
+Ce projet est publié **sans licence open-source**.
+
+Le code est rendu public à des fins de lecture et de transparence.
+Toute réutilisation, modification ou redistribution n’est pas autorisée sans accord explicite.
