@@ -23,6 +23,9 @@ def create_app():
 
     register_error_handlers(app)
     # Chemin vers la base de données
+    
+    instance_base = Path(app.instance_path)
+    (instance_base / "indices" / "sessions").mkdir(parents=True, exist_ok=True)
     app.config["DATABASE"] = os.path.join(app.instance_path, "database.db")
     
     app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 Mo
