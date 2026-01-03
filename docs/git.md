@@ -1,218 +1,117 @@
 # Git / GitHub — Organisation et workflow (Team Baguette)
 
-Ce document décrit **l’organisation Git mise en place**, **le rôle de GitHub**, et **les manipulations courantes** à effectuer au quotidien pour développer et déployer le site **sans casser la prod**.
+Ce document décrit l’organisation Git et le workflow GitHub du projet Team Baguette.
+Il est **normatif** : toute contribution au projet doit respecter ce fonctionnement,
+afin de garantir la stabilité de la branche principale et de la production.
 
 ---
 
-## 1. Objectif de Git dans le projet
+## Dépôt GitHub
 
-Git est utilisé pour :
-- séparer clairement **développement** et **production**
-- éviter toute modification directe en prod
-- garder un historique clair et pouvoir revenir en arrière
-- remplacer les copier/coller manuels par un flux fiable
-
-Git **ne gère pas** :
-- les bases de données
-- les secrets (`.env`)
-- les fichiers runtime
+Le projet est hébergé sur GitHub.
+Le dépôt GitHub est considéré comme la **source de vérité** du code.
 
 ---
 
-## 2. Organisation générale
+## Branches
 
-### 2.1 Dépôt distant (GitHub)
+Le projet utilise une organisation simple à deux branches principales :
 
-- GitHub est la **source de vérité du code**
-- Deux branches seulement sont utilisées :
+- `main`  
+  Branche stable.
+  Elle correspond à l’état déployé (ou déployable) en production.
 
-| Branche | Rôle |
-|-------|------|
-| `main` | Production (stable) |
-| `dev` | Développement |
+- `dev`  
+  Branche de développement.
+  Toute modification du code doit être effectuée sur cette branche.
 
----
-
-### 2.2 Dossiers sur le serveur
-
-Deux copies du projet existent sur le serveur :
-
-| Dossier | Rôle | Branche |
-|-------|------|---------|
-| `/home/adri/site_team_baguette` | Site PROD | `main` |
-| `/home/adri/site_team_baguette_dev` | Site DEV | `dev` |
-
-Chaque dossier :
-- est un **clone du même dépôt GitHub**
-- tourne avec son **service systemd**
-- utilise sa **propre base de données** et son **propre `.env`**
+Règle :
+- on ne travaille **jamais directement sur `main`**.
 
 ---
 
-## 3. Authentification GitHub (SSH)
+## Workflow standard
 
-Le serveur communique avec GitHub via **SSH**, sans mot de passe.
+Le workflow de développement est le suivant :
 
-- Une clé dédiée existe : `~/.ssh/id_github`
-- Elle est enregistrée dans **GitHub → Settings → SSH and GPG keys**
+1. Se placer sur la branche `dev`
+2. Effectuer les modifications
+3. Committer les changements sur `dev`
+4. Merger `dev` vers `main`
+5. Pousser `main` sur GitHub
+6. Mettre à jour la production en récupérant `main`
 
-### Vérification rapide
+Si cette séquence est respectée, la production reste stable.
+
+---
+
+## Commandes usuelles
+
+### Vérifier la branche active
 ```bash
-ssh -T git@github.com
-```
-Résultat attendu :
-```
-Hi <username>! You've successfully authenticated
-```
-
----
-
-## 4. Ce qui est versionné / non versionné
-
-### 4.1 Versionné (Git)
-- code Python
-- templates HTML
-- CSS / JS
-- documentation
-
-### 4.2 NON versionné (via `.gitignore`)
-- `.env`, `.env.*`
-- `venv/`, `.venv/`
-- bases SQLite (`*.db`, `*.sqlite*`)
-- fichiers runtime (`instance/indices/sessions`, logs, cache)
-
-👉 Les dossiers runtime sont créés automatiquement au démarrage de l’app.
-
----
-
-## 5. Workflow quotidien (DEV → PROD)
-
-### Règle principale
-
-> **On ne modifie jamais le code directement en prod.**
-
-Toute modification suit **exactement** ce chemin.
-
----
-
-### 5.1 Travailler en DEV
-
-```bash
-cd /home/adri/site_team_baguette_dev
-git checkout dev
 git branch
 ```
-(Vérifier que `dev` est bien actif)
 
-Après modification du code :
+### Se placer sur `dev`
 ```bash
-git status
-git add -A
-git commit -m "Description claire de la modif"
-git push origin dev
+git checkout dev
 ```
 
----
+### Mettre à jour `dev`
+```bash
+git pull origin dev
+```
 
-### 5.2 Publier vers la PROD (merge)
+### Committer les modifications
+```bash
+git status
+git add .
+git commit -m "description claire de la modification"
+```
 
-Quand la fonctionnalité est validée en DEV :
-
+### Merger `dev` vers `main`
 ```bash
 git checkout main
 git merge dev
+```
+
+### Pousser `main` sur GitHub
+```bash
 git push origin main
 ```
 
-À ce stade :
-- GitHub contient la version **prod-ready**
-- `main` est à jour
-
----
-
-### 5.3 Mettre à jour la PROD
-
-Dans le dossier prod :
-
+### Mettre à jour la production
+Sur la machine de production :
 ```bash
-cd /home/adri/site_team_baguette
-git checkout main
 git pull origin main
-sudo systemctl restart team-baguette
 ```
 
 ---
 
-## 6. Commandes utiles (mémo)
+## Cas d’erreurs courants
 
-### Vérifier l’état
-```bash
-git status
-git branch
-git log --oneline --max-count=10
-```
+- Si `git pull` refuse de s’exécuter :
+  - vérifier l’état du dépôt avec `git status`,
+  - s’assurer qu’aucune modification locale non commitée n’est présente.
 
-### Mettre à jour depuis GitHub
-```bash
-git pull origin dev   # en DEV
-git pull origin main  # en PROD
-```
+- Toujours vérifier la branche active avant de :
+  - modifier du code,
+  - faire un commit,
+  - merger.
 
-### Annuler des modifs locales non commit
-```bash
-git restore .
-```
-
-### Rollback à un commit précis
-```bash
-git log --oneline
-git reset --hard <HASH>
-sudo systemctl restart team-baguette
-```
+- En cas de doute :
+  - ne pas forcer (`--force`),
+  - revenir à un état propre avant de continuer.
 
 ---
 
-## 7. Bonnes pratiques importantes
+## Principes à respecter
 
-- Toujours vérifier la branche avant d’éditer (`git branch`)
-- Toujours commit en DEV, jamais en PROD
-- Commits petits et explicites
-- Toujours tester en DEV avant merge
-
----
-
-## 8. Dépannage courant
-
-### 8.1 Erreur SSH GitHub
-```bash
-ssh -T git@github.com
-```
-Si échec : vérifier `~/.ssh/config` et la clé `id_github`.
-
----
-
-### 8.2 Erreur systemd `203/EXEC` (gunicorn)
-Cause fréquente : venv copié.
-
-Solution propre :
-```bash
-rm -rf venv
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-deactivate
-sudo systemctl restart team-baguette
-```
-
----
-
-## 9. Règle finale à retenir
-
-> **DEV → commit → merge → push → pull → restart**
-
-Si cette règle est respectée, la prod reste stable.
+- Le dépôt distant GitHub est la référence.
+- La branche `main` doit toujours rester stable.
+- Toute modification passe par `dev`.
+- Les opérations Git sont volontairement simples et manuelles.
 
 ---
 
 Fin du document.
-

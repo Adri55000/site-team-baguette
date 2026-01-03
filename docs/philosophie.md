@@ -1,178 +1,74 @@
-# 🧭 Philosophie de conception — Team Baguette
+# Philosophie du projet — Team Baguette (v1)
 
-Ce document présente la **philosophie globale de conception** du projet Team Baguette.
-Il ne décrit pas le *comment* (implémentation), mais le *pourquoi* des choix structurants.
-
-Il complète les documents :
-- `database.md` (modèle de données)
-- `conventions.md` (règles techniques)
+Ce document définit les principes fondateurs du projet Team Baguette.
+Il est **normatif** : toute évolution du projet doit respecter ces règles,
+sauf décision explicite documentée en post-v1.
 
 ---
 
-## 🧱 Architecture générale
+## Objectif du projet
 
-Le projet adopte une **architecture modulaire basée sur les Blueprints Flask**.
+Team Baguette est une plateforme communautaire permettant :
+- l’organisation de compétitions (joueurs, équipes, tournois, phases, séries),
+- la publication de résultats lisibles,
+- la gestion de restreams (planning, indices, activation/désactivation).
 
-Chaque fonctionnalité majeure est isolée dans son propre module :
-
-- `auth` : authentification, comptes utilisateurs
-- `admin` : administration globale
-- `main` : pages publiques, profils
-- `restream` : restreams, indices
-
-### Objectifs de cette architecture
-
-- Ajouter ou modifier une fonctionnalité **sans impacter les autres**
-- Maintenir un code **lisible et segmenté**
-- Faciliter la contribution future (même après une longue pause)
-- Éviter les fichiers monolithiques
-
-👉 Chaque module possède :
-- ses routes
-- ses templates
-- sa logique métier
+Le projet vise une **v1 stable, compréhensible et maîtrisée**, volontairement limitée.
+La priorité est donnée à la clarté et à la fiabilité plutôt qu’à l’automatisation.
 
 ---
 
-## 🎨 Philosophie CSS — par fonctionnalités
+## Principes directeurs
 
-Le CSS suit une **approche par responsabilité fonctionnelle**, non par type de composant global.
+### 1. Clarté avant sophistication
+- Une solution simple et lisible est toujours préférée à une solution “maligne”.
+- Toute logique doit pouvoir être comprise rapidement par un nouveau contributeur.
+- Les effets implicites sont évités autant que possible.
 
-### Organisation
+### 2. Séparation stricte des responsabilités
+- Les templates servent uniquement à l’affichage.
+- Aucune logique métier ne doit se trouver dans les templates.
+- Le backend est l’unique source de vérité.
 
-- `css/base/`
-  - reset
-  - variables
-  - layout
-  - dark / light mode
+### 3. Architecture modulaire
+- Chaque module fonctionnel possède :
+  - ses routes,
+  - ses templates,
+  - sa logique métier principale.
+- Des fonctions **utilitaires transverses** peuvent exister dans des modules partagés,
+  à condition qu’elles soient génériques, sans dépendance métier forte.
 
-- `main.css`
-  - point d’entrée
-  - importe base, components et features
-
-- `css/components/`
-  - boutons
-  - formulaires
-  - navbar
-
-- `css/features/`
-  - un fichier par fonctionnalité :
-    - `admin.css`
-    - `profile.css`
-    - `restream.css`
-    - `tournament.css`
-
-### Pourquoi ce choix
-
-- Éviter les collisions de styles
-- Limiter la taille des fichiers
-- Identifier immédiatement l’origine d’un style
-- Faciliter les refontes ciblées
-
-👉 Un style appartient **à une feature**, pas à une page abstraite.
-
----
-
-## 🧠 Simplicité conceptuelle avant tout
-
-Le projet privilégie systématiquement :
-
-- des **règles simples mais universelles**
-- plutôt que des cas particuliers
-
-### Exemple clé : les équipes
-
-- Tous les matchs sont **équipe vs équipe**
-- Un joueur solo est modélisé comme une **équipe solo**
-- Cette équipe solo est **invisible côté UX**
-
-👉 Ce choix évite :
-- la duplication de logique
-- les branches conditionnelles complexes
-- les bugs liés aux cas “exceptionnels”
-
----
-
-## 🧩 Séparation stricte des concepts
-
-### Utilisateur ≠ Joueur
-
-- **Utilisateur** : compte du site (authentification, rôles)
-- **Joueur** : participant à une compétition
-
-Ils peuvent être liés, mais ne sont **jamais confondus**.
-
-Pourquoi ?
-- permettre des joueurs externes
-- ne pas forcer l’inscription au site
-- garder une BDD flexible
-
----
-
-## 🔒 Sécurité & permissions
-
-La sécurité repose sur des **règles explicites et non implicites**.
-
-### Principes
-
+### 4. Sécurité par conception
 - Toute route sensible est protégée par :
-  - `login_required`
-  - `role_required(...)`
+  - une authentification (`login_required`),
+  - et un contrôle de rôle explicite.
+- La sécurité backend prime toujours sur les protections UI.
 
-- L’UI peut masquer une action
-  - mais **le backend valide toujours**
+### 5. Données avant interface
+- La base de données est considérée comme le socle du projet.
+- L’interface s’adapte aux données, jamais l’inverse.
+- Les données ne doivent pas être altérées pour des raisons d’affichage.
 
-- Aucune action critique n’est basée uniquement sur le frontend
-
-### Exemple
-
-Même si le bouton "Supprimer" n’apparaît pas :
-- la route vérifie toujours les dépendances
-- la suppression peut être refusée côté serveur
-
----
-
-## 🧭 Préservation de l’historique
-
-L’historique des compétitions est considéré comme **prioritaire**.
-
-Conséquences :
-
-- un joueur ne peut pas être supprimé s’il a joué un match
-- une équipe ne peut pas être supprimée si elle a participé
-- les restreams restent toujours cohérents
-
-👉 Le projet préfère **interdire une action** plutôt que casser l’historique.
+### 6. Historique et traçabilité
+- Les suppressions destructrices sont évitées.
+- Lorsqu’un élément est désactivé, son historique est conservé.
+- La traçabilité prime sur le “nettoyage” esthétique.
 
 ---
 
-## 🧠 Évolution progressive
+## Règles explicites (ce que le projet ne fait pas)
 
-Le projet est conçu pour évoluer **par couches** :
-
-1. base solide (joueurs, équipes)
-2. tournois
-3. matchs
-4. exploitation (restream, stats)
-
-Chaque couche repose sur la précédente.
-
-👉 On évite les implémentations prématurées.
+- ❌ Pas de logique métier dans les templates.
+- ❌ Pas de CSS inline ou de styles isolés hors du système unifié.
+- ❌ Pas de données “magiques” ou implicites non documentées.
+- ❌ Pas d’automatisation opaque qui masque l’état réel des données.
 
 ---
 
-## 🧘 Philosophie générale
+## Références
 
-- **Clarté > astuce**
-- **Uniformité > exceptions**
-- **Lisibilité > optimisation prématurée**
-- **Historique > confort de suppression**
+Ce document est complété par :
+- `conventions.md` — règles techniques et conventions de développement.
+- `css-ux-validation.md` — décisions CSS & UX actées en v1.
 
-Le code doit rester :
-- compréhensible
-- modifiable
-- durable
-
----
-
-📌 Ce document sert de **boussole** pour toutes les décisions futures du projet à partir de la v1.
+Ces documents font foi dès lors qu’ils sont compatibles avec la présente philosophie.

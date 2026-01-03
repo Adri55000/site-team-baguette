@@ -1,79 +1,114 @@
-# 🎨 Uniformisation CSS & UX — Validation officielle
+# Validation CSS & UX — Team Baguette (v1)
 
-Ce document acte l’**uniformisation complète du CSS et de l’UX** du projet Team Baguette.
-Il fait suite à l’audit et au nettoyage intégral des styles globaux et des features.
+Ce document recense les **décisions CSS & UX actées** pour la v1.
+Il est **normatif** : toute évolution UI/CSS doit respecter ces règles, sauf décision explicitement documentée.
 
----
-
-## ✅ État global
-
-L’ensemble des fichiers CSS du projet respecte désormais les règles suivantes :
-
-- ❌ aucune couleur codée en dur (`#fff`, `#000`, `rgba(...)`, etc.)
-- ❌ aucune logique locale `dark-mode` dans les features
-- ✅ toutes les couleurs, ombres et contrastes passent par des **variables CSS**
-- ✅ compatibilité light / dark garantie par construction
+Objectif v1 : **cohérence, lisibilité, stabilité**.  
+L’optimisation fine et les refontes lourdes sont hors périmètre v1.
 
 ---
 
-## 🧱 Règles structurantes (désormais figées)
+## Principes généraux
 
-### 1️⃣ Variables obligatoires
-
-Toute valeur visuelle doit être exprimée via une variable :
-
-- couleurs (`--bg-*`, `--text-*`, `--primary`, etc.)
-- bordures (`--border-color`)
-- ombres (`--shadow-sm`, `--shadow-md`, `--shadow-lg`)
-- overlays et dégradés (`--overlay-*`)
-
-Même une couleur **utilisée par une seule page** (ex: indices) doit être une variable.
+- La lisibilité prime sur l’effet visuel.
+- L’uniformité prime sur l’exception.
+- Le backend reste la source de vérité ; l’UI s’y adapte.
+- L’UX doit être prévisible (pas de comportements “magiques”).
 
 ---
 
-### 2️⃣ Aucune exception par colonne ou composant
+## Système CSS
 
-- aucune colonne de tableau ne doit avoir un style différent sans raison métier
-- l’alternance se fait **par ligne uniquement**
-- pas de `nth-child()` pour des effets décoratifs
+### Variables
+- Toutes les couleurs, espacements, rayons, tailles et ombres sont définis via des **variables CSS**.
+- Aucune valeur “en dur” ne doit être ajoutée hors variables.
 
-Objectif : lisibilité et stabilité visuelle.
+### Interdictions
+- ❌ CSS inline
+- ❌ styles ad hoc non réutilisables
+- ❌ duplication de règles existantes
 
----
-
-### 3️⃣ Séparation claire des niveaux CSS
-
-- `base/` : variables, reset, layout
-- `components/` : boutons, formulaires, navbar
-- `features/` : styles spécifiques **sans valeurs hardcodées**
-
-Un composant global ne dépend **jamais** d’une variable de feature.
+### Composants
+- Les composants partagés (cartes, tableaux, boutons, badges, listes) ont un style générique.
+- Les variantes doivent être explicites (classes dédiées), pas implicites.
 
 ---
 
-## 🎯 Cas particuliers assumés
+## Hiérarchie visuelle
 
-### Indices
-
-La page *indices* utilise une identité colorée spécifique.
-
-Ces couleurs sont :
-- **centralisées dans les variables**
-- documentées
-- indépendantes du thème light / dark
-
-Cela permet une forte identité visuelle **sans casser le design system**.
+- Les titres structurent la page (hiérarchie claire).
+- Les informations critiques sont mises en évidence sans surcharge.
+- Les séparations visuelles sont sobres (lignes fines, espacements cohérents).
 
 ---
 
-## 🏁 Conclusion
+## Tables & listes (admin et public)
 
-Le projet dispose désormais d’un **design system stable, cohérent et extensible**.
+- Les tableaux privilégient la lisibilité :
+  - colonnes alignées,
+  - en-têtes explicites,
+  - pas d’icônes ambiguës.
+- Les actions sont clairement identifiables (icône + texte si nécessaire).
+- Les séparations “logiques” (ex : qualifiés / non qualifiés) restent discrètes.
 
-Toute nouvelle feature doit :
-- réutiliser les variables existantes
-- en introduire de nouvelles uniquement si nécessaire
-- ne jamais introduire de valeurs visuelles codées en dur
+---
 
-👉 Cette uniformisation est considérée comme **terminée et validée**.
+## Formulaires
 
+- Libellés explicites.
+- Messages d’erreur clairs et proches du champ concerné.
+- Pas de validation silencieuse.
+- Les champs obligatoires sont clairement identifiés.
+
+---
+
+## États & feedback utilisateur
+
+- États désactivés visibles (opacité, style dédié).
+- États actifs/inactifs cohérents sur l’ensemble du site.
+- Toute action impactante doit avoir un feedback visible.
+
+---
+
+## Brackets, groupes et affichages complexes
+
+- L’affichage doit rester lisible avant d’être exhaustif.
+- Les solutions choisies en v1 évitent la complexité excessive.
+- Les cas particuliers (ex : byes) sont traités sans casser la structure existante.
+
+L’amélioration de ces affichages est prévue **post-v1**.
+
+---
+
+## Responsive & compatibilité
+
+- La v1 est pensée **desktop-first**.
+- Le responsive existe mais n’est pas optimisé mobile-first.
+- Aucun comportement mobile ne doit casser la lisibilité.
+
+---
+
+## Hors périmètre v1
+
+- Refonte graphique globale
+- Animations complexes
+- Thèmes multiples avancés
+- Optimisation mobile poussée
+
+---
+
+## Validation
+
+Les règles ci-dessus sont considérées comme **validées v1**.
+Toute dérogation doit être :
+- justifiée,
+- documentée,
+- assumée comme exception.
+
+---
+
+## Références
+
+- `philosophie.md`
+- `conventions.md`
+- `structure.md`

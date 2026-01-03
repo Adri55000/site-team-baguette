@@ -1,246 +1,130 @@
-# 📘 Conventions du projet Team Baguette
+# Conventions de développement — Team Baguette (v1)
 
-Ce document regroupe **l’ensemble des conventions adoptées** pour le projet Team Baguette.
-Il sert de **référence commune** pour garantir :
-- cohérence du code
-- lisibilité
-- maintenabilité à long terme
+Ce document définit les conventions techniques du projet Team Baguette.
+Il est **normatif** : toute nouvelle modification du code doit respecter ces règles.
 
-Il couvre :
-- CSS / frontend
-- structure du site
-- conventions backend
-- principes de données
-
----
-L’uniformisation CSS et UX du projet est décrite et validée dans
-`docs/Uniformisation CSS & UX — Validation officielle.`
-Ce document fait foi pour toute évolution future du frontend.
-
-## 🎨 1. Conventions CSS (officielles)
-
-### 1.1 Approche générale : Component‑First + BEM léger
-
-Le projet utilise une convention **simple, explicite et très adaptée à Flask**.
-
-#### ✔ 1. Chaque page ou module = un namespace CSS
-
-Exemples :
-- `.profile-...`
-- `.restream-...`
-- `.admin-...`
-- `.tournament-...`
-- `.matches-...`
-
-Cela évite les collisions et permet d’identifier immédiatement l’origine d’un style.
+Ces conventions décrivent la **règle cible** du projet.
+Des écarts peuvent exister dans du code plus ancien, mais **aucune nouvelle régression
+ne doit être introduite**.
 
 ---
 
-#### ✔ 2. Structure des classes
+## Hiérarchie des règles
 
-Format recommandé :
+Les conventions sont classées selon leur importance :
 
-```
-.feature-element
-.feature-element-sub
-.feature-element--modifier
-```
-
-Exemples :
-- `.profile-header`
-- `.profile-header-info`
-- `.profile-section--highlight`
-
-- `.restream-indices-table`
-- `.restream-indices-table--compact`
-
-- `.admin-card`
-- `.admin-card-header`
-- `.admin-card--inactive`
+- 🔴 **Règles bloquantes**  
+  Non-respect = modification refusée.
+- 🟡 **Règles fortes**  
+  À respecter sauf raison claire et documentée.
+- ⚪ **Bonnes pratiques**  
+  Recommandées, mais non bloquantes.
 
 ---
 
-#### ✔ 3. Un fichier CSS par feature
+## Backend (Flask / Python)
 
-Localisation :
+### Architecture générale
+🔴 Chaque fonctionnalité est organisée en **module** clairement identifié.
 
-```
-static/css/features/<feature>.css
-```
+🔴 Les routes, templates et logique métier sont séparés conceptuellement.
 
-Chargement :
-- via `main.css` pour les pages publiques
-- ou directement dans les templates admin si nécessaire
+🟡 La logique métier principale appartient au module fonctionnel concerné.
 
----
-
-#### ✔ 4. Pas d’ID pour le styling
-
-- Les **ID sont réservés au JS**
-- Le CSS doit se baser **uniquement sur des classes**
+⚪ Des fonctions utilitaires génériques peuvent être mutualisées dans des modules partagés,
+à condition qu’elles soient transverses et sans dépendance métier forte.
 
 ---
 
-#### ✔ 5. Pas de styles génériques dans les features
+### Routes
+🔴 Les routes doivent rester lisibles et structurées  
+*(contrôles → traitement → réponse)*.
 
-Les fichiers `features/*.css` **ne doivent contenir que des styles spécifiques**.
+🟡 En v1, une partie de la logique métier peut se trouver dans les routes
+(héritage du projet). Toutefois :
+- on évite d’y ajouter de la complexité inutile,
+- on privilégie l’extraction progressive dès qu’une portion devient réutilisable,
+- toute nouvelle fonctionnalité non triviale doit, si possible, être extraite
+dans une fonction métier dédiée.
 
-Les styles globaux sont définis dans :
+🟡 **Règle d’évolution** : lorsqu’on modifie une route existante,
+on cherche à améliorer la situation (extraction, clarification),
+sans refactor massif obligatoire.
 
-```
-static/css/base/
-static/css/components/
-```
+🔴 Toute route sensible doit être protégée par :
+- une authentification,
+- un contrôle de rôle explicite.
 
----
-
-#### ✔ 6. Modifiers = double tiret `--`
-
-Pour représenter un état ou une variation :
-
-```
-.admin-card--inactive
-.restream-category--empty
-.profile-actions--inline
-```
-
----
-
-#### ✔ 7. Imbrication limitée
-
-Toujours préférer :
-
-```
-.feature-element-sub
-```
-
-Plutôt que :
-
-```
-.feature .element .subelement
-```
-
-Objectif : CSS lisible, stable et peu fragile.
+⚪ Une route peut contenir de la logique d’orchestration,
+mais les règles métier et algorithmes doivent tendre vers des fonctions dédiées.
 
 ---
 
-#### ✔ 8. Variables CSS obligatoires
+## Données & base de données
 
-Toutes les couleurs, espacements et constantes doivent utiliser les variables définies dans :
+🔴 La base de données est la **source de vérité** du projet.
 
-```
-static/css/base/variables.css
-```
+🔴 Les données ne doivent jamais être modifiées pour satisfaire un besoin d’affichage.
 
-Aucune valeur « magique » en dur.
+🟡 Les suppressions destructrices sont évitées lorsque l’historique a une valeur fonctionnelle.
 
----
-
-## 🧩 2. Organisation frontend
-
-### 2.1 Structure CSS
-
-```
-static/css/
-├── base/
-├── components/
-├── features/
-└── main.css
-```
-
-- `base/` : reset, layout, variables
-- `components/` : boutons, formulaires, navbar…
-- `features/` : styles par page ou module
+⚪ Toute modification impactant la structure des données doit être documentée.
 
 ---
 
-### 2.2 UX admin
+## Templates (Jinja)
 
-Toutes les pages admin doivent suivre **le même pattern UX** :
+🔴 Les templates sont dédiés **uniquement à l’affichage**.
 
-- Titre `<h1>`
-- Toolbar (recherche / actions)
-- Carte contenant la table
-- Pagination standardisée
+🔴 Aucune logique métier ne doit se trouver dans les templates.
 
-Objectif : **uniformité totale** entre users / players / teams / etc.
+🟡 Les templates doivent rester simples et lisibles,
+même au prix d’un affichage moins optimisé.
 
----
-
-## 🗂️ 3. Conventions backend (Flask)
-
-### 3.1 Séparation claire des concepts
-
-- **users** : comptes du site
-- **players** : participants aux compétitions
-- **teams** : abstraction unique pour tous les formats
-
-Ne jamais mélanger ces notions.
+⚪ Les templates peuvent contenir des conditions d’affichage mineures,
+sans impact métier.
 
 ---
 
-### 3.2 Routes admin
+## CSS / UX
 
-- Toutes les routes admin doivent avoir :
-  - `@login_required`
-  - `@role_required("admin")`
+🔴 Le CSS suit une approche **systémique et unifiée**.
 
-- Les règles métier critiques doivent être **validées côté serveur**, même si l’UI les masque.
+🔴 Aucune valeur de style ne doit être hardcodée hors des variables définies.
 
----
+🔴 Le CSS inline est interdit.
 
-### 3.3 Règles de suppression
+🟡 Les composants partagés doivent être stylés de manière générique et réutilisable.
 
-- Suppressions **jamais implicites**
-- Toujours vérifier les dépendances (équipes, matchs, historique)
-- Toujours protéger côté backend
+⚪ Les styles spécifiques à une page doivent rester limités
+et clairement identifiés.
 
 ---
 
-## 🧠 4. Conventions de données / logique métier
+## Organisation du code
 
-### 4.1 Joueurs vs utilisateurs
+🟡 Le nommage doit être cohérent, explicite et homogène.
 
-- Un joueur peut exister sans utilisateur
-- Un utilisateur peut ne pas être joueur
+🟡 Les nouveaux fichiers doivent respecter la structure existante du projet.
 
-Cette séparation est **fondamentale**.
-
----
-
-### 4.2 Équipes solo (règle structurante)
-
-- Chaque joueur a automatiquement une équipe solo
-- Cette équipe :
-  - est invisible côté UX
-  - sert uniquement à uniformiser la logique
-
-Aucune logique spéciale ne doit être ajoutée dans le code pour gérer le solo.
+⚪ Le code doit être commenté lorsque l’intention n’est pas évidente.
 
 ---
 
-### 4.3 Uniformisation des matchs
+## Erreurs courantes à éviter
 
-- Tous les matchs sont : **équipe vs équipe**
-- Même un duel solo passe par des équipes
-- Les tie-breaks utilisent des matchs multi-équipes
-
----
-
-## 🧭 5. Philosophie générale du projet
-
-- **Clarté > astuce**
-- **Uniformité > exceptions**
-- **Historique > facilité de suppression**
-- **Lisibilité > micro-optimisation**
-
-Le projet est pensé pour :
-- évoluer sans dette technique
-- rester compréhensible dans le temps
-- être repris facilement
+- Mettre de la logique métier dans un template “pour aller plus vite”.
+- Ajouter du CSS spécifique sans vérifier l’existant.
+- Dupliquer une logique au lieu de mutualiser proprement.
+- Modifier des données pour corriger un problème d’affichage.
 
 ---
 
-📌 Ce document doit être considéré comme **la référence officielle des conventions**.
-Toute nouvelle feature doit s’y conformer.
+## Références
 
+Ce document est complété par :
+- `philosophie.md` — principes fondateurs du projet.
+- `structure.md` — organisation concrète des fichiers.
+- `css-ux-validation.md` — décisions CSS & UX actées en v1.
+
+Ces documents font foi conjointement.
