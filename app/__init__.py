@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from .database import close_db, get_db
 from app.jinja_filters import display_team_name
 from app.errors import register_error_handlers
+from pathlib import Path
 
 login_manager = LoginManager()
 
