@@ -1,0 +1,284 @@
+{% macro render_tracker(participant, tracker_type, catalog, use_storage, update_url) %}
+
+  <section class="tracker"
+           data-tracker-root
+           data-tracker-type="{{ tracker_type }}"
+           data-slot="{{ participant['slot'] }}"
+           data-tracker-state='{{ participant | tojson }}'
+           data-tracker-update-url='{{ update_url }}'
+           data-tracker-use-storage='{{ "true" if (use_storage if use_storage is not none else True) else "false" }}'
+           data-tracker-storage-key='tb_tracker_preview_state_v1_slot{{ participant["slot"] }}'
+		   data-tracker-can-edit='{{ "true" if can_edit else "false" }}'>
+
+
+    {# ========================================================= #}
+    {# DONJONS — 7 colonnes                                      #}
+    {# ========================================================= #}
+
+    {% set dungeon_cols = [
+      ("SV",  "smallkey_sv",  ["golden_carving"]),
+      ("ET",  "key_pieces",   ["dragon_sculpture"]),
+      ("LMF", "smallkey_lmf", ["ancient_circuit"]),
+      ("AC",  "smallkey_ac",  ["blessed_idol"]),
+      ("SSH", "smallkey_ssh", ["squid_carving"]),
+      ("FS",  "smallkey_fs",  ["mysterious_crystals"]),
+      ("SK",  "smallkey_sk",  ["stone_of_trials"]),
+    ] %}
+
+    <div class="tracker-group tracker-group--dungeons">
+      <div class="tracker-dungeon-columns">
+
+        {% for code, key_id, item_ids in dungeon_cols %}
+          <div class="tracker-dungeon-col">
+
+            <div class="tracker-dungeon-row">
+
+              {# --- KEY (left) --- #}
+              <div class="tracker-dungeon-key">
+                {% if key_id %}
+                  {% set key_item = (catalog["items"] | selectattr("id", "equalto", key_id) | first) %}
+                  {% if key_item %}
+                    {% set level = participant["items"][key_item.id] %}
+                    <div class="tracker-item"
+                         title="{{ key_item.label }}"
+                         data-item-id="{{ key_item.id }}"
+                         data-kind="{{ key_item.kind or 'cycle' }}"
+                         data-level="{{ level }}">
+                      <img src="{{ url_for('static',
+                            filename=catalog["asset_dir"] ~ '/' ~ key_item.asset_base ~ level ~ '.png') }}"
+                           alt="{{ key_item.label }}">
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              {# --- LOOT (right) --- #}
+              <div class="tracker-dungeon-loot">
+                {% for item_id in item_ids %}
+                  {% set it = (catalog["items"] | selectattr("id", "equalto", item_id) | first) %}
+                  {% if it %}
+                    {% set level = participant["items"][it.id] %}
+                    <div class="tracker-item"
+                         title="{{ it.label }}"
+                         data-item-id="{{ it.id }}"
+                         data-kind="{{ it.kind or 'cycle' }}"
+                         data-level="{{ level }}">
+                      <img src="{{ url_for('static',
+                            filename=catalog["asset_dir"] ~ '/' ~ it.asset_base ~ level ~ '.png') }}"
+                           alt="{{ it.label }}">
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+            </div>
+
+            {# --- Dungeon label (clicable: 0->1->2) --- #}
+            {% set v = participant["dungeons"].get(code, 0) %}
+            <div class="tracker-dungeon
+                        {% if v == 0 %}tracker-dungeon--off
+                        {% elif v == 1 %}tracker-dungeon--todo
+                        {% else %}tracker-dungeon--done{% endif %}"
+                 data-dungeon="{{ code }}"
+                 data-dungeon-state="{{ v }}"
+                 title="Dungeon {{ code }}">
+              {{ code }}
+            </div>
+
+          </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+    {# ========================================================= #}
+    {# ÉQUIPEMENT + TABLETTES                                    #}
+    {# ========================================================= #}
+    <div class="tracker-equip-row">
+
+      {# ---------- EQUIPMENT ---------- #}
+      <div class="tracker-group tracker-group--equipment">
+        <div class="tracker-grid tracker-grid--equipment">
+          {% for item in catalog["items"] if item.group == "equipment" %}
+            {% set level = participant["items"][item.id] %}
+            <div class="tracker-item {% if item.id == 'epee' %}tracker-item--tall{% endif %}"
+                 title="{{ item.label }}"
+                 data-item-id="{{ item.id }}"
+                 data-kind="{{ item.kind or 'cycle' }}"
+                 data-level="{{ level }}">
+              <img src="{{ url_for('static',
+                    filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ level ~ '.png') }}"
+                   alt="{{ item.label }}">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# ---------- TABLETS (composite) ---------- #}
+      <div class="tracker-group tracker-group--tablets">
+        {% set item = (catalog["items"] | selectattr("id", "equalto", "tablets") | first) %}
+        {% if item %}
+          {% set state = participant["tablets"] %}
+          <div class="tracker-item tracker-item--tablet"
+               title="{{ item.label }}"
+               data-kind="composite"
+               data-composite-id="tablets">
+            <div class="tracker-composite">
+              <img class="tracker-composite-base"
+                   src="{{ url_for('static',
+                         filename=catalog["asset_dir"] ~ '/' ~ item.base_asset) }}"
+                   alt="{{ item.label }}">
+
+              {% for key, overlay in item.overlays.items() %}
+                {% set is_on = state.get(key) %}
+                <img class="tracker-composite-overlay{% if is_on %} is-on{% endif %}"
+                     src="{{ url_for('static',
+                           filename=catalog["asset_dir"] ~ '/' ~ overlay) }}"
+                     alt="{{ key }}"
+                     data-overlay-key="{{ key }}">
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {# ========================================================= #}
+    {# COUNTERS + TRIFORCES                                      #}
+    {# ========================================================= #}
+    <div class="tracker-row tracker-row--counters-triforce">
+
+      {# ---------- COUNTERS ---------- #}
+      <div class="tracker-group tracker-group--counters">
+        <div class="tracker-grid tracker-grid--flow">
+          {% for item in catalog["items"] if item.group == "counters" %}
+
+            <div class="tracker-item"
+                 title="{{ item.label }}"
+                 data-item-id="{{ item.id }}"
+                 data-kind="{{ item.kind or 'cycle' }}">
+
+              {% if item.kind == "wallet" %}
+                {% set level = participant["items"][item.id] %}
+                <div class="tracker-wallet" data-level="{{ level }}">
+                  <img src="{{ url_for('static',
+                        filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ level ~ '.png') }}"
+                       alt="{{ item.label }}">
+                  <span class="tracker-overlay">+{{ participant["wallet_bonus"] }}</span>
+                </div>
+
+              {% elif item.kind == "counter" %}
+                {% set value = participant["items"][item.id] %}
+                {% set icon_level = 1 if value > 0 else 0 %}
+                <div class="tracker-counter"
+                     data-value="{{ value }}"
+                     data-icon-level="{{ icon_level }}">
+                  <img src="{{ url_for('static',
+                        filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ icon_level ~ '.png') }}"
+                       alt="{{ item.label }}">
+                  <span class="tracker-overlay">{{ value }}</span>
+                </div>
+
+              {% else %}
+                {% set level = participant["items"][item.id] %}
+                <img src="{{ url_for('static',
+                      filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ level ~ '.png') }}"
+                     alt="{{ item.label }}"
+                     data-level="{{ level }}">
+              {% endif %}
+
+            </div>
+
+          {% endfor %}
+        </div>
+      </div>
+
+      {# ---------- TRIFORCES (composite) ---------- #}
+      <div class="tracker-group tracker-group--triforces">
+        {% set item = (catalog["items"] | selectattr("id", "equalto", "triforces") | first) %}
+        {% if item %}
+          {% set state = participant["triforces"] %}
+          <div class="tracker-item"
+               title="{{ item.label }}"
+               data-kind="composite"
+               data-composite-id="triforces">
+            <div class="tracker-composite">
+              <img class="tracker-composite-base"
+                   src="{{ url_for('static',
+                         filename=catalog["asset_dir"] ~ '/' ~ item.base_asset) }}"
+                   alt="{{ item.label }}">
+
+              {% for key, overlay in item.overlays.items() %}
+                {% set is_on = state.get(key) %}
+                <img class="tracker-composite-overlay{% if is_on %} is-on{% endif %}"
+                     src="{{ url_for('static',
+                           filename=catalog["asset_dir"] ~ '/' ~ overlay) }}"
+                     alt="{{ key }}"
+                     data-overlay-key="{{ key }}">
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+	
+	{# ========================================================= #}
+	{# SONGS (CHANTS)                                            #}
+	{# ========================================================= #}
+	<div class="tracker-group tracker-group--songs">
+	  <div class="tracker-grid tracker-grid--flow">
+		{% for item in catalog["items"] if item.group == "song" %}
+		  {% set level = participant["items"][item.id] %}
+		  <div class="tracker-item"
+			   title="{{ item.label }}"
+			   data-item-id="{{ item.id }}"
+			   data-kind="{{ item.kind or 'cycle' }}">
+			    {% if item.kind == "counter" %}
+				  {% set value = participant["items"][item.id] %}
+				  {% set icon_level = 1 if value > 0 else 0 %}
+				  <div class="tracker-counter"
+					   data-value="{{ value }}"
+					   data-icon-level="{{ icon_level }}">
+					<img src="{{ url_for('static',
+						  filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ icon_level ~ '.png') }}"
+						 alt="{{ item.label }}">
+					<span class="tracker-overlay">{{ value }}</span>
+				  </div>
+
+				{% else %}
+				  {% set level = participant["items"][item.id] %}
+				  <img src="{{ url_for('static',
+						filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ level ~ '.png') }}"
+					   alt="{{ item.label }}"
+					   data-level="{{ level }}">
+				{% endif %}
+		  </div>
+		{% endfor %}
+	  </div>
+	</div>
+
+    {# ========================================================= #}
+    {# QUEST                                                     #}
+    {# ========================================================= #}
+    <div class="tracker-group tracker-group--quest">
+      <div class="tracker-grid tracker-grid--flow">
+        {% for item in catalog["items"] if item.group == "quest" %}
+          {% set level = participant["items"][item.id] %}
+          <div class="tracker-item"
+               title="{{ item.label }}"
+               data-item-id="{{ item.id }}"
+               data-kind="{{ item.kind or 'cycle' }}"
+               data-level="{{ level }}">
+            <img src="{{ url_for('static',
+                  filename=catalog["asset_dir"] ~ '/' ~ item.asset_base ~ level ~ '.png') }}"
+                 alt="{{ item.label }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </section>
+
+{% endmacro %}

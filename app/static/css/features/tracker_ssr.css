@@ -1,0 +1,299 @@
+/* DEV ONLY
+ * Tracker SSR preview styles
+ * Temporary file – safe to delete or refactor later
+ */
+
+/* ================================
+   Multi-slot layout (NEW)
+   - 2 trackers per row
+   - more trackers continue on next row
+   ================================ */
+.tracker-slots-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.tracker-slot{
+  min-width: 0; /* prevent overflow in grid */
+}
+
+/* Optional: keep each tracker visually separated a bit
+   (safe: doesn't touch internal pixel-perfect sizing) */
+.tracker-slot .tracker{
+  padding: 10px;
+  border-radius: 14px;
+}
+
+/* Title (slot label) */
+.tracker h2{
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* ---------- Global wrapper ---------- */
+.tracker{
+  display: inline-block; /* do not stretch full width */
+
+  --icon-size: 52px;            /* normal items */
+  --gap: 8px;
+
+  --dungeon-icon-size: 20px;    /* dungeon block items */
+  --dungeon-label-size: 26px;
+
+  --tablet-size: 120px;         /* tablets composite size */
+}
+
+/* Make sections not stretch */
+.tracker-group{
+  margin-top: 18px;
+}
+
+/* Hide group titles if present */
+.tracker-group-title{
+  display: none;
+}
+
+/* Only direct child images (simple items), not composite inner imgs */
+.tracker-item > img{
+  width: var(--icon-size);
+  height: var(--icon-size);
+  object-fit: contain;
+  display: block;
+}
+
+/* ---------- Flow grids (most groups) ---------- */
+/* Render items tightly in width instead of filling the page */
+.tracker-grid,
+.tracker-grid--flow{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--icon-size);
+  gap: var(--gap);
+  justify-content: start;
+  align-items: start;
+}
+
+/* ---------- Overlays (counters / wallet) ---------- */
+.tracker-counter,
+.tracker-wallet{
+  position: relative;
+  display: inline-block;
+}
+
+.tracker-overlay{
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,.8);
+  pointer-events: none; /* default: overlays not clickable */
+}
+
+/* Allow clicking wallet bonus text specifically */
+.tracker-wallet .tracker-overlay{
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ---------- Composites (tablets / triforces) ---------- */
+.tracker-composite{
+  position: relative;
+
+  /* Default composite size = 1 normal icon (important for triforce) */
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.tracker-composite-base,
+.tracker-composite-overlay{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Pixel-perfect path: overlays are ALWAYS in the DOM.
+   We show/hide via opacity + .is-on */
+.tracker-composite-overlay{
+  opacity: 0;
+  pointer-events: none; /* do not block clicks; JS will listen on parent */
+}
+
+.tracker-composite-overlay.is-on{
+  opacity: 1;
+}
+
+/* Tablets composite is bigger (2 lines vibe) */
+.tracker-group--tablets .tracker-composite{
+  width: var(--tablet-size);
+  height: var(--tablet-size);
+}
+
+/* Ensure tablet item itself matches the composite size */
+.tracker-item--tablet{
+  width: var(--tablet-size);
+  height: var(--tablet-size);
+}
+
+.tracker-item--tablet .tracker-composite{
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Equipment + Tablets row ---------- */
+.tracker-equip-row{
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: nowrap; /* keep tablets on the right */
+  margin-top: 18px;  /* row owns spacing */
+}
+
+.tracker-equip-row .tracker-group{
+  margin-top: 0;      /* avoid “double spacing” */
+}
+
+.tracker-group--equipment,
+.tracker-group--tablets{
+  flex: 0 0 auto;     /* don't stretch/shrink */
+}
+
+/* ---------- Equipment grid (4 columns + sword tall) ---------- */
+.tracker-grid--equipment{
+  display: grid;
+  grid-template-columns: repeat(4, var(--icon-size));
+  grid-auto-rows: var(--icon-size);
+  gap: var(--gap);
+  justify-content: start;
+  align-items: start;
+}
+
+/* Default item fills one cell */
+.tracker-group--equipment .tracker-item{
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+/* Sword spans two rows */
+.tracker-group--equipment .tracker-item--tall{
+  grid-row: span 2;
+  height: calc(var(--icon-size) * 2 + var(--gap));
+}
+
+/* Make the image fit the tall container */
+.tracker-group--equipment .tracker-item--tall img{
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Row wrappers (ex: counters + triforce) ---------- */
+.tracker-row{
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: nowrap;
+  margin-top: 18px; /* row owns spacing */
+}
+
+.tracker-row .tracker-group{
+  margin-top: 0;     /* avoid “double spacing” */
+}
+
+/* ---------- Dungeon block ---------- */
+.tracker-group--dungeons{
+  margin-top: 10px;
+}
+
+/* 7 fixed columns so it doesn't stretch */
+.tracker-dungeon-columns{
+  display: grid;
+  grid-template-columns: repeat(7, 56px);
+  gap: 6px;
+  justify-content: start;
+  align-items: end;
+}
+
+/* each dungeon column */
+.tracker-dungeon-col{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* top row: key | loot */
+.tracker-dungeon-row{
+  display: grid;
+  grid-template-columns: var(--dungeon-icon-size) var(--dungeon-icon-size);
+  column-gap: 6px;
+  align-items: center;
+}
+
+/* key cell */
+.tracker-dungeon-key{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: var(--dungeon-icon-size);
+  min-height: var(--dungeon-icon-size);
+}
+
+/* loot cell (default: stack vertically) */
+.tracker-dungeon-loot{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  min-width: var(--dungeon-icon-size);
+  min-height: var(--dungeon-icon-size);
+}
+
+/* Dungeon items are smaller than normal items */
+.tracker-group--dungeons .tracker-item img{
+  width: var(--dungeon-icon-size);
+  height: var(--dungeon-icon-size);
+}
+
+/* Dungeon label style */
+.tracker-dungeon{
+  font-weight: 700;
+  font-size: var(--dungeon-label-size);
+  letter-spacing: .08em;
+  line-height: 1;
+  margin-top: 2px;
+  user-select: none;
+  text-shadow: 0 2px 6px rgba(0,0,0,.7);
+}
+
+.tracker-dungeon--off{ opacity: .3; }
+.tracker-dungeon--todo{ opacity: 1; }
+.tracker-dungeon--done{
+  text-decoration: line-through;
+  opacity: 1;
+}
+
+/* ---------- Quest: force 2 rows ---------- */
+.tracker-group--quest .tracker-grid--flow{
+  grid-auto-flow: row;                 /* instead of column */
+  grid-template-columns: repeat(6, var(--icon-size));
+  grid-auto-columns: unset;
+  grid-auto-rows: var(--icon-size);
+}
+
+/* Ensure nested imgs (counter/wallet) have the same size as normal items */
+.tracker-counter img,
+.tracker-wallet img{
+  width: var(--icon-size);
+  height: var(--icon-size);
+  object-fit: contain;
+  display: block;
+}

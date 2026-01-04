@@ -25,6 +25,12 @@
        class="btn btn-primary btn-large restream-indices-cta">
       🔎 Accéder aux indices
     </a>
+	
+	{% if can_edit %}
+		<a class="btn btn-primary btn-large restream-indices-cta" href="{{ url_for('restream.restream_live', slug=restream.slug) }}">
+		Live
+		</a>
+	{% endif %}
 
     {% if restream.twitch_url %}
       <a href="{{ restream.twitch_url }}"

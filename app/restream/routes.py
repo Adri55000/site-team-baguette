@@ -2,20 +2,22 @@ import json
 from pathlib import Path
 from flask import (
     Blueprint, render_template, abort,
-    request, redirect, url_for, Response, flash, current_app
+    request, redirect, url_for, Response, flash, current_app, jsonify, stream_with_context
 )
 import time
 from flask_login import current_user
 from app.database import get_db
 import os
-import json
 from shutil import copyfile
 
 from datetime import datetime
 
 from app.auth.utils import login_required
 from app.permissions.decorators import role_required
+from app.permissions.roles import has_required_role
 from app.modules.text import slugify
+from app.modules.tracker.games.ssr import get_catalog
+from app.modules.tracker.base import ensure_session_restream, save_session_restream, load_session_restream, build_session_from_preset, session_path_restream
 
 
 # === Dossiers ===
@@ -23,7 +25,7 @@ from app.modules.text import slugify
 INDICES_SESSIONS_DIR = Path("instance/indices/sessions")
 INDICES_TEMPLATES_DIR = Path("instance/indices/templates")
 
-
+SSE_POLL_INTERVAL = 0.25
 
 
 restream_bp = Blueprint("restream", __name__, url_prefix="/restream")
@@ -72,10 +74,16 @@ def view(slug):
 
     if not restream:
         abort(404)
+        
+    can_edit = current_user.is_authenticated and has_required_role(
+        getattr(current_user, "role", None),
+        "éditeur",
+    )
 
     return render_template(
         "restream/view.html",
-        restream=restream
+        restream=restream,
+        can_edit=can_edit
     )
 
 @restream_bp.route("/planning")
@@ -624,9 +632,13 @@ def stream_indices(slug):
 
     def event_stream():
         last_mtime = session_file.stat().st_mtime
+        
+        with open(session_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
         while True:
-            time.sleep(1)
+            time.sleep(SSE_POLL_INTERVAL)
 
             current_mtime = session_file.stat().st_mtime
             if current_mtime != last_mtime:
@@ -635,7 +647,7 @@ def stream_indices(slug):
                 with open(session_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
-                yield f"data: {json.dumps(data)}\n\n"
+                yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
     return Response(
         event_stream(),
@@ -747,47 +759,292 @@ def edit(slug):
 
 
 
+@restream_bp.get("/<slug>/live")
+def restream_live(slug: str):
+    db = get_db()
 
+    restream = db.execute(
+        """
+        SELECT id, slug, title, match_id, is_active
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
 
-####################################### DEV ONLY
+    if not restream:
+        abort(404)
 
-@restream_bp.get("/dev/tracker-preview/ssr")
-def dev_tracker_preview_ssr():
-    """
-    DEV ONLY (temporary): SSR tracker preview page.
-    - GET only
-    - mock state
-    - no SSE
-    - no file writes
-    """
+    # Indices: même logique que /<slug>/indices
+    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
+    if not session_file.exists():
+        abort(404)
 
-    # Mock catalog identifier (later: real catalog import)
-    tracker_type = "ssr_inventory"
+    with open(session_file, "r", encoding="utf-8") as f:
+        indices_data = json.load(f)
 
-    # Mock participant (1 slot)
-    participant = {
-        "slot": 1,
-        "team_id": 0,
-        "label": "Preview Slot",
-        "items": {
-            # exemples (à remplacer/compléter quand le catalog sera écrit)
-            "epee": 3,
-            "bow": 1,
-            "beetle": 2,
-            "bottle": 2,
-            "soth": 1,         # song of the hero
-            "tadtones": 10,
-            "gratitude": 35,
-            "wallet_level": 2,
-            "wallet_bonus": 300,
-        },
-        "dungeons": {"SV": 1, "ET": 0, "LM": 2, "AC": 0, "SSH": 0, "FS": 0, "SK": 0},
-        "tablets": {"emerald": True, "ruby": False, "amber": True},
-        "triforces": {"wisdom": False, "power": True, "courage": True},
-    }
+    can_edit = current_user.is_authenticated and has_required_role(
+        getattr(current_user, "role", None),
+        "éditeur",
+    )
+
+    tracker_payload = None
+
+    if can_edit:
+        # participants_count basé sur teams du match
+        teams = db.execute(
+            """
+            SELECT t.id AS team_id, t.name AS team_name
+            FROM match_teams mt
+            JOIN teams t ON t.id = mt.team_id
+            WHERE mt.match_id = ?
+            ORDER BY mt.team_id ASC
+            """,
+            (restream["match_id"],),
+        ).fetchall()
+
+        participants_count = max(1, len(teams))
+
+        tracker_type = "ssr_inventory"
+        catalog = get_catalog()
+
+        existing_session = load_session_restream(int(restream["id"]))
+        session = ensure_session_restream(
+            tracker_type=tracker_type,
+            restream_id=int(restream["id"]),
+            restream_slug=restream["slug"],
+            catalog=catalog,
+            participants_count=participants_count,
+        )
+
+        # inject labels/team_id à la création uniquement
+        if existing_session is None:
+            for i, p in enumerate(session.get("participants", [])):
+                p["slot"] = i + 1
+                if i < len(teams):
+                    name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
+                    p["team_id"] = int(teams[i]["team_id"])
+                    p["label"] = name
+                else:
+                    p.setdefault("team_id", 0)
+                    p.setdefault("label", f"Slot {i+1}")
+            save_session_restream(int(restream["id"]), session)
+
+        tracker_payload = {
+            "tracker_type": tracker_type,
+            "catalog": catalog,
+            "session": session,
+            "use_storage": False,
+            "update_url": url_for("restream.restream_tracker_update", slug=restream["slug"]),
+            "stream_url": url_for("restream.restream_tracker_stream", slug=restream["slug"]),
+        }
 
     return render_template(
-        "restream/dev/tracker_preview_ssr.html",
+        "restream/live.html",
+        restream=restream,
+        restream_slug=slug,
+        indices=indices_data,
+        can_edit=can_edit,
+        tracker=tracker_payload,
+    )
+
+@restream_bp.post("/<slug>/tracker/update")
+@login_required
+@role_required("éditeur")
+def restream_tracker_update(slug: str):
+    db = get_db()
+    restream = db.execute(
+        """
+        SELECT id, slug, match_id
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
+
+    if not restream:
+        abort(404)
+
+    payload = request.get_json(silent=True) or {}
+    participant = payload.get("participant")
+    if not isinstance(participant, dict):
+        abort(400, description="Payload invalide: participant manquant")
+
+    slot = int(participant.get("slot", 1))
+    if slot < 1:
+        abort(400, description="slot invalide (doit être >= 1)")
+
+    # s’assurer session existante
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+    participants_count = max(1, len(teams))
+
+    tracker_type = "ssr_inventory"
+    catalog = get_catalog()
+
+    session = ensure_session_restream(
         tracker_type=tracker_type,
-        participant=participant,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        catalog=catalog,
+        participants_count=participants_count,
+    )
+
+    idx = slot - 1
+    if idx >= len(session.get("participants", [])):
+        abort(400, description="slot invalide (hors bornes session)")
+
+    session["participants"][idx] = participant
+    session["version"] = int(session.get("version", 0)) + 1
+
+    save_session_restream(int(restream["id"]), session)
+    return jsonify({"ok": True, "version": session["version"]})
+
+@restream_bp.get("/<slug>/tracker/stream")
+def restream_tracker_stream(slug: str):
+    db = get_db()
+    restream = db.execute(
+        """
+        SELECT id, slug, match_id
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
+
+    if not restream:
+        abort(404)
+
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+
+    participants_count = max(1, len(teams))
+
+    tracker_type = "ssr_inventory"
+    catalog = get_catalog()
+
+    ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        catalog=catalog,
+        participants_count=participants_count,
+    )
+
+    session_file: Path = session_path_restream(int(restream["id"]))
+
+    def read_session_json() -> dict:
+        if not session_file.exists():
+            return {}
+        with session_file.open("r", encoding="utf-8") as f:
+            return json.load(f)
+
+    @stream_with_context
+    def event_stream():
+        last_mtime = session_file.stat().st_mtime if session_file.exists() else 0.0
+        yield f"data: {json.dumps(read_session_json(), ensure_ascii=False)}\n\n"
+
+        while True:
+            time.sleep(SSE_POLL_INTERVAL)
+            if not session_file.exists():
+                continue
+            mtime = session_file.stat().st_mtime
+            if mtime != last_mtime:
+                last_mtime = mtime
+                yield f"data: {json.dumps(read_session_json(), ensure_ascii=False)}\n\n"
+
+    headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    return Response(event_stream(), mimetype="text/event-stream", headers=headers)
+
+
+@restream_bp.get("/<slug>/overlay")
+def restream_overlay(slug: str):
+    db = get_db()
+
+    restream = db.execute(
+        """
+        SELECT id, slug, title, match_id, is_active
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
+
+    if not restream:
+        abort(404)
+
+    # participants_count basé sur les teams du match
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+
+    participants_count = max(1, len(teams))
+
+    tracker_type = "ssr_inventory"
+    catalog = get_catalog()
+
+    existing_session = load_session_restream(int(restream["id"]))
+    session = ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        catalog=catalog,
+        participants_count=participants_count,
+    )
+
+    # inject labels/team_id à la création uniquement (même logique que live)
+    if existing_session is None:
+        for i, p in enumerate(session.get("participants", [])):
+            p["slot"] = i + 1
+            if i < len(teams):
+                name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
+                p["team_id"] = int(teams[i]["team_id"])
+                p["label"] = name
+            else:
+                p.setdefault("team_id", 0)
+                p.setdefault("label", f"Slot {i+1}")
+        save_session_restream(int(restream["id"]), session)
+
+    tracker_payload = {
+        "tracker_type": tracker_type,
+        "catalog": catalog,
+        "session": session,
+        "use_storage": False,
+        # update_url pas utilisé en overlay (can_edit=false), mais on peut le laisser
+        "update_url": url_for("restream.restream_tracker_update", slug=restream["slug"]),
+        "stream_url": url_for("restream.restream_tracker_stream", slug=restream["slug"]),
+    }
+
+    # IMPORTANT: overlay = read-only
+    can_edit = False
+
+    return render_template(
+        "restream/overlay.html",
+        restream=restream,
+        restream_slug=slug,
+        tracker=tracker_payload,
+        can_edit=can_edit,
     )

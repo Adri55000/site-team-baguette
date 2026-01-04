@@ -1,0 +1,21 @@
+/* OBS Overlay: keep everything transparent and tightly wrapped */
+html, body {
+  background: transparent !important;
+}
+
+.obs-overlay {
+  background: transparent !important;
+}
+
+/* Optional: remove any extra padding introduced by tracker styles */
+.obs-overlay-wrap {
+  padding: 0;
+  margin: 0;
+}
+
+/* If your tracker CSS adds a background on .tracker-slot .tracker, neutralize it here */
+.obs-overlay .tracker-slot .tracker {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}

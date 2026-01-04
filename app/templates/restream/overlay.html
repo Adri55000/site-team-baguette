@@ -1,0 +1,51 @@
+{# templates/restream/overlay.html #}
+{% from "restream/_tracker_ssr_macro.html" import render_tracker with context %}
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Overlay – {{ restream.title }}</title>
+
+  {# IMPORTANT: fond transparent #}
+  <style>
+    html, body { background: transparent !important; margin: 0; padding: 0; }
+  </style>
+
+  {# Ton CSS tracker (tu as dit: css/features/) #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/features/tracker_ssr.css') }}">
+
+  {# CSS overlay (recommandé) #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/features/overlay_obs.css') }}">
+</head>
+
+<body class="obs-overlay">
+
+  {% if tracker and tracker.session %}
+    <div class="obs-overlay-wrap">
+      <div class="tracker-slots-grid">
+        {% for p in tracker.session["participants"] %}
+          <div class="tracker-slot">
+            {{ render_tracker(
+              p,
+              tracker.tracker_type,
+              tracker.catalog,
+              tracker.use_storage,
+              tracker.update_url
+            ) }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <script>
+    window.TRACKER_CATALOG = {{ tracker.catalog | tojson }};
+    window.TRACKER_STREAM_URL = {{ tracker.stream_url | tojson }};
+    window.TRACKER_USE_STORAGE = false; // OBS: pas besoin de localStorage
+  </script>
+  <script src="{{ url_for('static', filename='js/tracker_ssr.js') }}"></script>
+</body>
+</html>
