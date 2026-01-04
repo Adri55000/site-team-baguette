@@ -56,3 +56,8 @@ app/static/avatars/*
 .env
 .env.*
 !.env.example
+
+# Tracker runtime data
+instance/indices/sessions/*.json
+instance/trackers/sessions/*.json
+instance/trackers/presets/**/*.json
