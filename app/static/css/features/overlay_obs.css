@@ -19,3 +19,35 @@ html, body {
   box-shadow: none !important;
   padding: 0 !important;
 }
+
+/* === OBS DARK MODE (overlay only) === */
+
+/* Texte général */
+.obs-overlay,
+.obs-overlay * {
+  color: #eaeaea !important;
+}
+
+/* Textes secondaires */
+.obs-overlay .tracker-counter,
+.obs-overlay .tracker-overlay {
+  color: #f5f5f5 !important;
+}
+
+/* Donjons (si texte / barré) */
+.obs-overlay .tracker-dungeon {
+  color: #eaeaea !important;
+}
+
+/* Bordures / séparateurs si présents */
+.obs-overlay hr,
+.obs-overlay .tracker-separator {
+  border-color: rgba(255,255,255,0.35) !important;
+}
+
+/* Supprimer tout fond résiduel */
+.obs-overlay *,
+.obs-overlay .tracker,
+.obs-overlay .tracker-slot {
+  background: transparent !important;
+}
