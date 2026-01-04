@@ -744,3 +744,50 @@ def edit(slug):
         "restream/edit.html",
         restream=restream
     )
+
+
+
+
+
+####################################### DEV ONLY
+
+@restream_bp.get("/dev/tracker-preview/ssr")
+def dev_tracker_preview_ssr():
+    """
+    DEV ONLY (temporary): SSR tracker preview page.
+    - GET only
+    - mock state
+    - no SSE
+    - no file writes
+    """
+
+    # Mock catalog identifier (later: real catalog import)
+    tracker_type = "ssr_inventory"
+
+    # Mock participant (1 slot)
+    participant = {
+        "slot": 1,
+        "team_id": 0,
+        "label": "Preview Slot",
+        "items": {
+            # exemples (à remplacer/compléter quand le catalog sera écrit)
+            "epee": 3,
+            "bow": 1,
+            "beetle": 2,
+            "bottle": 2,
+            "soth": 1,         # song of the hero
+            "tadtones": 10,
+            "gratitude": 35,
+            "wallet_level": 2,
+            "wallet_bonus": 300,
+        },
+        "dungeons": {"SV": 1, "ET": 0, "LM": 2, "AC": 0, "SSH": 0, "FS": 0, "SK": 0},
+        "tablets": {"emerald": True, "ruby": False, "amber": True},
+        "triforces": {"wisdom": False, "power": True, "courage": True},
+    }
+
+    return render_template(
+        "restream/dev/tracker_preview_ssr.html",
+        tracker_type=tracker_type,
+        participant=participant,
+    )

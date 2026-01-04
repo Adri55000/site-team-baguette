@@ -1,0 +1,55 @@
+{# app/templates/restream/dev/tracker_preview_ssr.html #}
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dev/tracker_preview.css') }}">
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <h1>DEV — Tracker Preview (SSR)</h1>
+    <p class="text-muted">Preview only. No SSE, no persistence.</p>
+
+    <section class="card">
+      <h2>{{ participant.label }}</h2>
+
+      {# Donjons (texte) #}
+      <div class="tracker-dungeons">
+        {% for code in ["SV","ET","LM","AC","SSH","FS","SK"] %}
+          {% set v = participant.dungeons.get(code, 0) %}
+          <span class="tracker-dungeon
+                       {% if v == 0 %}tracker-dungeon--off{% elif v == 1 %}tracker-dungeon--todo{% else %}tracker-dungeon--done{% endif %}">
+            {{ code }}
+          </span>
+        {% endfor %}
+      </div>
+
+      {# Zone Tablettes (fond + overlays) #}
+      <div class="tracker-special">
+        <div class="tracker-overlay-stack">
+          <img class="tracker-overlay-base" src="{{ url_for('static', filename='tracker/ssr/tablet0.png') }}" alt="No tablets">
+          {% if participant.tablets.emerald %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/tabletemerald.png') }}" alt="Emerald">{% endif %}
+          {% if participant.tablets.ruby %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/tabletruby.png') }}" alt="Ruby">{% endif %}
+          {% if participant.tablets.amber %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/tabletamber.png') }}" alt="Amber">{% endif %}
+        </div>
+
+        <div class="tracker-overlay-stack">
+          <img class="tracker-overlay-base" src="{{ url_for('static', filename='tracker/ssr/triforce0.png') }}" alt="No triforces">
+          {% if participant.triforces.wisdom %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/triforcewisdom.png') }}" alt="Wisdom">{% endif %}
+          {% if participant.triforces.power %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/triforcepower.png') }}" alt="Power">{% endif %}
+          {% if participant.triforces.courage %}<img class="tracker-overlay-item" src="{{ url_for('static', filename='tracker/ssr/triforcecourage.png') }}" alt="Courage">{% endif %}
+        </div>
+      </div>
+
+      {# Placeholder grille items (on branchera au catalog après) #}
+      <div class="tracker-grid">
+        <div class="tracker-item">Épée: {{ participant.items.epee }}</div>
+        <div class="tracker-item">Bow: {{ participant.items.bow }}</div>
+        <div class="tracker-item">Beetle: {{ participant.items.beetle }}</div>
+        <div class="tracker-item">Bottles: {{ participant.items.bottle }}</div>
+        <div class="tracker-item">SotH: {{ participant.items.soth }}</div>
+        <div class="tracker-item">Tadtones: {{ participant.items.tadtones }}</div>
+        <div class="tracker-item">Crystals: {{ participant.items.gratitude }}</div>
+        <div class="tracker-item">Wallet: L{{ participant.items.wallet_level }} / +{{ participant.items.wallet_bonus }}</div>
+      </div>
+    </section>
+  </div>
+{% endblock %}
