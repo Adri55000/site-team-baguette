@@ -51,3 +51,8 @@ html, body {
 .obs-overlay .tracker-slot {
   background: transparent !important;
 }
+
+/* Overlay OBS : masquer le nom des joueurs */
+.obs-overlay .tracker-slot h2 {
+  display: none;
+}

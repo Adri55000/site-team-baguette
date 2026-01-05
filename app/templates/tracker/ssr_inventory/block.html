@@ -1,0 +1,30 @@
+{# 
+  Rendu du tracker SSR Inventory
+  Ce template est inclus par live.html via tracker.frontend.template_block
+#}
+
+{% from "restream/_tracker_ssr_macro.html" import render_tracker with context %}
+
+<div class="tracker-slots-grid">
+
+  {% for p in tracker.session["participants"] %}
+    <div class="tracker-slot">
+
+      {# Label du participant #}
+      {% if p.label %}
+        <h2>{{ p.label }}</h2>
+      {% endif %}
+
+      {# Rendu du tracker SSR #}
+      {{ render_tracker(
+          p,
+          tracker.tracker_type,
+          tracker.catalog,
+          tracker.use_storage,
+          tracker.update_url
+      ) }}
+
+    </div>
+  {% endfor %}
+
+</div>

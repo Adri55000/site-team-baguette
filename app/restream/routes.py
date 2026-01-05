@@ -7,7 +7,6 @@ from flask import (
 import time
 from flask_login import current_user
 from app.database import get_db
-import os
 from shutil import copyfile
 
 from datetime import datetime
@@ -16,43 +15,25 @@ from app.auth.utils import login_required
 from app.permissions.decorators import role_required
 from app.permissions.roles import has_required_role
 from app.modules.text import slugify
-from app.modules.tracker.games.ssr import get_catalog
-from app.modules.tracker.base import ensure_session_restream, save_session_restream, load_session_restream, build_session_from_preset, session_path_restream
-
+from app.modules.tracker.base import ensure_session_restream, save_session_restream, load_session_restream
+from app.modules.indices.registry import get_available_indices_templates, is_valid_indices_template, get_indices_template_path
+from app.modules.tracker.registry import get_available_trackers, get_tracker_definition, is_valid_tracker_type
 
 # === Dossiers ===
 
-INDICES_SESSIONS_DIR = Path("instance/indices/sessions")
-INDICES_TEMPLATES_DIR = Path("instance/indices/templates")
+def indices_sessions_dir() -> Path:
+    return Path(current_app.instance_path) / "indices" / "sessions"
+
+def indices_templates_dir() -> Path:
+    return Path(current_app.instance_path) / "indices" / "templates"
+    
+def tracker_session_path_restream(restream_id: int) -> Path:
+    return Path(current_app.instance_path) / "trackers" / "sessions" / f"restream_{restream_id}.json"
 
 SSE_POLL_INTERVAL = 0.25
 
 
 restream_bp = Blueprint("restream", __name__, url_prefix="/restream")
-
-
-def create_indices_session(slug, template_name):
-    base_path = current_app.instance_path
-    templates_dir = os.path.join(base_path, "indices", "templates")
-    sessions_dir = os.path.join(base_path, "indices", "sessions")
-
-    os.makedirs(sessions_dir, exist_ok=True)
-
-    template_path = os.path.join(templates_dir, f"{template_name}.json")
-    session_path = os.path.join(sessions_dir, f"{slug}.json")
-
-    if not os.path.exists(template_path):
-        raise FileNotFoundError("Template d’indices introuvable.")
-
-    with open(template_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    data["updated_at"] = None
-
-    with open(session_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-
 
 @restream_bp.route("/")
 def index():
@@ -63,7 +44,7 @@ def view(slug):
     db = get_db()
     restream = db.execute(
         """
-        SELECT r.title, r.slug, r.twitch_url, r.created_at, r.restreamer_name, r.commentator_name, r.tracker_name,
+        SELECT r.title, r.slug, r.twitch_url, r.created_at, r.restreamer_name, r.commentator_name, r.indices_template, r.tracker_type,
                u.username AS creator
         FROM restreams r
         JOIN users u ON u.id = r.created_by
@@ -355,16 +336,21 @@ def manage():
 def create():
     db = get_db()
 
+    # ------------------------------------------------------------------
+    # POST
+    # ------------------------------------------------------------------
     if request.method == "POST":
         title = request.form.get("title")
         match_id = request.form.get("match_id")
         indices_template = request.form.get("indices_template")
+        tracker_type = request.form.get("tracker_type")
+
         twitch_url = request.form.get("twitch_url") or None
         restreamer_name = request.form.get("restreamer_name") or None
         commentator_name = request.form.get("commentator_name") or None
         tracker_name = request.form.get("tracker_name") or None
 
-        if not title or not match_id or not indices_template:
+        if not title or not match_id or not indices_template or not tracker_type:
             flash("Tous les champs obligatoires doivent être remplis.", "error")
             return redirect(url_for("restream.create"))
 
@@ -380,35 +366,53 @@ def create():
               AND m.scheduled_at >= CURRENT_TIMESTAMP
               AND r.id IS NULL
             """,
-            (match_id,)
+            (match_id,),
         ).fetchone()
 
         if not match:
             flash("Match invalide ou déjà associé à un restream.", "error")
             return redirect(url_for("restream.create"))
 
-        slug = slugify(title)
-
-        indices_root = Path(current_app.instance_path) / "indices"
-        templates_dir = indices_root / "templates"
-        sessions_dir = indices_root / "sessions"
-
-        sessions_dir.mkdir(parents=True, exist_ok=True)
-
-        template_path = templates_dir / f"{indices_template}.json"
-        target_path = sessions_dir / f"{slug}.json"
-
-        if not template_path.exists():
-            flash("Template d’indices introuvable.", "error")
+        if not is_valid_indices_template(indices_template):
+            flash("Template d’indices invalide.", "error")
             return redirect(url_for("restream.create"))
 
-        copyfile(template_path, target_path)
+        if not is_valid_tracker_type(tracker_type):
+            flash("Tracker invalide.", "error")
+            return redirect(url_for("restream.create"))
 
+        slug = slugify(title)
+
+        # --------------------------------------------------------------
+        # Indices : création de la session uniquement si != "none"
+        # --------------------------------------------------------------
+        if indices_template != "none":
+            sessions_dir = Path(current_app.instance_path) / "indices" / "sessions"
+            sessions_dir.mkdir(parents=True, exist_ok=True)
+            session_path = sessions_dir / f"{slug}.json"
+
+            template_path = get_indices_template_path(indices_template)
+            copyfile(template_path, session_path)
+
+        # --------------------------------------------------------------
+        # Insert DB
+        # --------------------------------------------------------------
         db.execute(
             """
             INSERT INTO restreams
-                (slug, title, created_by, match_id, indices_template, twitch_url, restreamer_name, commentator_name, tracker_name)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (
+                    slug,
+                    title,
+                    created_by,
+                    match_id,
+                    indices_template,
+                    tracker_type,
+                    twitch_url,
+                    restreamer_name,
+                    commentator_name,
+                    tracker_name
+                )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 slug,
@@ -416,6 +420,7 @@ def create():
                 current_user.id,
                 match_id,
                 indices_template,
+                tracker_type,
                 twitch_url,
                 restreamer_name,
                 commentator_name,
@@ -427,9 +432,10 @@ def create():
         flash("Restream créé avec succès.", "success")
         return redirect(url_for("restream.manage"))
 
-    # -----------------------------
-    # GET : matchs éligibles
-    # -----------------------------
+    # ------------------------------------------------------------------
+    # GET
+    # ------------------------------------------------------------------
+
     matches = db.execute(
         """
         SELECT
@@ -461,8 +467,11 @@ def create():
 
     return render_template(
         "restream/create.html",
-        matches=matches
+        matches=matches,
+        available_indices_templates=get_available_indices_templates(),
+        available_tracker_types=get_available_trackers(),
     )
+
 
 @restream_bp.route("/<slug>/enable", methods=["POST"])
 @login_required
@@ -493,13 +502,11 @@ def enable_restream(slug):
     if not restream:
         abort(404)
 
-    template_file = INDICES_TEMPLATES_DIR / f"{restream['indices_template']}.json"
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
-
-    if not template_file.exists():
-        abort(404, description="Template d’indices introuvable")
-
-    copyfile(template_file, session_file)
+    if restream["indices_template"] != "none":
+        template_path = get_indices_template_path(restream["indices_template"])        
+        session_path = indices_sessions_dir() / f"{slug}.json"
+        session_path.parent.mkdir(parents=True, exist_ok=True)
+        copyfile(template_path, session_path)
 
 
     flash("Restream réactivé.", "success")
@@ -528,7 +535,7 @@ def disable_restream(slug):
     db.commit()
     
     # Suppression du fichier d’indices si présent
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
+    session_file = indices_sessions_dir() / f"{slug}.json"
     if session_file.exists():
         session_file.unlink()
 
@@ -544,18 +551,26 @@ def disable_restream(slug):
 
 @restream_bp.route("/<slug>/indices")
 def restream_indices(slug):
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
-
-    if not session_file.exists():
-        abort(404)
-
     db = get_db()
+
     restream = db.execute(
-        "SELECT title FROM restreams WHERE slug = ? AND is_active = 1",
-        (slug,)
+        """
+        SELECT title, indices_template
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
     ).fetchone()
 
     if not restream:
+        abort(404)
+
+    # Pas d'indices pour ce restream
+    if restream["indices_template"] == "none":
+        abort(404)
+
+    session_file = indices_sessions_dir() / f"{slug}.json"
+    if not session_file.exists():
         abort(404)
 
     with open(session_file, "r", encoding="utf-8") as f:
@@ -565,7 +580,7 @@ def restream_indices(slug):
         "restream/indices.html",
         restream=restream,
         indices=indices_data,
-        restream_slug=slug
+        restream_slug=slug,
     )
 
 
@@ -577,7 +592,7 @@ def restream_indices(slug):
 @login_required
 @role_required("éditeur")
 def update_category(slug):
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
+    session_file = indices_sessions_dir() / f"{slug}.json"
 
     if not session_file.exists():
         abort(404)
@@ -625,7 +640,7 @@ def update_category(slug):
 
 @restream_bp.route("/<slug>/indices/stream")
 def stream_indices(slug):
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
+    session_file = indices_sessions_dir() / f"{slug}.json"
 
     if not session_file.exists():
         abort(404)
@@ -673,23 +688,20 @@ def reset_all_indices(slug):
         (slug,)
     ).fetchone()
 
-    if not restream:
+    if not restream or restream["indices_template"] == "none":
         abort(404)
 
-    template_file = INDICES_TEMPLATES_DIR / f"{restream['indices_template']}.json"
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
+    template_file = get_indices_template_path(restream["indices_template"])
+    session_file = indices_sessions_dir() / f"{slug}.json"
 
     if not template_file.exists():
         abort(404, description="Template d’indices introuvable")
+        
+    session_file.parent.mkdir(parents=True, exist_ok=True)
 
     copyfile(template_file, session_file)
 
     return "", 204
-
-
-
-
-
 
 @restream_bp.route("/<slug>/edit", methods=["GET", "POST"])
 @login_required
@@ -706,11 +718,13 @@ def edit(slug):
             twitch_url,
             restreamer_name,
             commentator_name,
-            tracker_name
+            tracker_name,
+            indices_template,
+            tracker_type
         FROM restreams
         WHERE slug = ?
         """,
-        (slug,)
+        (slug,),
     ).fetchone()
 
     if not restream:
@@ -723,10 +737,55 @@ def edit(slug):
         commentator_name = request.form.get("commentator_name") or None
         tracker_name = request.form.get("tracker_name") or None
 
-        if not title:
-            flash("Le titre est obligatoire.", "error")
+        new_indices_template = request.form.get("indices_template")
+        new_tracker_type = request.form.get("tracker_type")
+
+        if not title or not new_indices_template or not new_tracker_type:
+            flash("Tous les champs obligatoires doivent être remplis.", "error")
+            return redirect(url_for("restream.edit", slug=slug))
+            
+        if not is_valid_indices_template(new_indices_template):
+            flash("Template d’indices invalide.", "error")
+            return redirect(url_for("restream.edit", slug=slug))
+            
+        if not is_valid_tracker_type(new_tracker_type):
+            flash("Tracker invalide.", "error")
             return redirect(url_for("restream.edit", slug=slug))
 
+        # --------------------------------------------------------------
+        # Gestion des indices (delete & recreate)
+        # --------------------------------------------------------------
+        session_path = indices_sessions_dir() / f"{slug}.json"
+
+        if new_indices_template != restream["indices_template"]:
+            # supprimer l’ancienne session si elle existe
+            if session_path.exists():
+                session_path.unlink()
+
+            # recréer seulement si != "none"
+            if new_indices_template != "none":
+                template_path = get_indices_template_path(new_indices_template)
+
+                if not template_path.exists():
+                    flash("Template d’indices introuvable.", "error")
+                    return redirect(url_for("restream.edit", slug=slug))
+
+                session_path.parent.mkdir(parents=True, exist_ok=True)
+                copyfile(template_path, session_path)
+                
+        # --------------------------------------------------------------
+        # Gestion du tracker (delete session si changement de type)
+        # --------------------------------------------------------------
+        if new_tracker_type != restream["tracker_type"]:
+            tracker_session_path: Path = tracker_session_path_restream(int(restream["id"]))
+
+            if tracker_session_path.exists():
+                tracker_session_path.unlink()
+
+
+        # --------------------------------------------------------------
+        # Update DB
+        # --------------------------------------------------------------
         db.execute(
             """
             UPDATE restreams
@@ -735,7 +794,9 @@ def edit(slug):
                 twitch_url = ?,
                 restreamer_name = ?,
                 commentator_name = ?,
-                tracker_name = ?
+                tracker_name = ?,
+                indices_template = ?,
+                tracker_type = ?
             WHERE slug = ?
             """,
             (
@@ -744,8 +805,10 @@ def edit(slug):
                 restreamer_name,
                 commentator_name,
                 tracker_name,
+                new_indices_template,
+                new_tracker_type,
                 slug,
-            )
+            ),
         )
         db.commit()
 
@@ -754,8 +817,11 @@ def edit(slug):
 
     return render_template(
         "restream/edit.html",
-        restream=restream
+        restream=restream,
+        available_indices_templates=get_available_indices_templates(),
+        available_tracker_types=get_available_trackers(),
     )
+
 
 
 
@@ -765,7 +831,14 @@ def restream_live(slug: str):
 
     restream = db.execute(
         """
-        SELECT id, slug, title, match_id, is_active
+        SELECT
+            id,
+            slug,
+            title,
+            match_id,
+            is_active,
+            indices_template,
+            tracker_type
         FROM restreams
         WHERE slug = ? AND is_active = 1
         """,
@@ -775,14 +848,22 @@ def restream_live(slug: str):
     if not restream:
         abort(404)
 
-    # Indices: même logique que /<slug>/indices
-    session_file = INDICES_SESSIONS_DIR / f"{slug}.json"
-    if not session_file.exists():
-        abort(404)
+    # --------------------------------------------------------------
+    # Indices
+    # --------------------------------------------------------------
+    indices_data = None
 
-    with open(session_file, "r", encoding="utf-8") as f:
-        indices_data = json.load(f)
+    if restream["indices_template"] != "none":
+        session_file = indices_sessions_dir() / f"{slug}.json"
+        if not session_file.exists():
+            abort(404)
 
+        with open(session_file, "r", encoding="utf-8") as f:
+            indices_data = json.load(f)
+
+    # --------------------------------------------------------------
+    # Permissions
+    # --------------------------------------------------------------
     can_edit = current_user.is_authenticated and has_required_role(
         getattr(current_user, "role", None),
         "éditeur",
@@ -790,8 +871,20 @@ def restream_live(slug: str):
 
     tracker_payload = None
 
-    if can_edit:
-        # participants_count basé sur teams du match
+    # --------------------------------------------------------------
+    # Tracker (uniquement si activé)
+    # --------------------------------------------------------------
+    if can_edit and restream["tracker_type"] != "none":
+
+        tracker_type = restream["tracker_type"]
+
+        # --- récupération de la définition du tracker ---
+        try:
+            tracker_def = get_tracker_definition(tracker_type)
+        except KeyError:
+            abort(500)  # tracker inconnu → incohérence DB
+
+        # --- participants ---
         teams = db.execute(
             """
             SELECT t.id AS team_id, t.name AS team_name
@@ -805,22 +898,22 @@ def restream_live(slug: str):
 
         participants_count = max(1, len(teams))
 
-        tracker_type = "ssr_inventory"
-        catalog = get_catalog()
-
+        # --- session tracker ---
         existing_session = load_session_restream(int(restream["id"]))
+
         session = ensure_session_restream(
             tracker_type=tracker_type,
             restream_id=int(restream["id"]),
             restream_slug=restream["slug"],
-            catalog=catalog,
+            preset_factory=tracker_def["default_preset"],
             participants_count=participants_count,
         )
 
-        # inject labels/team_id à la création uniquement
+        # --- injection slot / team / label UNIQUEMENT à la création ---
         if existing_session is None:
             for i, p in enumerate(session.get("participants", [])):
                 p["slot"] = i + 1
+
                 if i < len(teams):
                     name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
                     p["team_id"] = int(teams[i]["team_id"])
@@ -828,15 +921,24 @@ def restream_live(slug: str):
                 else:
                     p.setdefault("team_id", 0)
                     p.setdefault("label", f"Slot {i+1}")
+
             save_session_restream(int(restream["id"]), session)
 
+        # --- payload pour le template ---
         tracker_payload = {
             "tracker_type": tracker_type,
-            "catalog": catalog,
+            "catalog": tracker_def["catalog"](),
             "session": session,
             "use_storage": False,
-            "update_url": url_for("restream.restream_tracker_update", slug=restream["slug"]),
-            "stream_url": url_for("restream.restream_tracker_stream", slug=restream["slug"]),
+            "update_url": url_for(
+                "restream.restream_tracker_update",
+                slug=restream["slug"],
+            ),
+            "stream_url": url_for(
+                "restream.restream_tracker_stream",
+                slug=restream["slug"],
+            ),
+            "frontend": tracker_def["frontend"],
         }
 
     return render_template(
@@ -848,6 +950,7 @@ def restream_live(slug: str):
         tracker=tracker_payload,
     )
 
+
 @restream_bp.post("/<slug>/tracker/update")
 @login_required
 @role_required("éditeur")
@@ -855,7 +958,7 @@ def restream_tracker_update(slug: str):
     db = get_db()
     restream = db.execute(
         """
-        SELECT id, slug, match_id
+        SELECT id, slug, match_id, tracker_type
         FROM restreams
         WHERE slug = ? AND is_active = 1
         """,
@@ -887,14 +990,20 @@ def restream_tracker_update(slug: str):
     ).fetchall()
     participants_count = max(1, len(teams))
 
-    tracker_type = "ssr_inventory"
-    catalog = get_catalog()
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    try:
+        tracker_def = get_tracker_definition(tracker_type)
+    except KeyError:
+        abort(500)
 
     session = ensure_session_restream(
         tracker_type=tracker_type,
         restream_id=int(restream["id"]),
         restream_slug=restream["slug"],
-        catalog=catalog,
+        preset_factory=tracker_def["default_preset"],
         participants_count=participants_count,
     )
 
@@ -913,7 +1022,7 @@ def restream_tracker_stream(slug: str):
     db = get_db()
     restream = db.execute(
         """
-        SELECT id, slug, match_id
+        SELECT id, slug, match_id, tracker_type
         FROM restreams
         WHERE slug = ? AND is_active = 1
         """,
@@ -936,18 +1045,25 @@ def restream_tracker_stream(slug: str):
 
     participants_count = max(1, len(teams))
 
-    tracker_type = "ssr_inventory"
-    catalog = get_catalog()
+    
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    try:
+        tracker_def = get_tracker_definition(tracker_type)
+    except KeyError:
+        abort(500)
 
     ensure_session_restream(
         tracker_type=tracker_type,
         restream_id=int(restream["id"]),
         restream_slug=restream["slug"],
-        catalog=catalog,
+        preset_factory=tracker_def["default_preset"],
         participants_count=participants_count,
     )
 
-    session_file: Path = session_path_restream(int(restream["id"]))
+    session_file: Path = tracker_session_path_restream(int(restream["id"]))
 
     def read_session_json() -> dict:
         if not session_file.exists():
@@ -972,14 +1088,19 @@ def restream_tracker_stream(slug: str):
     headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     return Response(event_stream(), mimetype="text/event-stream", headers=headers)
 
-
 @restream_bp.get("/<slug>/overlay")
 def restream_overlay(slug: str):
     db = get_db()
 
     restream = db.execute(
         """
-        SELECT id, slug, title, match_id, is_active
+        SELECT
+            id,
+            slug,
+            title,
+            match_id,
+            is_active,
+            tracker_type
         FROM restreams
         WHERE slug = ? AND is_active = 1
         """,
@@ -989,7 +1110,25 @@ def restream_overlay(slug: str):
     if not restream:
         abort(404)
 
-    # participants_count basé sur les teams du match
+    # --------------------------------------------------------------
+    # Tracker désactivé → overlay vide / 404
+    # --------------------------------------------------------------
+    if restream["tracker_type"] == "none":
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+
+    # --------------------------------------------------------------
+    # Récupération définition tracker
+    # --------------------------------------------------------------
+    try:
+        tracker_def = get_tracker_definition(tracker_type)
+    except KeyError:
+        abort(500)  # incohérence DB
+
+    # --------------------------------------------------------------
+    # Participants (teams du match)
+    # --------------------------------------------------------------
     teams = db.execute(
         """
         SELECT t.id AS team_id, t.name AS team_name
@@ -1003,22 +1142,26 @@ def restream_overlay(slug: str):
 
     participants_count = max(1, len(teams))
 
-    tracker_type = "ssr_inventory"
-    catalog = get_catalog()
-
+    # --------------------------------------------------------------
+    # Session tracker (création si absente)
+    # --------------------------------------------------------------
     existing_session = load_session_restream(int(restream["id"]))
+
     session = ensure_session_restream(
         tracker_type=tracker_type,
         restream_id=int(restream["id"]),
         restream_slug=restream["slug"],
-        catalog=catalog,
+        preset_factory=tracker_def["default_preset"],
         participants_count=participants_count,
     )
 
-    # inject labels/team_id à la création uniquement (même logique que live)
+    # --------------------------------------------------------------
+    # Injection labels / team_id UNIQUEMENT à la création
+    # --------------------------------------------------------------
     if existing_session is None:
         for i, p in enumerate(session.get("participants", [])):
             p["slot"] = i + 1
+
             if i < len(teams):
                 name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
                 p["team_id"] = int(teams[i]["team_id"])
@@ -1026,19 +1169,31 @@ def restream_overlay(slug: str):
             else:
                 p.setdefault("team_id", 0)
                 p.setdefault("label", f"Slot {i+1}")
+
         save_session_restream(int(restream["id"]), session)
 
+    # --------------------------------------------------------------
+    # Payload tracker (read-only)
+    # --------------------------------------------------------------
     tracker_payload = {
         "tracker_type": tracker_type,
-        "catalog": catalog,
+        "catalog": tracker_def["catalog"](),
         "session": session,
         "use_storage": False,
-        # update_url pas utilisé en overlay (can_edit=false), mais on peut le laisser
-        "update_url": url_for("restream.restream_tracker_update", slug=restream["slug"]),
-        "stream_url": url_for("restream.restream_tracker_stream", slug=restream["slug"]),
+        "frontend": tracker_def["frontend"],
+        # SSE stream utilisé par OBS
+        "stream_url": url_for(
+            "restream.restream_tracker_stream",
+            slug=restream["slug"],
+        ),
+        # update_url présent mais non utilisé (overlay read-only)
+        "update_url": url_for(
+            "restream.restream_tracker_update",
+            slug=restream["slug"],
+        ),
     }
 
-    # IMPORTANT: overlay = read-only
+    # IMPORTANT : overlay = toujours read-only
     can_edit = False
 
     return render_template(
@@ -1048,3 +1203,4 @@ def restream_overlay(slug: str):
         tracker=tracker_payload,
         can_edit=can_edit,
     )
+

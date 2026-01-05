@@ -21,10 +21,13 @@
   <!-- ACTIONS PRINCIPALES -->
   <section class="restream-view-main">
 
+	{% if restream.indices_template != "none" %}
     <a href="{{ url_for('restream.restream_indices', slug=restream.slug) }}"
        class="btn btn-primary btn-large restream-indices-cta">
       🔎 Accéder aux indices
     </a>
+	{% endif %}
+
 	
 	{% if can_edit %}
 		<a class="btn btn-primary btn-large restream-indices-cta" href="{{ url_for('restream.restream_live', slug=restream.slug) }}">

@@ -18,6 +18,7 @@ Créer un restream
 
     <form method="post" class="restream-create-form">
 
+        <!-- MATCH -->
         <div class="form-group">
             <label for="match_id">Match à restreamer</label>
             <select name="match_id" id="match_id" required>
@@ -33,6 +34,7 @@ Créer un restream
             </select>
         </div>
 
+        <!-- TITLE -->
         <div class="form-group">
             <label for="title">Titre du restream</label>
             <input
@@ -43,13 +45,49 @@ Créer un restream
             >
         </div>
 
+        <!-- TRACKER TYPE -->
         <div class="form-group">
-            <label for="indices_template">Template d’indices</label>
-            <select name="indices_template" id="indices_template" required>
-                <option value="ssr-s4">SSR — Saison 4</option>
+            <label for="tracker_type">Tracker</label>
+            <select name="tracker_type" id="tracker_type" required>
+
+                <!-- Aucun tracker -->
+                <option value="none" selected>
+                    Aucun tracker
+                </option>
+
+                {% if available_tracker_types %}
+                    {% for tracker in available_tracker_types %}
+                        <option value="{{ tracker.key }}">
+                            {{ tracker.label }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+
             </select>
         </div>
 
+        <!-- INDICES TEMPLATE -->
+        <div class="form-group">
+            <label for="indices_template">Indices</label>
+            <select name="indices_template" id="indices_template" required>
+
+                <!-- Aucun indice -->
+                <option value="none" selected>
+                    Aucun indice
+                </option>
+
+                {% if available_indices_templates %}
+                    {% for tpl in available_indices_templates %}
+                        <option value="{{ tpl.key }}">
+                            {{ tpl.label }}
+                        </option>
+                    {% endfor %}
+                {% endif %}
+
+            </select>
+        </div>
+
+        <!-- TWITCH -->
         <div class="form-group">
             <label for="twitch_url">Lien Twitch</label>
             <input
@@ -59,38 +97,39 @@ Créer un restream
                 placeholder="https://twitch.tv/…"
             >
         </div>
-		
-		<div class="form-group">
-			<label for="restreamer_name">Restream</label>
-			<input
-				type="text"
-				name="restreamer_name"
-				id="restreamer_name"
-				placeholder="ex: Alice"
-			>
-		</div>
 
-		<div class="form-group">
-			<label for="commentator_name">Commentaires</label>
-			<input
-				type="text"
-				name="commentator_name"
-				id="commentator_name"
-				placeholder="ex: Bob & Charlie"
-			>
-		</div>
+        <!-- NAMES -->
+        <div class="form-group">
+            <label for="restreamer_name">Restream</label>
+            <input
+                type="text"
+                name="restreamer_name"
+                id="restreamer_name"
+                placeholder="ex: Alice"
+            >
+        </div>
 
-		<div class="form-group">
-			<label for="tracker_name">Tracking</label>
-			<input
-				type="text"
-				name="tracker_name"
-				id="tracker_name"
-				placeholder="ex: Dave"
-			>
-		</div>
+        <div class="form-group">
+            <label for="commentator_name">Commentaires</label>
+            <input
+                type="text"
+                name="commentator_name"
+                id="commentator_name"
+                placeholder="ex: Bob & Charlie"
+            >
+        </div>
 
+        <div class="form-group">
+            <label for="tracker_name">Tracking</label>
+            <input
+                type="text"
+                name="tracker_name"
+                id="tracker_name"
+                placeholder="ex: Dave"
+            >
+        </div>
 
+        <!-- ACTIONS -->
         <div class="restream-create-actions">
             <button type="submit" class="btn btn-primary">
                 Créer le restream
@@ -108,4 +147,3 @@ Créer un restream
 </div>
 
 {% endblock %}
-

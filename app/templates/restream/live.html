@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% from "restream/_tracker_ssr_macro.html" import render_tracker with context %}
 
 {% block title %}
 Live – {{ restream.title }}
@@ -7,51 +6,49 @@ Live – {{ restream.title }}
 
 {% block head %}
   {{ super() }}
-  {# Tracker uniquement si éditeur+ #}
-  {% if can_edit %}
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/features/tracker_ssr.css') }}">
+
+  {# Tracker CSS : uniquement si éditeur+ et tracker actif #}
+  {% if can_edit and tracker and tracker.frontend %}
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename=tracker.frontend.css) }}"
+    >
   {% endif %}
 {% endblock %}
 
 {% block content %}
 
-  
-
-  {# Tracker uniquement si éditeur+ #}
+  {# Tracker : uniquement si éditeur+ et tracker actif #}
   {% if can_edit and tracker and tracker.session %}
     <div class="container" style="margin-top: 18px;">
       <h2>Tracking</h2>
 
-      {# Ici on réutilise ton macro render_tracker #}
-      <div class="tracker-slots-grid">
-        {% for p in tracker.session["participants"] %}
-          <div class="tracker-slot">
-			<h2>{{ p["label"] }}</h2>
-            {{ render_tracker(p, tracker.tracker_type, tracker.catalog, tracker.use_storage, tracker.update_url) }}
-          </div>
-        {% endfor %}
-      </div>
+      {# Rendu délégué au tracker via le registry #}
+      {% include tracker.frontend.template_block %}
     </div>
   {% endif %}
-  
+
   {# Indices visibles pour tous #}
-  {% include "restream/_indices_block.html" %}
+  {% if indices %}
+    {% include "restream/_indices_block.html" %}
+  {% endif %}
 
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
 
-  {# Indices JS : toujours (comme indices.html) #}
-  <script src="{{ url_for('static', filename='js/indices.js') }}"></script>
+  {# Indices JS : uniquement si indices actifs #}
+  {% if indices %}
+    <script src="{{ url_for('static', filename='js/indices.js') }}"></script>
+  {% endif %}
 
-  {# Tracker JS : uniquement éditeur+ #}
-  {% if can_edit and tracker and tracker.catalog %}
+  {# Tracker JS : uniquement si éditeur+ et tracker actif #}
+  {% if can_edit and tracker and tracker.frontend %}
     <script>
       window.TRACKER_CATALOG = {{ tracker.catalog | tojson }};
       window.TRACKER_STREAM_URL = {{ tracker.stream_url | tojson }};
     </script>
-    <script src="{{ url_for('static', filename='js/tracker_ssr.js') }}"></script>
+    <script src="{{ url_for('static', filename=tracker.frontend.js) }}"></script>
   {% endif %}
 {% endblock %}
