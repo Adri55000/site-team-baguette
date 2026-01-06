@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+Presets – {{ tracker_label }}
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Presets – {{ tracker_label }}</h1>
+
+<div class="admin-actions">
+    <a href="{{ url_for('admin.admin_trackers_preset_new', tracker_type=tracker_type) }}"
+       class="btn btn-primary">
+        ➕ Créer un preset
+    </a>
+</div>
+
+{% if presets %}
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nom du preset</th>
+            <th>Dernière modification</th>
+			<th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for preset in presets %}
+        <tr>
+            <td>{{ preset.label }}</td>
+            <td>
+                {% if preset.updated_at %}
+                    {{ preset.updated_at | format_datetime}}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+			<td class="preset-notes">
+			  {{ preset.notes[:80] }}{% if preset.notes|length > 80 %}…{% endif %}
+			</td>
+            <td class="admin-actions">
+                <a href="{{ url_for(
+                        'admin.admin_trackers_preset_edit',
+                        tracker_type=tracker_type,
+                        preset_slug=preset.slug
+                    ) }}"
+                   class="btn btn-secondary">
+                    ✏️ Éditer
+                </a>
+
+                <form method="post"
+					  action="{{ url_for(
+						  'admin.admin_trackers_preset_delete',
+						  tracker_type=tracker_type,
+						  preset_slug=preset.slug
+					  ) }}"
+					  onsubmit="return confirm('Supprimer définitivement ce preset ?');"
+					  style="display:inline;">
+					<button type="submit" class="btn btn-danger">
+						🗑️ Supprimer
+					</button>
+				</form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Aucun preset n’existe pour ce tracker.</p>
+{% endif %}
+
+<a href="{{ url_for('admin.admin_trackers_index') }}"
+   class="btn btn-link">
+    ← Retour aux trackers
+</a>
+{% endblock %}

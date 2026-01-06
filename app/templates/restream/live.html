@@ -18,15 +18,30 @@ Live – {{ restream.title }}
 
 {% block content %}
 
-  {# Tracker : uniquement si éditeur+ et tracker actif #}
-  {% if can_edit and tracker and tracker.session %}
-    <div class="container" style="margin-top: 18px;">
-      <h2>Tracking</h2>
+{% if can_edit and tracker and tracker.session %}
+  <div class="container" style="margin-top: 18px;">
+    <h2>Tracking</h2>
 
-      {# Rendu délégué au tracker via le registry #}
-      {% include tracker.frontend.template_block %}
-    </div>
-  {% endif %}
+    {% if can_manage_tracker %}
+      <div class="admin-actions" style="margin-bottom: 12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn-primary"
+           href="{{ url_for('restream.restream_tracker_presets', slug=restream_slug) }}">
+          Charger un preset
+        </a>
+
+        <form method="post"
+              action="{{ url_for('restream.restream_tracker_reset', slug=restream_slug) }}"
+              onsubmit="return confirm('Reset le tracker (preset par défaut) ?');">
+          <button class="btn btn-danger" type="submit">Reset tracker</button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% include tracker.frontend.template_block %}
+
+
+  </div>
+{% endif %}
 
   {# Indices visibles pour tous #}
   {% if indices %}

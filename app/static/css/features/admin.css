@@ -365,3 +365,9 @@
     height: 14px;
     border-radius: 50%;
 }
+
+.preset-notes {
+  max-width: 320px;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}

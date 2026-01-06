@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "restream/_tracker_ssr_macro.html" import render_tracker with context %}
+
+{% block title %}
+{% if mode == "new" %}Créer{% else %}Éditer{% endif %} un preset – {{ tracker_label }}
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename=tracker_frontend.css) }}">
+{% endblock %}
+
+{% block content %}
+<h1>
+    {% if mode == "new" %}Créer{% else %}Éditer{% endif %} un preset – {{ tracker_label }}
+</h1>
+
+<form method="post" class="admin-form">
+    <div class="form-row">
+        <label for="label">Nom du preset</label>
+        <input id="label" name="label" type="text" value="{{ label }}" required>
+    </div>
+
+    <div class="form-row">
+        <label for="notes">Notes</label>
+        <textarea class="admin-input" id="notes" name="notes" rows="3">{{ notes }}</textarea>
+    </div>
+
+    <input type="hidden" id="participant_json" name="participant_json" value="{}">
+
+
+    <h2>État du tracker (1 slot)</h2>
+
+    {# Zone tracker : on utilise le template_block du tracker (dépend de tracker_type) #}
+    <div class="tracker-admin-scope">
+
+	  {{ render_tracker(
+		  participant,
+		  tracker_type,
+		  tracker_catalog,
+		  false,      
+		  none        
+	  ) }}
+
+	</div>
+
+    <div class="admin-actions">
+        <button type="submit" class="btn btn-primary">
+            💾 Enregistrer
+        </button>
+
+        <a href="{{ url_for('admin.admin_trackers_presets', tracker_type=tracker_type) }}" class="btn btn-secondary">
+            Annuler
+        </a>
+    </div>
+</form>
+
+<script>
+  // Mode "preset admin"
+  window.TRACKER_ADMIN_PRESET_MODE = true;
+
+  // état 1 slot (participant) initial
+  window.TRACKER_PRESET_PARTICIPANT = {{ participant | tojson }};
+
+  // où écrire le JSON final (pour POST form)
+  window.TRACKER_PRESET_OUTPUT_SELECTOR = "#participant_json";
+  
+  window.TRACKER_CATALOG = {{ tracker_catalog | tojson }};
+
+  // IMPORTANT :
+  // Le JS du tracker doit, en mode preset, travailler en local (pas SSE, pas POST)
+  // et maintenir participant_json à jour.
+</script>
+
+<script src="{{ url_for('static', filename=tracker_frontend.js) }}"></script>
+{% endblock %}

@@ -8,7 +8,7 @@
            data-tracker-update-url='{{ update_url }}'
            data-tracker-use-storage='{{ "true" if (use_storage if use_storage is not none else True) else "false" }}'
            data-tracker-storage-key='tb_tracker_preview_state_v1_slot{{ participant["slot"] }}'
-		   data-tracker-can-edit='{{ "true" if can_edit else "false" }}'>
+		   data-tracker-can-edit='{{ "false" if (can_edit is defined and not can_edit) else "true" }}'>
 
 
     {# ========================================================= #}

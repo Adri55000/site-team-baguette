@@ -18,6 +18,8 @@ from app.modules.text import slugify
 from app.modules.tracker.base import ensure_session_restream, save_session_restream, load_session_restream
 from app.modules.indices.registry import get_available_indices_templates, is_valid_indices_template, get_indices_template_path
 from app.modules.tracker.registry import get_available_trackers, get_tracker_definition, is_valid_tracker_type
+from app.modules.tracker.presets import list_presets, load_preset
+
 
 # === Dossiers ===
 
@@ -868,6 +870,11 @@ def restream_live(slug: str):
         getattr(current_user, "role", None),
         "éditeur",
     )
+    
+    can_manage_tracker = (
+        current_user.is_authenticated
+        and has_required_role(getattr(current_user, "role", None), "restreamer")
+    )
 
     tracker_payload = None
 
@@ -947,6 +954,7 @@ def restream_live(slug: str):
         restream_slug=slug,
         indices=indices_data,
         can_edit=can_edit,
+        can_manage_tracker=can_manage_tracker,
         tracker=tracker_payload,
     )
 
@@ -1011,7 +1019,9 @@ def restream_tracker_update(slug: str):
     if idx >= len(session.get("participants", [])):
         abort(400, description="slot invalide (hors bornes session)")
 
-    session["participants"][idx] = participant
+    existing_p = session["participants"][idx]
+    existing_p.update(participant)   # merge
+    session["participants"][idx] = existing_p
     session["version"] = int(session.get("version", 0)) + 1
 
     save_session_restream(int(restream["id"]), session)
@@ -1068,8 +1078,11 @@ def restream_tracker_stream(slug: str):
     def read_session_json() -> dict:
         if not session_file.exists():
             return {}
-        with session_file.open("r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with session_file.open("r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
 
     @stream_with_context
     def event_stream():
@@ -1204,3 +1217,154 @@ def restream_overlay(slug: str):
         can_edit=can_edit,
     )
 
+@restream_bp.get("/<slug>/tracker/presets")
+@login_required
+@role_required("restreamer")
+def restream_tracker_presets(slug: str):
+    db = get_db()
+    restream = db.execute(
+        "SELECT id, slug, match_id, tracker_type FROM restreams WHERE slug = ? AND is_active = 1",
+        (slug,),
+    ).fetchone()
+    if not restream:
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    tracker_def = get_tracker_definition(tracker_type)
+
+    presets = list_presets(tracker_type)
+    presets.sort(key=lambda p: (p.get("label") or "").lower())
+
+    return render_template(
+        "restream/tracker_presets.html",
+        restream=restream,
+        restream_slug=slug,
+        tracker_type=tracker_type,
+        tracker_label=tracker_def["label"],
+        presets=presets,
+    )
+
+@restream_bp.post("/<slug>/tracker/presets/apply")
+@login_required
+@role_required("restreamer")
+def restream_tracker_presets_apply(slug: str):
+    db = get_db()
+    restream = db.execute(
+        "SELECT id, slug, match_id, tracker_type FROM restreams WHERE slug = ? AND is_active = 1",
+        (slug,),
+    ).fetchone()
+    if not restream:
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    tracker_def = get_tracker_definition(tracker_type)
+
+    preset_slug = (request.form.get("preset_slug") or "").strip()
+    if not preset_slug:
+        abort(400, description="preset_slug manquant")
+
+    preset = load_preset(tracker_type, preset_slug)
+    preset_participant = preset.get("participant")
+    if not isinstance(preset_participant, dict):
+        abort(500, description="Preset invalide: participant manquant")
+
+    # garantir que la session existe (même logique que chez toi)
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+    participants_count = max(1, len(teams))
+
+    session = ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        preset_factory=tracker_def["default_preset"],
+        participants_count=participants_count,
+    )
+
+    # applique à tous les slots, en préservant identité
+    new_participants = []
+    for i, existing in enumerate(session.get("participants", []), start=1):
+        new_p = json.loads(json.dumps(preset_participant))  # deep copy simple
+        new_p["slot"] = existing.get("slot", i)
+        new_p["team_id"] = existing.get("team_id", 0)
+        new_p["label"] = existing.get("label", f"Slot {i}")
+        new_participants.append(new_p)
+
+    session["participants"] = new_participants
+    session["version"] = int(session.get("version", 0)) + 1
+    save_session_restream(int(restream["id"]), session)
+
+    flash("Preset chargé sur tous les slots.", "success")
+    return redirect(url_for("restream.restream_live", slug=slug))
+
+
+@restream_bp.post("/<slug>/tracker/reset")
+@login_required
+@role_required("restreamer")
+def restream_tracker_reset(slug: str):
+    db = get_db()
+    restream = db.execute(
+        "SELECT id, slug, match_id, tracker_type FROM restreams WHERE slug = ? AND is_active = 1",
+        (slug,),
+    ).fetchone()
+    if not restream:
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    tracker_def = get_tracker_definition(tracker_type)
+
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+    participants_count = max(1, len(teams))
+
+    session = ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        preset_factory=tracker_def["default_preset"],
+        participants_count=participants_count,
+    )
+
+    default_session = tracker_def["default_preset"](participants_count=participants_count)
+    default_participants = default_session.get("participants", [])
+
+    new_participants = []
+    for i, existing in enumerate(session.get("participants", []), start=1):
+        base = default_participants[i - 1] if i - 1 < len(default_participants) else {}
+        new_p = json.loads(json.dumps(base))
+        new_p["slot"] = existing.get("slot", i)
+        new_p["team_id"] = existing.get("team_id", 0)
+        new_p["label"] = existing.get("label", f"Slot {i}")
+        new_participants.append(new_p)
+
+    session["participants"] = new_participants
+    session["version"] = int(session.get("version", 0)) + 1
+    save_session_restream(int(restream["id"]), session)
+
+    flash("Tracker reset (preset par défaut).", "success")
+    return redirect(url_for("restream.restream_live", slug=slug))

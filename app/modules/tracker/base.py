@@ -98,7 +98,15 @@ def load_session_restream(restream_id: int) -> Optional[Dict[str, Any]]:
     if not path.exists():
         return None
 
-    return _read_json(path)
+    try:
+        return _read_json(path)
+    except Exception:
+        # Optionnel: log pour debug
+        current_app.logger.warning(
+            "Tracker session JSON invalide (restream_id=%s) -> reset",
+            restream_id,
+        )
+        return None
 
 
 def save_session_restream(restream_id: int, session: Dict[str, Any]):
@@ -130,7 +138,15 @@ def ensure_session_restream(
 
     existing = load_session_restream(restream_id)
     if existing is not None:
-        return existing
+        if existing.get("tracker_type") == tracker_type:
+            return existing
+
+        current_app.logger.info(
+            "Tracker session type mismatch (restream_id=%s, got=%s, expected=%s) -> reset",
+            restream_id,
+            existing.get("tracker_type"),
+            tracker_type,
+        )
 
     # Création du preset par défaut (via le registry)
     preset = preset_factory(participants_count)

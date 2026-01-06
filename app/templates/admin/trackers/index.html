@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Gérer les trackers
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Gérer les trackers</h1>
+
+{% if trackers %}
+    <table class="admin-table">
+	  <thead>
+		<tr>
+		  <th>Tracker</th>
+		  <th>Presets</th>
+		  <th>Actions</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		{% for tracker in trackers %}
+		<tr>
+		  <td>{{ tracker.label }}</td>
+		  <td>{{ tracker.presets_count }}</td>
+		  <td>
+			<a class="btn btn-primary"
+			   href="{{ url_for('admin.admin_trackers_presets', tracker_type=tracker.tracker_type) }}">
+			  Gérer les presets
+			</a>
+		  </td>
+		</tr>
+		{% endfor %}
+	  </tbody>
+	</table>
+{% else %}
+    <p>Aucun tracker disponible.</p>
+{% endif %}
+{% endblock %}

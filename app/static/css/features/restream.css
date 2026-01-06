@@ -201,3 +201,54 @@
 .restream-staff-list li {
   margin: 0.25rem 0;
 }
+
+/* Wrapper */
+.tracker-presets {
+  margin-top: 18px;
+}
+
+.tracker-presets-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+/* Table */
+.tracker-presets-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+}
+
+.tracker-presets-table th,
+.tracker-presets-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tracker-presets-table th {
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.tracker-presets-table tr:hover {
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+/* Notes */
+.tracker-presets-notes {
+  max-width: 420px;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+/* Actions */
+.tracker-presets-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}

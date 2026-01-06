@@ -3,11 +3,23 @@
  * - POST updates per slot (only if can_edit)
  * - SSE stream receives full session JSON (participants[]) and updates UI
  * - avoids feedback loops (SSE apply never triggers POST)
+ *
+ * + ADMIN PRESET MODE
+ *   - no SSE
+ *   - no POST
+ *   - local-only edits
+ *   - exports participant JSON to a hidden input (TRACKER_PRESET_OUTPUT_SELECTOR)
  */
 
 (() => {
   const GLOBAL_CATALOG = window.TRACKER_CATALOG || {};
   const STREAM_URL = window.TRACKER_STREAM_URL || null;
+
+  // ------------------------------------------------------------
+  // ADMIN PRESET MODE (generic)
+  // ------------------------------------------------------------
+  const IS_PRESET_MODE = window.TRACKER_ADMIN_PRESET_MODE === true;
+  const PRESET_OUTPUT_SELECTOR = window.TRACKER_PRESET_OUTPUT_SELECTOR || null;
 
   const roots = document.querySelectorAll("[data-tracker-root]");
   if (!roots.length) return;
@@ -23,7 +35,8 @@
   });
 
   // One SSE connection for the whole page (session-wide)
-  if (STREAM_URL) {
+  // Disabled in preset mode
+  if (STREAM_URL && !IS_PRESET_MODE) {
     try {
       const es = new EventSource(STREAM_URL);
 
@@ -80,14 +93,19 @@
         : false;
 
     // State: prefer per-root JSON
+    // + preset admin: prefer window.TRACKER_PRESET_PARTICIPANT
     let baseState = null;
-    if (root.dataset.trackerState) {
+
+    if (IS_PRESET_MODE && window.TRACKER_PRESET_PARTICIPANT) {
+      baseState = window.TRACKER_PRESET_PARTICIPANT;
+    } else if (root.dataset.trackerState) {
       try {
         baseState = JSON.parse(root.dataset.trackerState);
       } catch (e) {
         console.warn("[tracker] invalid data-tracker-state JSON", e);
       }
     }
+
     if (!baseState) baseState = window.TRACKER_STATE || {};
 
     const slot = Number(baseState?.slot || root.dataset.slot || 0) || 0;
@@ -98,7 +116,8 @@
     let state = JSON.parse(JSON.stringify(baseState));
 
     // Standalone only: allow localStorage restore (per root)
-    if (USE_STORAGE) {
+    // Disabled in preset mode
+    if (USE_STORAGE && !IS_PRESET_MODE) {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) state = JSON.parse(saved);
@@ -116,11 +135,27 @@
     }
 
     function saveLocal() {
-      if (!USE_STORAGE) return;
+      // Disabled in preset mode (we export to hidden input instead)
+      if (!USE_STORAGE || IS_PRESET_MODE) return;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch {
         // ignore
+      }
+    }
+
+    // ------------------------------------------------------------
+    // ADMIN PRESET: export current participant state to hidden input
+    // ------------------------------------------------------------
+    function exportPresetState() {
+      if (!IS_PRESET_MODE || !PRESET_OUTPUT_SELECTOR) return;
+      const el = document.querySelector(PRESET_OUTPUT_SELECTOR);
+      if (!el) return;
+
+      try {
+        el.value = JSON.stringify(state);
+      } catch (e) {
+        console.warn("[tracker] failed to export preset state", e);
       }
     }
 
@@ -133,6 +168,7 @@
     let _suppressNetworkSaves = false;
 
     function scheduleServerSave() {
+      if (IS_PRESET_MODE) return; // NEW: preset admin never POST
       if (!UPDATE_URL) return;
       if (!CAN_EDIT) return; // NEW: viewers never POST
       if (_suppressNetworkSaves) return;
@@ -144,6 +180,7 @@
     }
 
     async function flushServerSave() {
+      if (IS_PRESET_MODE) return; // NEW: preset admin never POST
       if (!UPDATE_URL) return;
       if (!CAN_EDIT) return; // NEW: viewers never POST
       if (_suppressNetworkSaves) return;
@@ -573,10 +610,17 @@
 
     function afterChangePersist() {
       saveLocal();
-      scheduleServerSave();
+
+      // NEW: preset admin => export to hidden input, no POST
+      if (IS_PRESET_MODE) {
+        exportPresetState();
+      } else {
+        scheduleServerSave();
+      }
     }
 
     // NEW: bind interactions only for editors
+    // In preset admin, CAN_EDIT must be true (we want to edit locally).
     if (CAN_EDIT) {
       root.addEventListener("click", (ev) => {
         const changed = handleInteraction(ev, +1);
@@ -614,6 +658,11 @@
     }
 
     renderAll();
+
+    // NEW: preset admin => export initial state immediately
+    if (IS_PRESET_MODE) {
+      exportPresetState();
+    }
 
     return { slot, applyRemoteParticipant };
   }
