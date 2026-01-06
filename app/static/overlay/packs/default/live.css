@@ -120,3 +120,40 @@
   transform: scale(0.95);
   transform-origin: top left;
 }
+
+/* -------------------------------------------------- */
+/* Go Mode (overlay)                                  */
+/* -------------------------------------------------- */
+
+.overlay-go-modes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* important pour OBS */
+}
+
+.overlay-go-mode {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.overlay-go-mode.is-active {
+  opacity: 1;
+}
+
+/* Go Mode – joueur gauche (slot 1) */
+.overlay-go-mode--slot1 {
+  left: 26%;
+  top: 53%;
+}
+
+/* Go Mode – joueur droit (slot 2) */
+.overlay-go-mode--slot2 {
+  right: 26%;
+  top: 53%;
+}
+.overlay-go-video {
+  width: clamp(156px, 16vw, 228px);
+  height: auto;
+  display: block;
+}

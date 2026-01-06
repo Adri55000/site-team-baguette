@@ -173,6 +173,7 @@ def tournament(slug):
     ).fetchone()
 
     if tournament:
+        ensure_public_tournament(tournament)
         # -----------------------------
         # Statut PUBLIC (mapping v1)
         # -----------------------------
@@ -272,6 +273,8 @@ def tournament_results(slug):
 
     if not tournament:
         abort(404)
+        
+    ensure_public_tournament(tournament)
 
     # -------------------------------------------------
     # Metadata JSON
@@ -492,6 +495,8 @@ def tournament_bracket(slug):
 
     if not tournament:
         abort(404)
+
+    ensure_public_tournament(tournament)
 
     # -------------------------------------------------
     # Metadata

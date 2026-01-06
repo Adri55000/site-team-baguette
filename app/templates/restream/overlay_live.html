@@ -18,8 +18,8 @@
 
     <!-- Textes -->
     <div class="live-texts">
-      <div class="live-player live-player-left">{{ live.left_name }}</div>
-      <div class="live-player live-player-right">{{ live.right_name }}</div>
+      <div class="live-player live-player-left">{{ live.left_name | overlay_player_name}}</div>
+      <div class="live-player live-player-right">{{ live.right_name | overlay_player_name}}</div>
 
       <div class="live-title">{{ live.title }}</div>
 

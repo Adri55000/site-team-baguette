@@ -28,11 +28,11 @@
         </div>
 
         <div class="next-player next-player-left">
-          {{ next.left_name }}
+          {{ next.left_name | overlay_player_name}}
         </div>
 
         <div class="next-player next-player-right">
-          {{ next.right_name }}
+          {{ next.right_name | overlay_player_name}}
         </div>
 
         <div class="next-label">

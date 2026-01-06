@@ -14,6 +14,7 @@ def inject_tournaments():
             status
         FROM tournaments
         WHERE source = 'internal'
+          AND UPPER(TRIM(name)) NOT LIKE '[CASUAL%'
         """
     ).fetchall()
 

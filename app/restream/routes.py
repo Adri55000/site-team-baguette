@@ -21,6 +21,7 @@ from app.modules.tracker.registry import get_available_trackers, get_tracker_def
 from app.modules.tracker.presets import list_presets, load_preset
 from app.restream.queries import get_active_restream_by_slug, get_match_teams, get_next_planned_match_for_overlay, simplify_restream_title, split_commentators
 from app.modules.overlay.registry import resolve_overlay_pack_for_match
+from app.modules.tournaments import overlay_tournament_name
 
 # === Dossiers ===
 
@@ -1407,7 +1408,7 @@ def restream_overlay_intro(slug: str):
         (restream["match_id"],),
     ).fetchone()
 
-    tournament_name = row["tournament_name"] if row and row["tournament_name"] else ""
+    tournament_name = overlay_tournament_name(row["tournament_name"]) if row and row["tournament_name"] else ""
 
     overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
     
@@ -1469,7 +1470,8 @@ def restream_overlay_next(slug: str):
     ).fetchone()
 
     tournament_id = row["tournament_id"] if row else None
-    tournament_name = row["tournament_name"] if row and row["tournament_name"] else ""
+    tournament_name = overlay_tournament_name(row["tournament_name"]) if row and row["tournament_name"] else ""
+    
 
     overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
 

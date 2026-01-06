@@ -9,13 +9,14 @@ from werkzeug.security import generate_password_hash
 import os
 from app.modules.text import slugify, _canonical_key, normalize_group_name
 from datetime import datetime
-from app.modules.tournaments import get_tournament_phases
+from app.modules.tournaments import get_tournament_phases, is_reserved_casual_prefix
 import secrets
 import string
 import json
 from app.modules.tracker.registry import get_available_trackers, get_tracker_definition
 from app.modules.tracker.presets import list_presets, create_preset, load_preset, save_preset, rename_preset, delete_preset
 from app.modules.tracker.games.ssr.preset import build_default_preset as ssr_default_preset
+
 
 @admin_bp.route("/")
 @login_required
@@ -204,6 +205,8 @@ def games_add():
         return redirect(url_for("admin.games_list"))
 
     db = get_db()
+
+    # 1) Création du jeu
     db.execute(
         """
         INSERT INTO games (name, short_name, color)
@@ -211,6 +214,41 @@ def games_add():
         """,
         (name, short_name, color)
     )
+
+    # Récupère l'id du jeu fraîchement créé (SQLite)
+    game_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+
+    # 2) Auto-création du tournoi CASUAL associé
+    game_slug = slugify(name)  # ou slugify(short_name) si vous préférez un slug plus stable
+    casual_tournament_name = f"[CASUAL] {name}"
+    casual_tournament_slug = f"casual-{game_slug}"
+
+    existing = db.execute(
+        """
+        SELECT id
+        FROM tournaments
+        WHERE game_id = ? AND slug = ?
+        """,
+        (game_id, casual_tournament_slug)
+    ).fetchone()
+
+    if not existing:
+        db.execute(
+            """
+            INSERT INTO tournaments
+                (name, slug, game_id, status, source, metadata, created_at)
+            VALUES (?, ?, ?, ?, 'internal', ?, ?)
+            """,
+            (
+                casual_tournament_name,
+                casual_tournament_slug,
+                game_id,
+                "draft",          # ou "active" si tu veux qu'il soit immédiatement utilisable
+                "",               # metadata
+                datetime.now().isoformat(),
+            )
+        )
+
     db.commit()
 
     flash("Jeu ajouté avec succès.", "success")
@@ -693,6 +731,9 @@ def tournaments_create():
 
         if not name:
             errors["name"] = "Le nom du tournoi est obligatoire."
+            
+        if name and is_reserved_casual_prefix(name):
+            errors["name"] = "Le préfixe [CASUAL] est réservé aux tournois système."
 
         if not game_id:
             errors["game_id"] = "Un jeu doit être sélectionné."
@@ -755,11 +796,14 @@ def admin_tournament_edit(tournament_id):
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         game_id = request.form.get("game_id")
-        status = request.form.get("status")
+        status = request.form.get("status", tournament["status"])
         metadata = request.form.get("metadata", "").strip()
 
         if not name:
             errors["name"] = "Le nom du tournoi est obligatoire."
+            
+        if name and is_reserved_casual_prefix(name):
+            errors["name"] = "Le préfixe [CASUAL] est réservé aux tournois système."
 
         if not game_id:
             errors["game_id"] = "Un jeu doit être sélectionné."
@@ -769,26 +813,26 @@ def admin_tournament_edit(tournament_id):
             abort(400)
 
         # 🔒 Règle métier existante
-        if tournament["status"] == "finished" and status != "finished":
-            flash(
-                "Un tournoi terminé ne peut pas être réactivé.",
-                "error"
-            )
-            return redirect(
-                url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
-            )
+        if not errors :
+            if tournament["status"] == "finished" and status != "finished":
+                flash(
+                    "Un tournoi terminé ne peut pas être réactivé.",
+                    "error"
+                )
+                return redirect(
+                    url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
+                )
 
-        # 🔒 NOUVELLE règle métier (Phase 6)
-        if status == "active" and not phases:
-            flash(
-                "Impossible d'activer le tournoi : aucune phase n'est définie.",
-                "error"
-            )
-            return redirect(
-                url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
-            )
+            # 🔒 NOUVELLE règle métier (Phase 6)
+            if status == "active" and not phases:
+                flash(
+                    "Impossible d'activer le tournoi : aucune phase n'est définie.",
+                    "error"
+                )
+                return redirect(
+                    url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
+                )
 
-        if not errors:
             db.execute(
                 """
                 UPDATE tournaments

@@ -9,6 +9,7 @@ from .database import close_db, get_db
 from app.jinja_filters import display_team_name
 from app.errors import register_error_handlers
 from pathlib import Path
+from app.modules.tournaments import is_casual_tournament, overlay_player_name
 
 login_manager = LoginManager()
 
@@ -51,6 +52,8 @@ def create_app():
     app.jinja_env.filters["format_datetime"] = format_datetime
     app.jinja_env.filters["team_name"] = display_team_name
     app.jinja_env.globals["current_tournament_slug"] = "ssr-s4"
+    app.jinja_env.globals["is_casual_tournament"] = is_casual_tournament
+    app.jinja_env.filters["overlay_player_name"] = overlay_player_name
 
 
     app.config["TOURNAMENTS"] = TOURNAMENTS
