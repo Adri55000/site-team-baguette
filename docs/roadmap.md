@@ -59,9 +59,9 @@ Orientation :
 - évolution progressive, sans refonte brutale.
 
 Pistes identifiées :
-- ajout d’un **module de tracking collaboratif**,
-- tracking temps réel via **SSE**,
-- permettre à plusieurs personnes distantes de contribuer au tracking,
+- ajout d’un **module de tracking collaboratif**, DONE
+- tracking temps réel via **SSE**, DONE
+- permettre à plusieurs personnes distantes de contribuer au tracking, DONE
 - réduire la charge sur la personne en charge du restream.
 
 Le restream reste un module central, mais maîtrisé.

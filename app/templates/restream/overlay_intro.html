@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Overlay — Intro</title>
+
+    <!-- Base commun OBS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='overlay/base.css') }}">
+
+    <!-- CSS du tournoi (pack) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename=overlay_pack['css']['intro']) }}">
+</head>
+
+<body class="overlay overlay-intro" data-pack="{{ overlay_pack['slug'] }}">
+  <div class="overlay-root">
+    <!-- Asset de fond (cadre + VS déjà dessinés) -->
+    <div class="overlay-background"></div>
+
+    <!-- Textes uniquement -->
+    <div class="intro-texts">
+
+      <div class="intro-tournament">
+        {{ intro.tournament_name }}
+      </div>
+
+      <div class="intro-match-label">
+        {{ intro.match_label }}
+      </div>
+
+      <div class="intro-player intro-player-left">
+        {{ intro.left_name }}
+      </div>
+
+      <div class="intro-player intro-player-right">
+        {{ intro.right_name }}
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

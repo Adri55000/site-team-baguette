@@ -1,21 +1,17 @@
 {
   "edition": "2025",
-  "description": "Tournoi officiel Team Baguette de la saison 2025.",
-
-  "organizers": [
-    "Team Baguette",
-    "SSR France"
-  ],
-
+  "description": "Ce tournoi est tourné vers les options du randomizer mises de côtés en S3 : quêtes de recupix, flooded faron woods, DER et autres sont mis à l'honneur. Ce tournoi est ouvert à tous.\nLe tournoi est constitué d'une qualification facultative asynchrone, une phase de groupe et un arbre final (demi-finale/finale) en simple élimination avec matchs en BO1.\nIl s'agit également du premier tournoi organisé par la Team Baguette.",
+  "organizers": ["Team Baguette"],
   "highlights": [
-    "Victoire surprise de l'équipe Alpha en finale",
-    "Record de participation avec 16 équipes",
-    "Première diffusion en restream officiel"
-  ],
-
+    { "entity": "Oni", "result": "Vainqueur" },
+    { "entity": "Adri00", "result": "Finaliste" },
+	{ "entity": "whale_fins", "result": "Top 4 / 1ère place du groupe Pain au chocolat" },
+	{ "entity": "SpaceRawk", "result": "Top 4" }
+  ], 
+  "overlay_pack": "default",
   "external_links": {
-    "vod": "https://example.com/vod",
-    "rules": "https://example.com/rules",
-    "liquipedia": "https://liquipedia.net/..."
+    "Google Doc français des résultats": "https://docs.google.com/spreadsheets/d/1pX_EbAqUhNxNbCllq0qKvZAH3W5po23gVg2wcfMUg-U/edit?usp=sharing",
+    "Document du tournoi (en français)": "https://docs.google.com/document/d/1jl1NBpxKHvvyAP2HMKObx5orX4EBE6C6PT0_UpMeUGw/edit?usp=drive_link",
+    "Document du tournoi (en anglais)": "https://docs.google.com/document/d/1AlfoQ9x2pe4NSJKnEeJoacJeI8nqPsDk458RrQxticM/edit?usp=drive_link"
   }
 }

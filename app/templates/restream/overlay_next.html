@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Overlay — Next</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='overlay/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename=overlay_pack['css']['next']) }}">
+</head>
+
+<body class="overlay overlay-next {% if next %}has-next{% else %}no-next{% endif %}"
+      data-pack="{{ overlay_pack['slug'] }}">
+
+  <div class="overlay-root">
+    <div class="overlay-background"></div>
+
+    <div class="next-texts">
+
+      <!-- Toujours affiché -->
+      <div class="next-tournament">
+        {{ tournament_name }}
+      </div>
+
+      {% if next %}
+        <!-- Match prévu -->
+        <div class="next-message">
+          Merci d'avoir suivi - Prochain Match
+        </div>
+
+        <div class="next-player next-player-left">
+          {{ next.left_name }}
+        </div>
+
+        <div class="next-player next-player-right">
+          {{ next.right_name }}
+        </div>
+
+        <div class="next-label">
+          {{ next.label }}
+        </div>
+
+        <div class="next-datetime">
+          {{ next.datetime_label }} (heure française)
+        </div>
+
+      {% else %}
+        <!-- Pas de match prévu -->
+        <div class="next-message">
+          Merci d'avoir suivi
+        </div>
+
+        <div class="next-waiting">
+          Prochain match en attente de programmation
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</body>
+</html>

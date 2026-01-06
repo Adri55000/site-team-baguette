@@ -1,0 +1,105 @@
+/* static/overlay/packs/default/next.css */
+@font-face {
+  font-family: "KG Red Hands";
+  src: url("/static/overlay/packs/default/fonts/KGRedHands.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+/* ------------------------------ */
+/* BACKGROUNDS (2 assets)         */
+/* ------------------------------ */
+
+.overlay-next.has-next .overlay-background {
+  background-image: url("/static/overlay/packs/ssr-s4/assets/s4_next.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.overlay-next.no-next .overlay-background {
+  background-image: url("/static/overlay/packs/ssr-s4/assets/s4_next_none.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* ------------------------------ */
+/* TEXT LAYER                     */
+/* ------------------------------ */
+
+.next-texts {
+  position: absolute;
+  inset: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+}
+
+/* Tout centré, sauf joueurs */
+.next-tournament,
+.next-message,
+.next-label,
+.next-datetime,
+.next-waiting {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ------------------------------ */
+/* POSITIONS (à ajuster)          */
+/* ------------------------------ */
+
+/* Titre tournoi */
+.next-tournament {
+  top: 47%;
+  font-size: clamp(48px, 2.6vw, 48px);
+  font-weight: 600;
+}
+
+/* Ligne fixe "Merci d'avoir suivi..." */
+.next-message {
+  top: 54%;
+  font-size: clamp(32px, 1.8vw, 34px);
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Joueurs sur la barre VS (dessinée dans l'asset) */
+.next-player {
+  position: absolute;
+  top: 69%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: clamp(22px, 2.2vw, 40px);
+  font-weight: 700;
+}
+
+/* mêmes réglages que ton intro : commence par 39/61 */
+.next-player-left  { left: 38%; }
+.next-player-right { left: 62%; }
+
+/* Bas : label + date */
+.next-label {
+  top: 81%;
+  font-size: clamp(18px, 1.9vw, 34px);
+  font-weight: 600;
+}
+
+.next-datetime {
+  top: 86%;
+  font-size: clamp(16px, 1.6vw, 30px);
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Variante no-next */
+.next-waiting {
+  top: 66%;
+  font-size: clamp(18px, 1.8vw, 34px);
+  font-weight: 500;
+  opacity: 0.95;
+}
+.next-texts { font-family: "KG Red Hands", sans-serif; }

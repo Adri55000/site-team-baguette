@@ -8,6 +8,8 @@
 <div class="tracker-slots-grid">
 
   {% for p in tracker.session["participants"] %}
+  
+	{% if overlay_slot is not defined or p.slot == overlay_slot %}
     <div class="tracker-slot">
 
       {# Label du participant #}
@@ -25,6 +27,7 @@
       ) }}
 
     </div>
+  {% endif %}
   {% endfor %}
 
 </div>

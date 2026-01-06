@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Overlay – {{ restream.title }}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='overlay/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename=overlay_pack['css']['live']) }}">
+
+  {% if tracker and tracker.frontend %}
+    <link rel="stylesheet" href="{{ url_for('static', filename=tracker.frontend.css) }}">
+  {% endif %}
+</head>
+
+<body class="overlay overlay-live" data-pack="{{ overlay_pack['slug'] }}">
+  <div class="overlay-root">
+    <div class="overlay-background"></div>
+
+    <!-- Textes -->
+    <div class="live-texts">
+      <div class="live-player live-player-left">{{ live.left_name }}</div>
+      <div class="live-player live-player-right">{{ live.right_name }}</div>
+
+      <div class="live-title">{{ live.title }}</div>
+
+      <div class="live-commentators">
+	  {% if live.commentator_1 %}
+		<div class="live-commentator live-commentator-left">
+		  {{ live.commentator_1 }}
+		</div>
+	  {% endif %}
+
+	  {% if live.commentator_2 %}
+		<div class="live-commentator live-commentator-right">
+		  {{ live.commentator_2 }}
+		</div>
+	  {% endif %}
+	</div>
+
+    <!-- Trackers (2 slots) -->
+    {% if tracker and tracker.session %}
+      <div class="live-trackers">
+        <div class="live-tracker live-tracker-left" data-slot="tracker-1">
+          {% with overlay_slot=1 %}
+            {% include tracker.frontend.template_block %}
+          {% endwith %}
+        </div>
+
+        <div class="live-tracker live-tracker-right" data-slot="tracker-2">
+          {% with overlay_slot=2 %}
+            {% include tracker.frontend.template_block %}
+          {% endwith %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if tracker %}
+    <script>
+      window.TRACKER_CATALOG = {{ tracker.catalog | tojson }};
+      window.TRACKER_STREAM_URL = {{ tracker.stream_url | tojson }};
+      window.TRACKER_USE_STORAGE = false;
+    </script>
+    <script src="{{ url_for('static', filename=tracker.frontend.js) }}"></script>
+  {% endif %}
+</body>
+</html>

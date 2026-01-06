@@ -8,7 +8,7 @@ import time
 from flask_login import current_user
 from app.database import get_db
 from shutil import copyfile
-
+import re
 from datetime import datetime
 
 from app.auth.utils import login_required
@@ -19,7 +19,8 @@ from app.modules.tracker.base import ensure_session_restream, save_session_restr
 from app.modules.indices.registry import get_available_indices_templates, is_valid_indices_template, get_indices_template_path
 from app.modules.tracker.registry import get_available_trackers, get_tracker_definition, is_valid_tracker_type
 from app.modules.tracker.presets import list_presets, load_preset
-
+from app.restream.queries import get_active_restream_by_slug, get_match_teams, get_next_planned_match_for_overlay, simplify_restream_title, split_commentators
+from app.modules.overlay.registry import resolve_overlay_pack_for_match
 
 # === Dossiers ===
 
@@ -1101,122 +1102,6 @@ def restream_tracker_stream(slug: str):
     headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     return Response(event_stream(), mimetype="text/event-stream", headers=headers)
 
-@restream_bp.get("/<slug>/overlay")
-def restream_overlay(slug: str):
-    db = get_db()
-
-    restream = db.execute(
-        """
-        SELECT
-            id,
-            slug,
-            title,
-            match_id,
-            is_active,
-            tracker_type
-        FROM restreams
-        WHERE slug = ? AND is_active = 1
-        """,
-        (slug,),
-    ).fetchone()
-
-    if not restream:
-        abort(404)
-
-    # --------------------------------------------------------------
-    # Tracker désactivé → overlay vide / 404
-    # --------------------------------------------------------------
-    if restream["tracker_type"] == "none":
-        abort(404)
-
-    tracker_type = restream["tracker_type"]
-
-    # --------------------------------------------------------------
-    # Récupération définition tracker
-    # --------------------------------------------------------------
-    try:
-        tracker_def = get_tracker_definition(tracker_type)
-    except KeyError:
-        abort(500)  # incohérence DB
-
-    # --------------------------------------------------------------
-    # Participants (teams du match)
-    # --------------------------------------------------------------
-    teams = db.execute(
-        """
-        SELECT t.id AS team_id, t.name AS team_name
-        FROM match_teams mt
-        JOIN teams t ON t.id = mt.team_id
-        WHERE mt.match_id = ?
-        ORDER BY mt.team_id ASC
-        """,
-        (restream["match_id"],),
-    ).fetchall()
-
-    participants_count = max(1, len(teams))
-
-    # --------------------------------------------------------------
-    # Session tracker (création si absente)
-    # --------------------------------------------------------------
-    existing_session = load_session_restream(int(restream["id"]))
-
-    session = ensure_session_restream(
-        tracker_type=tracker_type,
-        restream_id=int(restream["id"]),
-        restream_slug=restream["slug"],
-        preset_factory=tracker_def["default_preset"],
-        participants_count=participants_count,
-    )
-
-    # --------------------------------------------------------------
-    # Injection labels / team_id UNIQUEMENT à la création
-    # --------------------------------------------------------------
-    if existing_session is None:
-        for i, p in enumerate(session.get("participants", [])):
-            p["slot"] = i + 1
-
-            if i < len(teams):
-                name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
-                p["team_id"] = int(teams[i]["team_id"])
-                p["label"] = name
-            else:
-                p.setdefault("team_id", 0)
-                p.setdefault("label", f"Slot {i+1}")
-
-        save_session_restream(int(restream["id"]), session)
-
-    # --------------------------------------------------------------
-    # Payload tracker (read-only)
-    # --------------------------------------------------------------
-    tracker_payload = {
-        "tracker_type": tracker_type,
-        "catalog": tracker_def["catalog"](),
-        "session": session,
-        "use_storage": False,
-        "frontend": tracker_def["frontend"],
-        # SSE stream utilisé par OBS
-        "stream_url": url_for(
-            "restream.restream_tracker_stream",
-            slug=restream["slug"],
-        ),
-        # update_url présent mais non utilisé (overlay read-only)
-        "update_url": url_for(
-            "restream.restream_tracker_update",
-            slug=restream["slug"],
-        ),
-    }
-
-    # IMPORTANT : overlay = toujours read-only
-    can_edit = False
-
-    return render_template(
-        "restream/overlay.html",
-        restream=restream,
-        restream_slug=slug,
-        tracker=tracker_payload,
-        can_edit=can_edit,
-    )
-
 @restream_bp.get("/<slug>/tracker/presets")
 @login_required
 @role_required("restreamer")
@@ -1368,3 +1253,250 @@ def restream_tracker_reset(slug: str):
 
     flash("Tracker reset (preset par défaut).", "success")
     return redirect(url_for("restream.restream_live", slug=slug))
+
+###############################################
+#############  OVERLAYS #######################
+###############################################
+
+@restream_bp.get("/<slug>/overlay")
+def restream_overlay(slug: str):
+    db = get_db()
+
+    restream = db.execute(
+        """
+        SELECT
+            id,
+            slug,
+            title,
+            match_id,
+            is_active,
+            commentator_name,
+            tracker_type
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
+
+    if not restream:
+        abort(404)
+
+    # --------------------------------------------------------------
+    # Tracker désactivé → overlay vide / 404
+    # --------------------------------------------------------------
+    if restream["tracker_type"] == "none":
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+
+    # --------------------------------------------------------------
+    # Récupération définition tracker
+    # --------------------------------------------------------------
+    try:
+        tracker_def = get_tracker_definition(tracker_type)
+    except KeyError:
+        abort(500)  # incohérence DB
+
+    # --------------------------------------------------------------
+    # Participants (teams du match)
+    # --------------------------------------------------------------
+    teams = get_match_teams(db, restream["match_id"])
+
+    participants_count = max(1, len(teams))
+
+    # --------------------------------------------------------------
+    # Session tracker (création si absente)
+    # --------------------------------------------------------------
+    existing_session = load_session_restream(int(restream["id"]))
+
+    session = ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        preset_factory=tracker_def["default_preset"],
+        participants_count=participants_count,
+    )
+
+    # --------------------------------------------------------------
+    # Injection labels / team_id UNIQUEMENT à la création
+    # --------------------------------------------------------------
+    if existing_session is None:
+        for i, p in enumerate(session.get("participants", [])):
+            p["slot"] = i + 1
+
+            if i < len(teams):
+                name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
+                p["team_id"] = int(teams[i]["team_id"])
+                p["label"] = name
+            else:
+                p.setdefault("team_id", 0)
+                p.setdefault("label", f"Slot {i+1}")
+
+        save_session_restream(int(restream["id"]), session)
+
+    # --------------------------------------------------------------
+    # Payload tracker (read-only)
+    # --------------------------------------------------------------
+    tracker_payload = {
+        "tracker_type": tracker_type,
+        "catalog": tracker_def["catalog"](),
+        "session": session,
+        "use_storage": False,
+        "frontend": tracker_def["frontend"],
+        # SSE stream utilisé par OBS
+        "stream_url": url_for(
+            "restream.restream_tracker_stream",
+            slug=restream["slug"],
+        ),
+        # update_url présent mais non utilisé (overlay read-only)
+        "update_url": url_for(
+            "restream.restream_tracker_update",
+            slug=restream["slug"],
+        ),
+    }
+    
+    left = (teams[0]["team_name"] if len(teams) > 0 else "Slot 1") or "Slot 1"
+    right = (teams[1]["team_name"] if len(teams) > 1 else "Slot 2") or "Slot 2"
+
+    c1, c2 = split_commentators(restream["commentator_name"])
+
+    live_payload = {
+        "left_name": left.replace("Solo - ", ""),
+        "right_name": right.replace("Solo - ", ""),
+        "title": simplify_restream_title(restream["title"]),
+        "commentator_1": c1,
+        "commentator_2": c2,
+    }
+
+
+    # IMPORTANT : overlay = toujours read-only
+    can_edit = False
+    
+    overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
+
+    return render_template(
+        "restream/overlay_live.html",
+        restream=restream,
+        restream_slug=slug,
+        tracker=tracker_payload,
+        can_edit=can_edit,
+        overlay_pack=overlay_pack,
+        live=live_payload,
+    )
+    
+@restream_bp.get("/<slug>/overlay/intro")
+def restream_overlay_intro(slug: str):
+    db = get_db()
+    restream = get_active_restream_by_slug(db, slug)
+    if not restream:
+        abort(404)
+
+    teams = get_match_teams(db, restream["match_id"])
+
+    left = (teams[0]["team_name"] if len(teams) > 0 else "Slot 1") or "Slot 1"
+    right = (teams[1]["team_name"] if len(teams) > 1 else "Slot 2") or "Slot 2"
+
+    # tournament name
+    row = db.execute(
+        """
+        SELECT t.name AS tournament_name
+        FROM matches m
+        JOIN tournaments t ON t.id = m.tournament_id
+        WHERE m.id = ?
+        """,
+        (restream["match_id"],),
+    ).fetchone()
+
+    tournament_name = row["tournament_name"] if row and row["tournament_name"] else ""
+
+    overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
+    
+    display_title = simplify_restream_title(restream["title"])
+
+    return render_template(
+        "restream/overlay_intro.html",
+        restream=restream,
+        restream_slug=slug,
+        intro={
+            "tournament_name": tournament_name,
+            "match_label": display_title,  # on réutilise le title comme label
+            "left_name": left.replace("Solo - ", ""),
+            "right_name": right.replace("Solo - ", ""),
+        },
+        overlay_pack=overlay_pack,
+    )
+
+
+MONTHS_FR = [
+    "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+]
+DAYS_FR = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+
+
+def _format_dt_fr(scheduled_at: str | None) -> str:
+    if not scheduled_at:
+        return ""
+    # SQLite renvoie souvent "YYYY-MM-DD HH:MM:SS"
+    try:
+        dt = datetime.fromisoformat(scheduled_at.replace("Z", "").replace("T", " "))
+    except ValueError:
+        return scheduled_at
+
+    day = DAYS_FR[dt.weekday()].capitalize()
+    month = MONTHS_FR[dt.month - 1].capitalize()
+    return f"{day} {dt.day} {month} - {dt:%Hh%M}"
+
+
+@restream_bp.get("/<slug>/overlay/next")
+def restream_overlay_next(slug: str):
+    db = get_db()
+    restream = get_active_restream_by_slug(db, slug)
+    if not restream:
+        abort(404)
+
+    # tournoi courant (pour afficher le titre, même si next_match=None)
+    row = db.execute(
+        """
+        SELECT
+            t.id AS tournament_id,
+            t.name AS tournament_name
+        FROM matches m
+        JOIN tournaments t ON t.id = m.tournament_id
+        WHERE m.id = ?
+        """,
+        (restream["match_id"],),
+    ).fetchone()
+
+    tournament_id = row["tournament_id"] if row else None
+    tournament_name = row["tournament_name"] if row and row["tournament_name"] else ""
+
+    overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
+
+    next_match = get_next_planned_match_for_overlay(db, tournament_id=tournament_id, exclude_match_id=restream["match_id"])
+
+    # Payload affichage (ou None)
+    next_payload = None
+    if next_match:
+        teams = next_match.get("teams") or []
+        left = (teams[0]["team_name"] if len(teams) > 0 else "Slot 1") or "Slot 1"
+        right = (teams[1]["team_name"] if len(teams) > 1 else "Slot 2") or "Slot 2"
+
+        label_raw = next_match.get("restream_title") or "Prochain match"
+        label = simplify_restream_title(label_raw) or label_raw
+
+        next_payload = {
+            "left_name": left.replace("Solo - ", ""),
+            "right_name": right.replace("Solo - ", ""),
+            "label": label,
+            "datetime_label": _format_dt_fr(next_match.get("scheduled_at")),
+        }
+
+    return render_template(
+        "restream/overlay_next.html",
+        restream=restream,
+        restream_slug=slug,
+        overlay_pack=overlay_pack,
+        tournament_name=tournament_name,
+        next=next_payload,
+    )

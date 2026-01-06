@@ -1,0 +1,77 @@
+/* static/overlay/packs/default/intro.css */
+@font-face {
+  font-family: "KG Red Hands";
+  src: url("/static/overlay/packs/default/fonts/KGRedHands.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+/* Fond */
+.overlay-background {
+  background-image: url("/static/overlay/packs/ssr-s4/assets/s4_intro.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Layer texte */
+.intro-texts {
+  position: absolute;
+  inset: 0;
+}
+
+/* ------------------------------ */
+/* Titre tournoi + label match    */
+/* ------------------------------ */
+
+.intro-tournament,
+.intro-match-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+  white-space: nowrap;
+}
+
+.intro-tournament {
+  top: 47%;
+  font-size: clamp(48px, 2.6vw, 48px);
+  /*font-weight: 800;*/
+}
+
+.intro-match-label {
+  top: 54%;
+  font-size: clamp(36px, 1.8vw, 34px);
+  /*font-weight: 700;*/
+  opacity: 0.95;
+}
+
+/* ------------------------------ */
+/* Noms joueurs (sur la barre)    */
+/* ------------------------------ */
+
+.intro-player {
+  position: absolute;
+  top: 69%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.85);
+  font-size: clamp(22px, 2.2vw, 40px);
+  /*font-weight: 800;*/
+  white-space: nowrap;
+}
+
+/* Centres approximatifs des 2 "barres" autour du VS */
+.intro-player-left  { left: 38%; }
+.intro-player-right { left: 62%; }
+
+.intro-tournament,
+.intro-match-label,
+.intro-player {
+  font-family: "KG Red Hands", sans-serif;
+    font-weight: 500;              /* tentera de s'appliquer si dispo */
+  -webkit-text-stroke: 0.3px rgba(0,0,0,0.35); /* optionnel: améliore lisibilité sans épaissir */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}

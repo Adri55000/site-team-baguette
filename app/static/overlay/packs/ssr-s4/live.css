@@ -1,0 +1,122 @@
+@font-face {
+  font-family: "KG Red Hands";
+  src: url("/static/overlay/packs/default/fonts/KGRedHands.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+/* Background asset */
+.overlay-live .overlay-background{
+  background-image: url("/static/overlay/packs/ssr-s4/assets/s4_live.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Text layer */
+.live-texts{
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+}
+
+/* Joueurs (haut gauche / haut droite) */
+.live-player{
+  position: absolute;
+  top: 50.8%;
+  font-size: clamp(22px, 2.2vw, 32px);
+  font-weight: 500;
+  white-space: nowrap;
+}
+/* Noms des joueurs */
+.overlay-live .live-player {
+  white-space: nowrap;
+}
+
+/* Joueur gauche : aligné à gauche */
+.overlay-live .live-player-left {
+  text-align: left;
+}
+
+/* Joueur droit : aligné à droite */
+.overlay-live .live-player-right {
+  text-align: right;
+}
+.live-player-left{ left: 26.5%; transform: translateX(0); }
+.live-player-right{ left: 73.5%; transform: translateX(-100%); }
+
+/* Titre match (centre) */
+.live-title{
+  position: absolute;
+  top: 60.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(18px, 1.8vw, 32px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Commentateurs (bas centre) */
+/* Commentateurs */
+.live-commentators {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Commun */
+.live-commentator {
+  position: absolute;
+  bottom: 5.25%;
+  font-size: clamp(16px, 1.8vw, 24px);
+  font-weight: 600;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+}
+
+/* Gauche */
+.live-commentator-left {
+  right: 62.5%;
+  text-align: right;
+}
+
+/* Droite */
+.live-commentator-right {
+  left: 62.5%;
+  text-align: left;
+}
+
+
+/* Trackers: 2 rectangles bas gauche/droite */
+.live-trackers{ position: absolute; inset: 0; }
+
+.live-tracker{
+  position: absolute;
+  top: 50%;
+  width: 23.5%;
+  height: 45%;
+  overflow: hidden; /* important */
+}
+
+.live-tracker-left{ left: 3.5%; }
+.live-tracker-right{ right: 2.25%; }
+
+.live-tournament,
+.live-title,
+.live-commentator,
+.live-player {
+  font-family: "KG Red Hands", sans-serif;
+    font-weight: 500;              /* tentera de s'appliquer si dispo */
+  -webkit-text-stroke: 0.3px rgba(0,0,0,0.35); /* optionnel: améliore lisibilité sans épaissir */
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+/* Overlay live : on masque le titre/label participant du tracker */
+.overlay-live .tracker-slot > h2 {
+  display: none;
+}
+/* Scale globale des trackers dans l’overlay live */
+.overlay-live .live-tracker {
+  transform: scale(0.95);
+  transform-origin: top left;
+}
