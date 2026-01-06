@@ -297,3 +297,26 @@
   object-fit: contain;
   display: block;
 }
+
+.tracker-slot {
+  position: relative;
+  width: fit-content;
+}
+
+.tracker-go-toggle {
+  position: absolute;
+  right: -52px;      /* à ajuster */
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.tracker-go-toggle__img {
+  width: 44px;       /* à ajuster */
+  height: auto;
+  display: block;
+}

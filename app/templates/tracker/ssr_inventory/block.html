@@ -26,6 +26,22 @@
           tracker.update_url
       ) }}
 
+		{# Go Mode toggle (UI séparée) #}
+        <button
+          type="button"
+          class="tracker-go-toggle"
+          data-go-slot="{{ p.slot }}"
+          aria-label="Go mode"
+        >
+          <img
+            class="tracker-go-toggle__img"
+            data-go-asset-0="/static/{{ tracker.catalog.asset_dir }}/go0.png"
+            data-go-asset-1="/static/{{ tracker.catalog.asset_dir }}/go1.png"
+            src="/static/{{ tracker.catalog.asset_dir }}/go{{ 1 if p.gomode else 0 }}.png"
+            alt=""
+          >
+        </button>
+
     </div>
   {% endif %}
   {% endfor %}

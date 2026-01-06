@@ -58,9 +58,25 @@ def build_participant_from_preset(preset_participant: Dict[str, Any]) -> Dict[st
     Construit un participant runtime à partir du preset.
     On copie TOUTES les clés du participant (shape spécifique au jeu),
     pour éviter de hardcoder un format unique.
+
+    + Normalisation légère : gomode (compat presets legacy)
     """
-    # shallow copy suffisant (les sous-dicts sont du JSON simple)
-    return dict(preset_participant)
+    p = dict(preset_participant)  # shallow copy suffisant
+
+    # --- gomode: default + sanitation ---
+    gomode = p.get("gomode", 0)
+
+    # Accepte bool/int, clamp vers 0/1
+    if isinstance(gomode, bool):
+        gomode = 1 if gomode else 0
+    elif isinstance(gomode, int):
+        gomode = 1 if gomode == 1 else 0
+    else:
+        gomode = 0
+
+    p["gomode"] = gomode
+    return p
+
 
 
 def build_session_from_preset(

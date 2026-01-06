@@ -53,6 +53,29 @@
         </div>
       </div>
     {% endif %}
+	{% if tracker and tracker.session %}
+	  <div class="overlay-go-modes">
+
+		{% for p in tracker.session.participants %}
+		  <div
+			class="overlay-go-mode overlay-go-mode--slot{{ p.slot }}
+				   {% if p.gomode %}is-active{% endif %}"
+			data-slot="{{ p.slot }}"
+		  >
+			<video
+			  class="overlay-go-video"
+			  src="/static/{{ tracker.catalog.asset_dir }}/go1.webm"
+			  autoplay
+			  loop
+			  muted
+			  playsinline
+			></video>
+		  </div>
+		{% endfor %}
+
+	  </div>
+	{% endif %}
+
   </div>
 
   {% if tracker %}

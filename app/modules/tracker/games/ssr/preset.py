@@ -61,6 +61,7 @@ def _build_participant_state(catalog: Dict[str, Any]) -> Dict[str, Any]:
             items[item_id] = 0
 
     return {
+        "gomode": 0,
         "items": items,
         "wallet_bonus": 0,
         "dungeons": {

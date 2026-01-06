@@ -97,6 +97,8 @@ def list_presets(tracker_type: str) -> List[Dict[str, Any]]:
 def load_preset(tracker_type: str, preset_slug: str) -> Dict[str, Any]:
     """
     Load and return a preset.
+
+    + Normalisation légère : gomode sur le participant (compat presets legacy)
     """
     path = _preset_path(tracker_type, preset_slug)
     if not path.exists():
@@ -108,7 +110,22 @@ def load_preset(tracker_type: str, preset_slug: str) -> Dict[str, Any]:
     if data.get("tracker_type") != tracker_type:
         raise ValueError("Preset tracker_type mismatch")
 
+    # --- gomode: default + sanitation ---
+    participant = data.get("participant")
+    if isinstance(participant, dict):
+        gomode = participant.get("gomode", 0)
+
+        if isinstance(gomode, bool):
+            gomode = 1 if gomode else 0
+        elif isinstance(gomode, int):
+            gomode = 1 if gomode == 1 else 0
+        else:
+            gomode = 0
+
+        participant["gomode"] = gomode
+
     return data
+
 
 
 def save_preset(tracker_type: str, preset_slug: str, data: Dict[str, Any]) -> None:

@@ -33,6 +33,23 @@
       instancesBySlot.set(api.slot, api);
     }
   });
+  
+  document.addEventListener("click", (ev) => {
+	  const btn = ev.target.closest(".tracker-go-toggle[data-go-slot]");
+	  if (!btn) return;
+
+	  ev.preventDefault();
+	  ev.stopPropagation();
+
+	  const slot = Number(btn.dataset.goSlot);
+	  if (!Number.isFinite(slot)) return;
+
+	  const api = instancesBySlot.get(slot);
+	  if (!api || typeof api.toggleGoMode !== "function") return;
+
+	  api.toggleGoMode();
+	});
+
 
   // One SSE connection for the whole page (session-wide)
   // Disabled in preset mode
@@ -342,6 +359,28 @@
         img.classList.toggle("is-on", on);
       });
     }
+	
+	function renderGoMode() {
+	  const slotContainer = root.closest(".tracker-slot");
+	  if (!slotContainer) return;
+
+	  const btn = slotContainer.querySelector(
+		`.tracker-go-toggle[data-go-slot="${slot}"]`
+	  );
+	  if (!btn) return;
+
+	  const img = btn.querySelector("img");
+	  if (!img) return;
+
+	  const v = Number(state.gomode || 0) ? 1 : 0;
+
+	  const src = img.getAttribute(
+		v ? "data-go-asset-1" : "data-go-asset-0"
+	  );
+	  if (src) img.src = src;
+
+	  btn.dataset.goValue = String(v);
+	}
 
     function renderAll() {
       if (state.items) {
@@ -359,6 +398,7 @@
 
       renderComposite("tablets");
       renderComposite("triforces");
+	  renderGoMode();
     }
 
     // ----- Update logic -----
@@ -607,6 +647,17 @@
       cycleLevel(itemId, delta);
       return true;
     }
+	
+	function toggleGoMode() {
+	  if (!CAN_EDIT) return;
+
+	  const cur = Number(state.gomode || 0) ? 1 : 0;
+	  state.gomode = cur ? 0 : 1;
+
+	  renderGoMode();
+	  afterChangePersist();
+	}
+
 
     function afterChangePersist() {
       saveLocal();
@@ -650,6 +701,19 @@
       try {
         state = JSON.parse(JSON.stringify(participant));
         renderAll();
+		
+		// --- Overlay Go Mode ---
+		const goEl = document.querySelector(
+		  `.overlay-go-mode[data-slot="${participant.slot}"]`
+		);
+
+		if (goEl) {
+		  goEl.classList.toggle(
+			"is-active",
+			Number(participant.gomode) === 1
+		  );
+		}
+		
         // Keep localStorage in sync (even in read-only, helps refresh keep last seen state)
         saveLocal();
       } finally {
@@ -664,6 +728,6 @@
       exportPresetState();
     }
 
-    return { slot, applyRemoteParticipant };
+    return { slot, applyRemoteParticipant, toggleGoMode };
   }
 })();
