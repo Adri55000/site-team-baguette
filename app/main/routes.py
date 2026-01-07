@@ -5,6 +5,7 @@ from app.auth.utils import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
 import math
+from app.modules.tournaments import ensure_public_tournament
 
 main_bp = Blueprint("main", __name__)
 
