@@ -252,3 +252,106 @@
   gap: 10px;
   margin-top: 16px;
 }
+
+/* =========================================================
+   LIVE – ACTIONS BAR (darkmode friendly)
+========================================================= */
+
+.live-actions {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  flex-wrap: wrap;
+}
+
+/* Zone gauche: boutons + toggles */
+.live-actions__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 320px;
+}
+
+/* Toggle buttons pack */
+.live-actions__toggles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Racetime form à droite */
+.live-actions__racetime {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 520px) auto;
+  align-items: center;
+  gap: 10px 12px;
+}
+
+/* Label discret */
+.live-actions__label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  opacity: 0.95;
+  white-space: nowrap;
+}
+
+/* Input dark */
+.live-actions__racetime input[type="text"],
+#racetime_room {
+  appearance: none;
+  -webkit-appearance: none;
+
+  height: 40px;
+  padding: 0 12px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-2);
+  color: var(--text-primary);
+
+  outline: none;
+  box-shadow: 0 0 0 0 rgba(255,255,255,0);
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.live-actions__racetime input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.live-actions__racetime input:hover {
+  background: var(--bg-hover);
+}
+
+.live-actions__racetime input:focus {
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+/* Mobile: racetime passe en pleine largeur, label au dessus */
+@media (max-width: 860px) {
+  .live-actions__racetime {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label label"
+      "input button";
+  }
+
+  .live-actions__label { grid-area: label; }
+  .live-actions__racetime input { grid-area: input; width: 100%; }
+  .live-actions__racetime button { grid-area: button; }
+}

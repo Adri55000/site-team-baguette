@@ -23,33 +23,55 @@ Live – {{ restream.title }}
     <h2>Tracking</h2>
 
     {% if can_manage_tracker %}
-      <div class="admin-actions" style="margin-bottom: 12px; display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn btn-primary"
-           href="{{ url_for('restream.restream_tracker_presets', slug=restream_slug) }}">
-          Charger un preset
-        </a>
+	  <section class="live-actions">
 
-        <form method="post"
-              action="{{ url_for('restream.restream_tracker_reset', slug=restream_slug) }}"
-              onsubmit="return confirm('Reset le tracker (preset par défaut) ?');">
-          <button class="btn btn-danger" type="submit">Reset tracker</button>
-        </form>
-		
-		{% if can_manage_tracker and tracker and tracker.session %}
-		  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
-			{% for p in tracker.session.participants %}
-			  <form method="post"
-					action="{{ url_for('restream.restream_toggle_final_time', slug=restream_slug, slot=p.slot) }}">
-				<button class="btn {% if p.show_final_time %}btn-success{% else %}btn-secondary{% endif %}"
-						type="submit">
-				  Temps final J{{ p.slot }} : {% if p.show_final_time %}ON{% else %}OFF{% endif %}
-				</button>
-			  </form>
-			{% endfor %}
-		  </div>
-		{% endif %}
-      </div>
-    {% endif %}
+		<div class="live-actions__left">
+		  <a class="btn btn-primary"
+			 href="{{ url_for('restream.restream_tracker_presets', slug=restream_slug) }}">
+			Charger un preset
+		  </a>
+
+		  <form method="post"
+				action="{{ url_for('restream.restream_tracker_reset', slug=restream_slug) }}"
+				onsubmit="return confirm('Reset le tracker (preset par défaut) ?');">
+			<button class="btn btn-danger" type="submit">Reset tracker</button>
+		  </form>
+
+		  {% if tracker and tracker.session %}
+			<div class="live-actions__toggles">
+			  {% for p in tracker.session.participants %}
+				<form method="post"
+					  action="{{ url_for('restream.restream_toggle_final_time', slug=restream_slug, slot=p.slot) }}">
+				  <button class="btn {% if p.show_final_time %}btn-success{% else %}btn-secondary{% endif %}"
+						  type="submit">
+					Temps final J{{ p.slot }} : {% if p.show_final_time %}ON{% else %}OFF{% endif %}
+				  </button>
+				</form>
+			  {% endfor %}
+			</div>
+		  {% endif %}
+		</div>
+
+		<form method="post"
+			  action="{{ url_for('restream.live_set_room_racetime', slug=restream.slug) }}"
+			  class="live-actions__racetime">
+		  <label class="live-actions__label" for="racetime_room">Room racetime</label>
+
+		  <input
+			id="racetime_room"
+			name="racetime_room"
+			type="text"
+			value="{{ match.racetime_room or '' }}"
+			placeholder="lozssr/puzzled-pumpkin-1332"
+			autocomplete="off"
+			spellcheck="false"
+		  >
+
+		  <button type="submit" class="btn btn-secondary">Enregistrer</button>
+		</form>
+
+	  </section>
+	{% endif %}
 
     {% include tracker.frontend.template_block %}
 

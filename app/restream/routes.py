@@ -950,10 +950,21 @@ def restream_live(slug: str):
             ),
             "frontend": tracker_def["frontend"],
         }
+        
+    match = db.execute(
+        """
+        SELECT id, racetime_room
+        FROM matches
+        WHERE id = ?
+        """,
+        (restream["match_id"],),
+    ).fetchone()
+
 
     return render_template(
         "restream/live.html",
         restream=restream,
+        match=match,
         restream_slug=slug,
         indices=indices_data,
         can_edit=can_edit,
@@ -1317,7 +1328,48 @@ def restream_toggle_final_time(slug: str, slot: int):
     )
     return redirect(url_for("restream.restream_live", slug=slug))
 
+@restream_bp.post("/<slug>/live/set-room-racetime")
+@login_required
+@role_required("restreamer")
+def live_set_room_racetime(slug: str):
+    db = get_db()
 
+    restream = db.execute(
+        """
+        SELECT id, slug, match_id
+        FROM restreams
+        WHERE slug = ? AND is_active = 1
+        """,
+        (slug,),
+    ).fetchone()
+
+    if not restream:
+        abort(404)
+
+    room = (request.form.get("racetime_room") or "").strip()
+
+    # petite validation “safe” (évite les valeurs vides / trop longues)
+    if not room:
+        flash("Room racetime vide.", "error")
+        return redirect(url_for("restream.restream_live", slug=slug))
+
+    if len(room) > 200:
+        flash("Room racetime trop longue.", "error")
+        return redirect(url_for("restream.restream_live", slug=slug))
+
+    db.execute(
+        """
+        UPDATE matches
+        SET racetime_room = ?
+        WHERE id = ?
+        """,
+        (room, restream["match_id"]),
+    )
+    db.commit()
+
+    flash("Room racetime enregistrée sur le match.", "success")
+    return redirect(url_for("restream.restream_live", slug=slug))
+    
 ###############################################
 #############  OVERLAYS #######################
 ###############################################

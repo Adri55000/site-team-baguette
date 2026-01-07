@@ -2,7 +2,7 @@
   const root = document.querySelector(".interview-ranking");
   if (!root) return;
 
-  const POLL_MS = 2000;
+  const POLL_MS = 5000;
 
   // Recommandé : passer l'URL depuis le template:
   // <div class="interview-ranking" data-url="..."></div>
