@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Résultats du match{% endblock %}
+
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+<script defer src="{{ url_for('static', filename='js/api/match_results_racetime.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -12,6 +14,34 @@
 <p class="admin-subtitle">
     Match #{{ match.id }}
 </p>
+
+{% if match.racetime_room %}
+    <p class="admin-subtitle">
+        Racetime :
+        <a href="{{ match.racetime_room }}" target="_blank" rel="noopener">
+            {{ match.racetime_room }}
+        </a>
+    </p>
+
+    <div class="admin-actions-toolbar"
+         id="racetime-toolbar"
+         data-match-id="{{ match.id }}"
+         data-racetime-room="{{ match.racetime_room }}"
+         data-prefill-url="{{ url_for('admin.admin_match_results_racetime_prefill', match_id=match.id) }}">
+        <button type="button" class="btn btn-secondary" id="racetime-prefill-btn">
+            Pré-remplir depuis racetime
+        </button>
+
+        <a class="btn btn-secondary"
+           href="{{ match.racetime_room }}"
+           target="_blank"
+           rel="noopener">
+            Ouvrir racetime
+        </a>
+    </div>
+
+    <div id="racetime-feedback"></div>
+{% endif %}
 
 <form method="post" class="admin-card admin-form">
 
@@ -26,9 +56,7 @@
         <tbody>
         {% for t in teams %}
             <tr>
-                <td>
-                    {{ t["name"] | team_name }}
-                </td>
+                <td>{{ t["name"] | team_name }}</td>
 
                 <td>
                     <input type="text"
@@ -59,9 +87,7 @@
             <strong>Format accepté :</strong>
             <code>HH:MM:SS</code>, <code>DNF</code>, <code>DQ</code>
         </p>
-        <p>
-            Le classement est calculé automatiquement à l’enregistrement.
-        </p>
+        <p>Le classement est calculé automatiquement à l’enregistrement.</p>
     </div>
 
     <div class="admin-actions-footer">
@@ -70,19 +96,16 @@
         </button>
 
         {% if match.series_id %}
-		<a href="{{ url_for('admin.admin_confrontation_matches',
-                        series_id=match.series_id) }}"
-			class="btn btn-secondary">
-			Retour
-		</a>
-		{% else %}
-		<a href="{{ url_for('admin.admin_matches',
-                        tournament_id=match.tournament_id) }}"
-			class="btn btn-secondary">
-			Retour
-		</a>
-		{% endif %}
-
+            <a href="{{ url_for('admin.admin_confrontation_matches', series_id=match.series_id) }}"
+               class="btn btn-secondary">
+                Retour
+            </a>
+        {% else %}
+            <a href="{{ url_for('admin.admin_matches', tournament_id=match.tournament_id) }}"
+               class="btn btn-secondary">
+                Retour
+            </a>
+        {% endif %}
     </div>
 
 </form>

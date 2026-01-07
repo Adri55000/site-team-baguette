@@ -29,6 +29,7 @@
         <thead>
             <tr>
                 <th>Nom</th>
+				<th>Racetime</th>
                 <th>Créé le</th>
                 <th class="actions">Actions</th>
             </tr>
@@ -37,6 +38,13 @@
         {% for p in players %}
             <tr>
                 <td>{{ p.name }}</td>
+				<td>
+                    {% if p.racetime_user %}
+                        {{ p.racetime_user }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
                 <td>{{ p.created_at }}</td>
                 <td class="actions">
 					<a href="{{ url_for('admin.players_edit', player_id=p.id) }}"

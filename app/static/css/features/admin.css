@@ -371,3 +371,33 @@
   opacity: 0.85;
   font-size: 0.9rem;
 }
+
+.admin-help {
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: var(--color-text-muted, #666);
+    line-height: 1.4;
+}
+
+.admin-help code {
+    font-family: monospace;
+    font-size: 0.95em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+#racetime-feedback.admin-info,
+#racetime-feedback.admin-warning {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+#racetime-feedback.admin-info {
+  background: rgba(0,0,0,0.04);
+}
+
+#racetime-feedback.admin-warning {
+  background: rgba(255,0,0,0.06);
+}

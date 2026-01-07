@@ -75,6 +75,7 @@ def build_participant_from_preset(preset_participant: Dict[str, Any]) -> Dict[st
         gomode = 0
 
     p["gomode"] = gomode
+    p.setdefault("show_final_time", False)
     return p
 
 

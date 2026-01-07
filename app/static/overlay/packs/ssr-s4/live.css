@@ -105,6 +105,8 @@
 .live-tournament,
 .live-title,
 .live-commentator,
+.live-twitch,
+.live-time,
 .live-player {
   font-family: "KG Red Hands", sans-serif;
     font-weight: 500;              /* tentera de s'appliquer si dispo */
@@ -158,3 +160,84 @@
   height: auto;
   display: block;
 }
+/* -------------------------------------------------- */
+/* Commentators — mode SOLO (1 seul commentateur)      */
+/* -------------------------------------------------- */
+
+/* Si .live-commentators ne contient qu’un seul .live-commentator,
+   on le centre en bas. (Chromium/OBS OK avec :has) */
+.live-commentators:has(.live-commentator:only-child) .live-commentator {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  text-align: center;
+  bottom: 3%;
+}
+
+/* On neutralise les règles left/right spécifiques quand il n’y en a qu’un */
+.live-commentators:has(.live-commentator:only-child) .live-commentator-left,
+.live-commentators:has(.live-commentator:only-child) .live-commentator-right {
+  left: 50%;
+  right: auto;
+  text-align: center;
+}
+.overlay-root:has(
+  .live-commentators .live-commentator:only-child
+) .overlay-background {
+  background-image: url("/static/overlay/packs/ssr-s4/assets/s4_live_solo.png");
+}
+
+/* -------------------------------------------------- */
+/* Twitch + Temps (overlay live)                      */
+/* -------------------------------------------------- */
+
+/* Twitch (sous le nom joueur) */
+.live-twitch {
+  position: absolute;
+  top: 54.5%; /* sous .live-player (50.8%) */
+  font-size: clamp(14px, 1.4vw, 22px);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.live-twitch-left {
+  left: 27.5%;
+  text-align: left;
+  transform: translateX(0);
+}
+
+.live-twitch-right {
+  left: 72.5%;
+  text-align: right;
+  transform: translateX(-100%);
+}
+
+/* Temps final / statut (encore un cran en dessous) */
+.live-time {
+  position: absolute;
+  top: 46.0%;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.live-time-left {
+  left: 22%;
+  text-align: center;
+  transform: translateX(0);
+}
+
+.live-time-right {
+  left: 78%;
+  text-align: center;
+  transform: translateX(-100%);
+}
+
+/* Typo cohérente avec le reste */
+.live-twitch,
+.live-time {
+  font-family: "KG Red Hands", sans-serif;
+  -webkit-text-stroke: 0.3px rgba(0,0,0,0.35);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+.live-time.is-hidden { display: none; }

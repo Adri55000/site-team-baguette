@@ -28,6 +28,19 @@
                    required>
         </div>
 
+        <div class="admin-form-group">
+            <label for="racetime_user">Racetime user</label>
+            <input type="text"
+                   id="racetime_user"
+                   name="racetime_user"
+                   class="admin-input"
+                   value="{{ player.racetime_user if player and player.racetime_user else '' }}"
+                   placeholder="username#1234">
+            <p class="admin-help">
+                Identifiant racetime au format <code>username#1234</code> (optionnel).
+            </p>
+        </div>
+
         <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary">
                 Enregistrer

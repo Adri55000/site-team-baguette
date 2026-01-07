@@ -20,6 +20,31 @@
     <div class="live-texts">
       <div class="live-player live-player-left">{{ live.left_name | overlay_player_name}}</div>
       <div class="live-player live-player-right">{{ live.right_name | overlay_player_name}}</div>
+	  
+	  {# Twitch #}
+      {% if live.left_twitch %}
+        <div class="live-twitch live-twitch-left">{{ live.left_twitch }}</div>
+      {% endif %}
+      {% if live.right_twitch %}
+        <div class="live-twitch live-twitch-right">{{ live.right_twitch }}</div>
+      {% endif %}
+
+      {# Temps final / statut (rendu statique, piloté en JS) #}
+
+		{# Slot gauche #}
+		<div
+		  class="live-time live-time-left is-hidden"
+		  data-slot="1"
+		></div>
+
+		{# Slot droit #}
+		<div
+		  class="live-time live-time-right is-hidden"
+		  data-slot="2"
+		></div>
+
+
+
 
       <div class="live-title">{{ live.title }}</div>
 
@@ -36,7 +61,7 @@
 		</div>
 	  {% endif %}
 	</div>
-
+</div>
     <!-- Trackers (2 slots) -->
     {% if tracker and tracker.session %}
       <div class="live-trackers">
@@ -86,5 +111,117 @@
     </script>
     <script src="{{ url_for('static', filename=tracker.frontend.js) }}"></script>
   {% endif %}
+  
+  
+  <script>
+  const LIVE_DATA_URL = {{ url_for("restream.restream_overlay_live_data", slug=restream_slug) | tojson }};
+
+  function getTimeEl(slot) {
+    return document.querySelector('.live-time[data-slot="' + slot + '"]');
+  }
+
+  async function fetchTimesAndUpdate() {
+    try {
+      const r = await fetch(LIVE_DATA_URL, { cache: "no-store" });
+      const data = await r.json();
+
+      for (const slot of ["1", "2"]) {
+        const el = getTimeEl(slot);
+        if (!el) continue;
+
+        const slotData = (data.slots && data.slots[slot]) ? data.slots[slot] : {};
+        const time = (slotData.time || "").trim();
+		const status = (slotData.status || "").toLowerCase();
+
+		if (time) {
+		  el.textContent = time;
+		} else if (status === "dnf" || status === "dq") {
+		  el.textContent = status.toUpperCase();
+		} else {
+		  el.textContent = "";
+		}
+
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  let pollTimer = null;
+  function startPollingTimes() {
+    if (pollTimer) return;
+    // toutes les 5s pendant qu'au moins un slot est ON
+    pollTimer = setInterval(fetchTimesAndUpdate, 5000);
+    fetchTimesAndUpdate();
+  }
+  function stopPollingTimes() {
+    if (!pollTimer) return;
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+
+  function applyShowFinalTimeFromSession(session) {
+    if (!session || !session.participants) return;
+
+    const showBySlot = {};
+    for (const p of session.participants) {
+      showBySlot[String(p.slot)] = !!p.show_final_time;
+    }
+
+    let anyOn = false;
+
+    for (const slot of ["1", "2"]) {
+      const el = getTimeEl(slot);
+      if (!el) continue;
+
+      const on = !!showBySlot[slot];
+      anyOn = anyOn || on;
+
+      // si OFF => on masque et on vide
+      if (!on) {
+        el.classList.add("is-hidden");
+        el.textContent = "";
+        continue;
+      }
+
+      // si ON => on montre seulement si on a déjà un temps
+      const hasTime = el.textContent.trim().length > 0;
+      el.classList.toggle("is-hidden", !hasTime);
+
+      // Et on va chercher/mettre à jour les temps via API
+      // (le fetch mettra le texte; puis on recheck l'affichage)
+    }
+
+    if (anyOn) startPollingTimes();
+    else stopPollingTimes();
+  }
+
+  // SSE tracker: on récupère la session mise à jour en temps réel
+  (function initFinalTimeSSE() {
+    if (!window.TRACKER_STREAM_URL) return;
+
+    const es = new EventSource(window.TRACKER_STREAM_URL);
+    es.onmessage = async (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        const session = data.session ? data.session : data;
+
+        // 1) applique toggles ON/OFF
+        applyShowFinalTimeFromSession(session);
+
+        // 2) si au moins un ON, on fetch immédiatement puis on ajuste visuel
+        if (session && session.participants && session.participants.some(p => !!p.show_final_time)) {
+          await fetchTimesAndUpdate();
+
+          // après fetch, on ré-applique le "show if has time"
+          applyShowFinalTimeFromSession(session);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+  })();
+</script>
+
 </body>
 </html>

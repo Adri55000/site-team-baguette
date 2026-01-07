@@ -22,6 +22,7 @@ from app.modules.tracker.presets import list_presets, load_preset
 from app.restream.queries import get_active_restream_by_slug, get_match_teams, get_next_planned_match_for_overlay, simplify_restream_title, split_commentators
 from app.modules.overlay.registry import resolve_overlay_pack_for_match
 from app.modules.tournaments import overlay_tournament_name
+from app.modules.racetime import fetch_race_data, extract_entrants_overlay_info
 
 # === Dossiers ===
 
@@ -922,7 +923,7 @@ def restream_live(slug: str):
         if existing_session is None:
             for i, p in enumerate(session.get("participants", [])):
                 p["slot"] = i + 1
-
+                p.setdefault("show_final_time", False)
                 if i < len(teams):
                     name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
                     p["team_id"] = int(teams[i]["team_id"])
@@ -930,7 +931,7 @@ def restream_live(slug: str):
                 else:
                     p.setdefault("team_id", 0)
                     p.setdefault("label", f"Slot {i+1}")
-
+                
             save_session_restream(int(restream["id"]), session)
 
         # --- payload pour le template ---
@@ -1254,6 +1255,68 @@ def restream_tracker_reset(slug: str):
 
     flash("Tracker reset (preset par défaut).", "success")
     return redirect(url_for("restream.restream_live", slug=slug))
+    
+@restream_bp.post("/<slug>/final-time/<int:slot>/toggle")
+@login_required
+@role_required("restreamer")
+def restream_toggle_final_time(slug: str, slot: int):
+    db = get_db()
+    restream = db.execute(
+        "SELECT id, slug, match_id, tracker_type FROM restreams WHERE slug = ? AND is_active = 1",
+        (slug,),
+    ).fetchone()
+    if not restream:
+        abort(404)
+
+    tracker_type = restream["tracker_type"]
+    if tracker_type == "none":
+        abort(404)
+
+    # On charge la session existante (si elle n'existe pas, on la crée via ensure)
+    tracker_def = get_tracker_definition(tracker_type)
+
+    teams = db.execute(
+        """
+        SELECT t.id AS team_id, t.name AS team_name
+        FROM match_teams mt
+        JOIN teams t ON t.id = mt.team_id
+        WHERE mt.match_id = ?
+        ORDER BY mt.team_id ASC
+        """,
+        (restream["match_id"],),
+    ).fetchall()
+    participants_count = max(1, len(teams))
+
+    session = ensure_session_restream(
+        tracker_type=tracker_type,
+        restream_id=int(restream["id"]),
+        restream_slug=restream["slug"],
+        preset_factory=tracker_def["default_preset"],
+        participants_count=participants_count,
+    )
+
+    participants = session.get("participants", [])
+    target = None
+    for p in participants:
+        if int(p.get("slot", 0)) == slot:
+            target = p
+            break
+
+    if not target:
+        abort(404)
+
+    current = bool(target.get("show_final_time", False))
+    target["show_final_time"] = not current
+
+    session["version"] = int(session.get("version", 0)) + 1
+    save_session_restream(int(restream["id"]), session)
+
+    flash(
+        f"Temps final Joueur {slot} : {'ON' if target['show_final_time'] else 'OFF'}.",
+        "success",
+    )
+    return redirect(url_for("restream.restream_live", slug=slug))
+
 
 ###############################################
 #############  OVERLAYS #######################
@@ -1304,6 +1367,73 @@ def restream_overlay(slug: str):
     teams = get_match_teams(db, restream["match_id"])
 
     participants_count = max(1, len(teams))
+    
+    # --------------------------------------------------------------
+    # Racetime (twitch + temps final) pour overlay
+    # --------------------------------------------------------------
+    match_row = db.execute(
+        "SELECT racetime_room FROM matches WHERE id = ?",
+        (restream["match_id"],),
+    ).fetchone()
+
+    racetime_room = (match_row["racetime_room"] if match_row else "") or ""
+
+    def team_racetime_users(team_id: int) -> list[str]:
+        rows = db.execute(
+            """
+            SELECT p.racetime_user
+            FROM team_players tp
+            JOIN players p ON p.id = tp.player_id
+            WHERE tp.team_id = ?
+            ORDER BY tp.position ASC
+            """,
+            (team_id,),
+        ).fetchall()
+        return [r["racetime_user"] for r in rows if r["racetime_user"]]
+
+    # best effort: on prend le 1er joueur de chaque team pour slot1/slot2
+    left_rt_user = ""
+    right_rt_user = ""
+
+    if len(teams) > 0:
+        left_users = team_racetime_users(int(teams[0]["team_id"]))
+        left_rt_user = left_users[0] if left_users else ""
+
+    if len(teams) > 1:
+        right_users = team_racetime_users(int(teams[1]["team_id"]))
+        right_rt_user = right_users[0] if right_users else ""
+
+    left_twitch = ""
+    right_twitch = ""
+    left_time = ""
+    right_time = ""
+    left_status = ""
+    right_status = ""
+
+    if racetime_room:
+        try:
+            race_json = fetch_race_data(racetime_room)
+            overlay_map = extract_entrants_overlay_info(race_json)
+
+            left_info = overlay_map.get(left_rt_user)
+            right_info = overlay_map.get(right_rt_user)
+
+            if left_info:
+                left_twitch = left_info.twitch_name
+                left_status = left_info.status
+                if left_info.status == "done":
+                    left_time = left_info.finish_time_hms
+
+            if right_info:
+                right_twitch = right_info.twitch_name
+                right_status = right_info.status
+                if right_info.status == "done":
+                    right_time = right_info.finish_time_hms
+
+        except Exception:
+            # overlay ne doit pas casser si Racetime est KO / URL invalide
+            pass
+
 
     # --------------------------------------------------------------
     # Session tracker (création si absente)
@@ -1324,7 +1454,7 @@ def restream_overlay(slug: str):
     if existing_session is None:
         for i, p in enumerate(session.get("participants", [])):
             p["slot"] = i + 1
-
+            p.setdefault("show_final_time", False)
             if i < len(teams):
                 name = (teams[i]["team_name"] or f"Slot {i+1}").replace("Solo - ", "")
                 p["team_id"] = int(teams[i]["team_id"])
@@ -1360,6 +1490,17 @@ def restream_overlay(slug: str):
     right = (teams[1]["team_name"] if len(teams) > 1 else "Slot 2") or "Slot 2"
 
     c1, c2 = split_commentators(restream["commentator_name"])
+    
+    # exemple logique côté route overlay
+    left_show_time = False
+    right_show_time = False
+
+    for p in session.get("participants", []):
+        if p.get("slot") == 1:
+            left_show_time = bool(p.get("show_final_time", False))
+        elif p.get("slot") == 2:
+            right_show_time = bool(p.get("show_final_time", False))
+
 
     live_payload = {
         "left_name": left.replace("Solo - ", ""),
@@ -1367,6 +1508,14 @@ def restream_overlay(slug: str):
         "title": simplify_restream_title(restream["title"]),
         "commentator_1": c1,
         "commentator_2": c2,
+        "left_twitch": left_twitch,
+        "right_twitch": right_twitch,
+        "left_time": left_time,
+        "right_time": right_time,
+        "left_status": left_status,
+        "right_status": right_status,
+        "left_show_time": left_show_time,
+        "right_show_time": right_show_time,
     }
 
 
@@ -1502,3 +1651,75 @@ def restream_overlay_next(slug: str):
         tournament_name=tournament_name,
         next=next_payload,
     )
+
+@restream_bp.get("/<slug>/overlay/live-data")
+def restream_overlay_live_data(slug: str):
+    db = get_db()
+
+    restream = db.execute(
+        "SELECT id, slug, match_id, tracker_type FROM restreams WHERE slug = ? AND is_active = 1",
+        (slug,),
+    ).fetchone()
+    if not restream or restream["tracker_type"] == "none":
+        abort(404)
+
+    # Match: racetime_room (URL complète)
+    match_row = db.execute(
+        "SELECT racetime_room FROM matches WHERE id = ?",
+        (restream["match_id"],),
+    ).fetchone()
+    racetime_room = (match_row["racetime_room"] if match_row else "") or ""
+
+    # Session pour connaitre team_id/slot (et racetime users via DB)
+    session = load_session_restream(int(restream["id"])) or {}
+    participants = session.get("participants", [])
+
+    # helper: récupérer 1 racetime_user par team (slot)
+    def team_racetime_user(team_id: int) -> str:
+        row = db.execute(
+            """
+            SELECT p.racetime_user
+            FROM team_players tp
+            JOIN players p ON p.id = tp.player_id
+            WHERE tp.team_id = ?
+            ORDER BY tp.position ASC
+            LIMIT 1
+            """,
+            (team_id,),
+        ).fetchone()
+        return (row["racetime_user"] if row else "") or ""
+
+    # Prépare slots -> racetime_user
+    slot_to_rt = {}
+    for p in participants:
+        slot = int(p.get("slot", 0) or 0)
+        team_id = int(p.get("team_id", 0) or 0)
+        if slot and team_id:
+            slot_to_rt[str(slot)] = team_racetime_user(team_id)
+
+    # Réponse vide si pas de racetime_room
+    payload = {"slots": {}}
+
+    if not racetime_room:
+        return payload
+
+    try:
+        race_json = fetch_race_data(racetime_room)
+        overlay_map = extract_entrants_overlay_info(race_json)
+
+        for slot_str, rt_user in slot_to_rt.items():
+            info = overlay_map.get(rt_user)
+            if not info:
+                payload["slots"][slot_str] = {"status": "", "time": ""}
+                continue
+
+            payload["slots"][slot_str] = {
+                "status": info.status,
+                "time": info.finish_time_hms if info.status == "done" else "",
+            }
+
+    except Exception:
+        # fail-safe
+        pass
+
+    return payload

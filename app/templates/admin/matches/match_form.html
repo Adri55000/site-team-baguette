@@ -44,6 +44,27 @@
     <label>Date / heure prévue</label>
     <input type="datetime-local" name="scheduled_at">
 
+	<label for="racetime_room">Racetime room</label>
+	<input type="text"
+		   id="racetime_room"
+		   name="racetime_room"
+		   class="admin-input"
+		   value="{{ match.racetime_room if match and match.racetime_room else '' }}"
+		   placeholder="https://racetime.gg/ssr/abcdef">
+
+	<p class="admin-help">
+		URL de la room racetime (optionnel).
+	</p>
+
+	{% if match and match.racetime_room %}
+	<p>
+		<a href="{{ match.racetime_room }}" target="_blank" class="btn btn-secondary-small">
+			Ouvrir la room racetime
+		</a>
+	</p>
+	{% endif %}
+
+
     <div class="admin-actions-footer">
         <button class="btn btn-primary">
             Enregistrer

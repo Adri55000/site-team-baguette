@@ -34,6 +34,20 @@ Live – {{ restream.title }}
               onsubmit="return confirm('Reset le tracker (preset par défaut) ?');">
           <button class="btn btn-danger" type="submit">Reset tracker</button>
         </form>
+		
+		{% if can_manage_tracker and tracker and tracker.session %}
+		  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+			{% for p in tracker.session.participants %}
+			  <form method="post"
+					action="{{ url_for('restream.restream_toggle_final_time', slug=restream_slug, slot=p.slot) }}">
+				<button class="btn {% if p.show_final_time %}btn-success{% else %}btn-secondary{% endif %}"
+						type="submit">
+				  Temps final J{{ p.slot }} : {% if p.show_final_time %}ON{% else %}OFF{% endif %}
+				</button>
+			  </form>
+			{% endfor %}
+		  </div>
+		{% endif %}
       </div>
     {% endif %}
 

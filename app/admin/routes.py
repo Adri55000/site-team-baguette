@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, current_app, abort
+from flask import render_template, request, redirect, url_for, flash, current_app, abort, jsonify
 from . import admin_bp
 from app.database import get_db
 from app.auth.utils import login_required
@@ -16,7 +16,7 @@ import json
 from app.modules.tracker.registry import get_available_trackers, get_tracker_definition
 from app.modules.tracker.presets import list_presets, create_preset, load_preset, save_preset, rename_preset, delete_preset
 from app.modules.tracker.games.ssr.preset import build_default_preset as ssr_default_preset
-
+from app.modules import racetime as racetime_mod
 
 @admin_bp.route("/")
 @login_required
@@ -327,7 +327,7 @@ def players_list():
         params.append(f"%{q}%")
 
     players = conn.execute(f"""
-        SELECT id, name, created_at
+        SELECT id, name, created_at, racetime_user
         FROM players
         {where}
         ORDER BY name ASC
@@ -358,18 +358,24 @@ def players_list():
 def players_create():
     if request.method == "POST":
         name = request.form["name"].strip()
+        racetime_user_raw = request.form.get("racetime_user", "").strip()
+        racetime_user = racetime_user_raw or None
 
         if name:
             conn = get_db()
             conn.execute(
-                "INSERT INTO players (name) VALUES (?)",
-                (name,)
+                """
+                INSERT INTO players (name, racetime_user)
+                VALUES (?, ?)
+                """,
+                (name, racetime_user)
             )
             conn.commit()
             flash("Joueur créé avec succès.", "success")
             return redirect(url_for("admin.players_list"))
 
     return render_template("admin/players_form.html")
+
 
 @admin_bp.route("/players/<int:player_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -389,16 +395,22 @@ def players_edit(player_id):
     # 2️⃣ Traitement du formulaire (édition)
     if request.method == "POST":
         name = request.form["name"].strip()
+        racetime_user_raw = request.form.get("racetime_user", "").strip()
+        racetime_user = racetime_user_raw or None
+
         if name:
             conn.execute(
-                "UPDATE players SET name = ? WHERE id = ?",
-                (name, player_id)
+                """
+                UPDATE players
+                SET name = ?, racetime_user = ?
+                WHERE id = ?
+                """,
+                (name, racetime_user, player_id)
             )
             conn.commit()
             return redirect(url_for("admin.players_list"))
 
     # 3️⃣ Calcul de can_delete (MÊME logique que players_delete)
-
     can_delete, _ = can_delete_player(conn, player_id)
 
     # 4️⃣ Rendu
@@ -407,6 +419,7 @@ def players_edit(player_id):
         player=player,
         can_delete=can_delete
     )
+
 
 
 @admin_bp.route("/players/<int:player_id>/delete", methods=["POST"])
@@ -1840,13 +1853,16 @@ def admin_match_create():
     if request.method == "POST":
         scheduled_at = request.form.get("scheduled_at")
 
+        racetime_room_raw = request.form.get("racetime_room", "").strip()
+        racetime_room = racetime_room_raw or None
+
         # Création du match
         cur = db.execute(
             """
-            INSERT INTO matches (tournament_id, series_id, scheduled_at)
-            VALUES (?, ?, ?)
+            INSERT INTO matches (tournament_id, series_id, scheduled_at, racetime_room)
+            VALUES (?, ?, ?, ?)
             """,
-            (tournament_id, series_id, scheduled_at)
+            (tournament_id, series_id, scheduled_at, racetime_room)
         )
         match_id = cur.lastrowid
         # Création des lignes match_teams pour une confrontation
@@ -2015,13 +2031,16 @@ def admin_match_edit(match_id):
     if request.method == "POST":
         scheduled_at = request.form.get("scheduled_at")
 
+        racetime_room_raw = request.form.get("racetime_room", "").strip()
+        racetime_room = racetime_room_raw or None
+
         db.execute(
             """
             UPDATE matches
-            SET scheduled_at = ?
+            SET scheduled_at = ?, racetime_room = ?
             WHERE id = ?
             """,
-            (scheduled_at, match_id)
+            (scheduled_at, racetime_room, match_id)
         )
         db.commit()
 
@@ -2247,6 +2266,95 @@ def admin_match_results(match_id):
         match=match,
         teams=teams
     )
+
+@admin_bp.route(
+    "/matches/<int:match_id>/results/racetime/prefill",
+    methods=["GET"]
+)
+@login_required
+@role_required("admin")
+def admin_match_results_racetime_prefill(match_id: int):
+    try:
+        db = get_db()
+
+        # 1) Match + racetime_room
+        match = db.execute(
+            "SELECT id, racetime_room FROM matches WHERE id = ?",
+            (match_id,)
+        ).fetchone()
+
+        if not match:
+            return jsonify({"ok": False, "error": "Match introuvable."}), 404
+
+        racetime_room = (match["racetime_room"] or "").strip()
+        if not racetime_room:
+            return jsonify({"ok": False, "error": "Aucune room racetime associée à ce match."}), 400
+
+        # 2) Teams du match
+        teams = db.execute(
+            """
+            SELECT mt.team_id
+            FROM match_teams mt
+            WHERE mt.match_id = ?
+            """,
+            (match_id,)
+        ).fetchall()
+
+        if not teams:
+            return jsonify({"ok": False, "error": "Aucune équipe associée à ce match."}), 400
+
+        team_ids = [t["team_id"] for t in teams]
+
+        # 3) Récupérer TOUS les racetime_user de chaque team (co-op support)
+        #    (team time = last finisher time, géré dans le module racetime)
+        placeholders = ",".join(["?"] * len(team_ids))
+        rows = db.execute(
+            f"""
+            SELECT
+                tp.team_id,
+                p.racetime_user
+            FROM team_players tp
+            JOIN players p ON p.id = tp.player_id
+            WHERE tp.team_id IN ({placeholders})
+            ORDER BY tp.team_id, tp.position ASC
+            """,
+            tuple(team_ids)
+        ).fetchall()
+
+        team_to_users: dict[int, list[str]] = {tid: [] for tid in team_ids}
+        for r in rows:
+            tid = r["team_id"]
+            rt = (r["racetime_user"] or "").strip()
+            if rt:
+                team_to_users[tid].append(rt)
+
+        # Si une team n'a aucun racetime_user, on refuse (plus clair pour le MVP)
+        missing_team_ids = [tid for tid, users in team_to_users.items() if not users]
+        if missing_team_ids:
+            return jsonify({
+                "ok": False,
+                "error": "Certaines équipes n'ont pas de racetime_user renseigné (players).",
+                "missing_team_ids": missing_team_ids
+            }), 400
+
+        # 4) Fetch racetime + build results payload
+        try:
+            race_json = racetime_mod.fetch_race_data(racetime_room)
+            results, meta = racetime_mod.build_prefill_payload_for_teams(team_to_users, race_json)
+        except racetime_mod.RacetimeRoomInvalid:
+            return jsonify({"ok": False, "error": "URL racetime invalide."}), 400
+        except racetime_mod.RacetimeFetchError:
+            return jsonify({"ok": False, "error": "Impossible de contacter racetime ou réponse invalide."}), 502
+
+        # Si on ne peut rien calculer pour certaines teams, on renvoie quand même (préfill partiel possible)
+        return jsonify({
+            "ok": True,
+            "results": results,
+            "meta": meta
+        })
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
 
 @admin_bp.route(
     "/tournaments/<int:tournament_id>/phases/create",
@@ -2658,3 +2766,4 @@ def admin_trackers_preset_delete(tracker_type, preset_slug):
             tracker_type=tracker_type,
         )
     )
+    
