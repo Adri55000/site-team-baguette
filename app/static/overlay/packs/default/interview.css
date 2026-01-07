@@ -128,45 +128,78 @@
   justify-content: center;
 }
 
-/*
-  Quand tu ajouteras le tableau:
-  - chaque ligne: .interview-row
-  - colonnes: .col-rank / .col-name / .col-twitch / .col-time
-*/
-.interview-row {
-  display: grid;
-  grid-template-columns: 8% 44% 26% 22%;
-  align-items: center;
+/* -------------------------------------------------- */
+/* Zone classement (tableau interview)                 */
+/* -------------------------------------------------- */
 
-  font-size: clamp(14px, 1.5vw, 22px);
-  line-height: 1.15;
+.interview-ranking {
+  position: absolute;
+  /* Remonté un peu pour mieux coller à la zone "Résultats" */
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 74%;
+  height: 40%;
 
-  /* stabilité visuelle (évite "sauts") */
-  min-height: 1.6em;
-  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  /* un peu d'air + lisibilité */
+  padding: 0.6em 1em;
 }
 
+/* Lignes du tableau */
+.interview-row {
+  display: grid;
+  grid-template-columns: 3ch minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  column-gap: 1.2ch;
+  align-items: center;
+  white-space: nowrap;
+
+  /* Texte plus gros */
+  font-size: clamp(18px, 2.1vw, 28px);
+  line-height: 1.25;
+
+  /* Séparateur entre joueurs */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 0.35em;
+}
+
+/* Espace entre les lignes (en plus du séparateur) */
 .interview-row + .interview-row {
   margin-top: 0.35em;
 }
 
 .interview-row .col-rank {
-  text-align: right;
-  padding-right: 0.35em;
+  font-weight: 700;
+  opacity: 0.95;
 }
 
-.interview-row .col-name {
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+.interview-row .col-name,
 .interview-row .col-twitch {
-  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .interview-row .col-time {
   text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* En-tête */
+.interview-row--head {
+  opacity: 0.95;
+  font-size: clamp(16px, 1.9vw, 24px);
+  font-weight: 700;
+  margin-bottom: 0.45em;
+
+  /* En-tête sans séparateur */
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.interview-row--head .col-time,
+.interview-row--head .col-rank {
+  font-weight: 800;
 }
