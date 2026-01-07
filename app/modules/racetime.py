@@ -427,3 +427,59 @@ def extract_entrants_overlay_info(race_json: Dict[str, Any]) -> Dict[str, Entran
         )
 
     return out
+
+# app/modules/racetime.py
+
+# app/modules/racetime.py
+
+ALLOWED_INTERVIEW_STATUSES = {"in_progress", "done", "dnf", "dq"}
+
+
+def extract_interview_top8(race_json: dict, limit: int = 5) -> list[dict]:
+    """
+    Extrait une liste ordonnée (ordre Racetime) des entrants à afficher
+    pour l'overlay interview.
+
+    Format retourné :
+    [
+        {"name": str, "twitch": str, "status": str, "time": str},
+        ...
+    ]
+    """
+    results: list[dict] = []
+
+    entrants = race_json.get("entrants") or []
+    for entrant in entrants:
+        if len(results) >= limit:
+            break
+
+        status = status_value(entrant.get("status"))
+        if status not in ALLOWED_INTERVIEW_STATUSES:
+            continue
+
+        user = entrant.get("user") or {}
+
+        # Nom (Racetime)
+        name = (user.get("name") or "").strip()
+
+        # Twitch (best effort) - aligné sur extract_entrants_overlay_info
+        twitch_name = (user.get("twitch_name") or "").strip()
+        twitch_channel = (user.get("twitch_channel") or "").strip()
+        twitch = twitch_name or twitch_channel or ""
+
+        # Temps final (Racetime) : champ entrant["finish_time"]
+        time_hms = ""
+        if status == "done":
+            finish_raw = entrant.get("finish_time")
+            sec = iso8601_duration_to_seconds(finish_raw)
+            if sec is not None:
+                time_hms = seconds_to_hms(sec)
+
+        results.append({
+            "name": name,
+            "twitch": twitch,
+            "status": status,
+            "time": time_hms,
+        })
+
+    return results

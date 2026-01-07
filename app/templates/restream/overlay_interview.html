@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Overlay – {{ interview.title }}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='overlay/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename=overlay_pack['css']['interview']) }}">
+</head>
+
+<body class="overlay overlay-interview" data-pack="{{ overlay_pack['slug'] }}">
+  <div class="overlay-root">
+    <div class="overlay-background"></div>
+
+    <!-- Textes -->
+    <div class="interview-texts">
+
+      {# Titre tournoi #}
+      {% if interview.tournament_name %}
+        <div class="interview-tournament">
+          {{ interview.tournament_name }}
+        </div>
+      {% endif %}
+
+      {# Titre match / restream #}
+      {% if interview.title %}
+        <div class="interview-title">
+          {{ interview.title }}
+        </div>
+      {% endif %}
+
+      {# Zone classement  #}
+		<div
+		  class="interview-ranking"
+		  data-url="{{ url_for('restream.restream_overlay_interview_data', slug=restream_slug) }}"
+		></div>
+
+
+      {# Commentateurs (même logique que overlay_live) #}
+      <div class="interview-commentators">
+
+        {% if interview.commentator_1 %}
+          <div class="interview-commentator interview-commentator-left">
+            {{ interview.commentator_1 }}
+          </div>
+        {% endif %}
+
+        {% if interview.commentator_2 %}
+          <div class="interview-commentator interview-commentator-right">
+            {{ interview.commentator_2 }}
+          </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='overlay/interview.js') }}" defer></script>
+</body>
+</html>

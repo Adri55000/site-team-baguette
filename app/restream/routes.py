@@ -22,7 +22,7 @@ from app.modules.tracker.presets import list_presets, load_preset
 from app.restream.queries import get_active_restream_by_slug, get_match_teams, get_next_planned_match_for_overlay, simplify_restream_title, split_commentators
 from app.modules.overlay.registry import resolve_overlay_pack_for_match
 from app.modules.tournaments import overlay_tournament_name
-from app.modules.racetime import fetch_race_data, extract_entrants_overlay_info
+from app.modules.racetime import fetch_race_data, extract_entrants_overlay_info, extract_interview_top8
 
 # === Dossiers ===
 
@@ -1723,3 +1723,105 @@ def restream_overlay_live_data(slug: str):
         pass
 
     return payload
+
+@restream_bp.get("/<slug>/overlay/interview")
+def restream_overlay_interview(slug: str):
+    db = get_db()
+
+    restream = get_active_restream_by_slug(db, slug)
+    if not restream:
+        abort(404)
+
+    # --------------------------------------------------------------
+    # Commentateurs : on relit le champ pour être sûr qu'il existe
+    # --------------------------------------------------------------
+    row = db.execute(
+        "SELECT commentator_name FROM restreams WHERE id = ?",
+        (int(restream["id"]),),
+    ).fetchone()
+
+    commentator_raw = (row["commentator_name"] if row else "") or ""
+    c1, c2 = split_commentators(commentator_raw)
+
+    # --------------------------------------------------------------
+    # Titre affiché
+    # --------------------------------------------------------------
+    display_title = simplify_restream_title(restream["title"])
+
+    # --------------------------------------------------------------
+    # Nom du tournoi
+    # --------------------------------------------------------------
+    row = db.execute(
+        """
+        SELECT t.name AS tournament_name
+        FROM matches m
+        JOIN tournaments t ON t.id = m.tournament_id
+        WHERE m.id = ?
+        """,
+        (restream["match_id"],),
+    ).fetchone()
+
+    tournament_name = (
+        overlay_tournament_name(row["tournament_name"])
+        if row and row["tournament_name"]
+        else ""
+    )
+
+    overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
+
+    return render_template(
+        "restream/overlay_interview.html",
+        restream=restream,
+        restream_slug=slug,
+        interview={
+            "title": display_title,
+            "tournament_name": tournament_name,
+            "commentator_1": c1,
+            "commentator_2": c2,
+        },
+        overlay_pack=overlay_pack,
+    )
+
+@restream_bp.get("/<slug>/overlay/interview/data")
+def restream_overlay_interview_data(slug: str):
+    db = get_db()
+
+    restream = get_active_restream_by_slug(db, slug)
+    if not restream:
+        return jsonify({"ok": False, "error": "restream_not_found"}), 404
+
+    # --------------------------------------------------------------
+    # Racetime room (URL complète)
+    # --------------------------------------------------------------
+    row = db.execute(
+        "SELECT racetime_room FROM matches WHERE id = ?",
+        (restream["match_id"],),
+    ).fetchone()
+
+    racetime_room = (row["racetime_room"] if row else "") or ""
+    if not racetime_room:
+        return jsonify({"ok": False, "error": "no_racetime_room"})
+
+    # --------------------------------------------------------------
+    # Appel API Racetime
+    # --------------------------------------------------------------
+    try:
+        race_json = fetch_race_data(racetime_room)
+    except Exception:
+        # overlay = best effort, jamais de crash
+        return jsonify({"ok": False, "error": "racetime_unreachable"})
+
+    # --------------------------------------------------------------
+    # Extraction classement interview
+    # --------------------------------------------------------------
+    top = extract_interview_top8(race_json)
+
+    race_status = (
+        race_json.get("status", {}).get("value", "")
+    )
+
+    return jsonify({
+        "ok": True,
+        "race_status": race_status,
+        "top": top,
+    })

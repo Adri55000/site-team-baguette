@@ -12,6 +12,7 @@ OVERLAY_PACKS = {
             "intro": "overlay/packs/default/intro.css",
             "live": "overlay/packs/default/live.css",
             "next": "overlay/packs/default/next.css",
+            "interview": "overlay/packs/default/interview.css",
             # "solo": "overlay/packs/default/solo.css",
         },
         "assets": {
@@ -26,6 +27,7 @@ OVERLAY_PACKS = {
             "intro": "overlay/packs/ssr-s4/intro.css",
             "live": "overlay/packs/ssr-s4/live.css",
             "next": "overlay/packs/ssr-s4/next.css",
+            "interview": "overlay/packs/ssr-s4/interview.css",
             # "solo": "overlay/packs/ssr-s4/solo.css",
         },
         "assets": {
