@@ -2027,6 +2027,21 @@ def admin_match_edit(match_id):
         return redirect(
             url_for("admin.admin_matches", tournament_id=tournament["id"])
         )
+        
+    series = None
+    if match["series_id"]:
+        series = db.execute(
+            """
+            SELECT s.*,
+                   t1.name AS team1_name,
+                   t2.name AS team2_name
+            FROM series s
+            LEFT JOIN teams t1 ON t1.id = s.team1_id
+            LEFT JOIN teams t2 ON t2.id = s.team2_id
+            WHERE s.id = ?
+            """,
+            (match["series_id"],)
+        ).fetchone()
 
     if request.method == "POST":
         scheduled_at = request.form.get("scheduled_at")
@@ -2053,6 +2068,7 @@ def admin_match_edit(match_id):
         "admin/matches/match_form.html",
         match=match,
         tournament=tournament,
+        series=series,
         series_id=match["series_id"]
     )
 

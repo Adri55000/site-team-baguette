@@ -42,7 +42,9 @@
     <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
 
     <label>Date / heure prévue</label>
-    <input type="datetime-local" name="scheduled_at">
+    <input type="datetime-local"
+       name="scheduled_at"
+       value="{{ match.scheduled_at[:16] if match and match.scheduled_at else '' }}">
 
 	<label for="racetime_room">Racetime room</label>
 	<input type="text"
