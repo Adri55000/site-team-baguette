@@ -13,6 +13,9 @@ Planning des matchs
     <!-- Filtres -->
     <!-- ========================= -->
     <form method="get" class="restream-planning-filters">
+		{% if filter_kind %}
+		  <input type="hidden" name="filter" value="{{ filter_kind }}">
+		{% endif %}
 
         <div class="restream-planning-filters-group">
             <label for="tournament">Tournoi</label>
@@ -152,11 +155,12 @@ Planning des matchs
             {% if page > 1 %}
                 <a
                     href="{{ url_for(
-                        'restream.planning',
-                        page=page-1,
-                        tournament=request.args.get('tournament'),
-                        show_past=request.args.get('show_past')
-                    ) }}"
+						'restream.planning',
+						page=page-1,
+						tournament=request.args.get('tournament'),
+						show_past=request.args.get('show_past'),
+						filter=filter_kind
+					) }}"
                 >
                     ← Précédent
                 </a>
@@ -169,11 +173,12 @@ Planning des matchs
             {% if page < total_pages %}
                 <a
                     href="{{ url_for(
-                        'restream.planning',
-                        page=page+1,
-                        tournament=request.args.get('tournament'),
-                        show_past=request.args.get('show_past')
-                    ) }}"
+						'restream.planning',
+						page=page+1,
+						tournament=request.args.get('tournament'),
+						show_past=request.args.get('show_past'),
+						filter=filter_kind
+					) }}"
                 >
                     Suivant →
                 </a>

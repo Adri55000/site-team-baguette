@@ -1,0 +1,109 @@
+/* =========================================================
+   PAGE – CONTACT (v1)
+   - classes namespacées : p-contact__*
+   - aucune redéfinition des composants globaux (.btn, etc.)
+   - aucune valeur en dur : uniquement des variables
+========================================================= */
+
+.p-contact {
+  max-width: var(--layout-page-max);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3);
+}
+
+.p-contact__header {
+  margin-bottom: var(--space-4);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}
+
+.p-contact__title {
+  margin: 0 0 var(--space-2) 0;
+}
+
+.p-contact__actions {
+  margin-top: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.p-contact__muted {
+  color: var(--text-muted);
+  margin: var(--space-2) 0 0 0;
+}
+
+.p-contact__muted--small {
+  font-size: 0.95rem;
+}
+
+/* Panels (style "card" page-specific, sans toucher aux .card globaux si vous en avez) */
+.p-contact__panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+}
+
+.p-contact__panel--full {
+  margin-top: var(--space-4);
+}
+
+.p-contact__h2 {
+  margin: 0 0 var(--space-3) 0;
+}
+
+/* Layout */
+.p-contact__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+/* Desktop-first, mais safe en petit écran */
+@media (max-width: 720px) {
+  .p-contact__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Lists */
+.p-contact__list {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.p-contact__list--tight > li + li {
+  margin-top: var(--space-1);
+}
+
+/* Details */
+.p-contact__details {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}
+
+.p-contact__summary {
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+/* Alert page-specific (sans toucher aux .alert globaux si vous en avez) */
+.p-contact__alert {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.p-contact__alert--warning {
+  border-color: var(--warning);
+}

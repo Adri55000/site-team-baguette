@@ -15,98 +15,93 @@
         <h1><a href="{{ url_for('main.home') }}">Team Baguette</a></h1>
     </div>
 
-	<nav class="navbar">
+	<nav class="navbar" aria-label="Navigation principale">
+  <ul class="nav-links">
 
-    
+    <!-- Planning (existe déjà : restream.planning) -->
+    <li>
+      <a class="nav-link" href="{{ url_for('restream.planning') }}">Planning</a>
+    </li>
 
-    <ul class="nav-links">
+    <!-- Tournois : on garde le dropdown (en cours / à venir),
+         mais on ajoute "Tous les tournois" en placeholder pour l'instant -->
+    <li class="nav-dropdown">
+      <span class="nav-link">Tournois ▾</span>
 
-
-        <li class="nav-dropdown">
-    <span>Tournois SSR▾</span>
-    <ul class="dropdown-menu">
-
+      <ul class="dropdown-menu">
         {% if tournaments_active %}
-            <li class="dropdown-title">En cours</li>
-            {% for t in tournaments_active %}
-                <li>
-                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
-                        {{ t.name }}
-                    </a>
-                </li>
-            {% endfor %}
+          <li class="dropdown-title">En cours</li>
+          {% for t in tournaments_active %}
+            <li>
+              <a href="{{ url_for('main.tournament', slug=t.slug) }}">
+                {{ t.name }}
+              </a>
+            </li>
+          {% endfor %}
         {% endif %}
 
         {% if tournaments_upcoming %}
-            <li class="dropdown-title">À venir</li>
-            {% for t in tournaments_upcoming %}
-                <li>
-                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
-                        {{ t.name }}
-                    </a>
-                </li>
-            {% endfor %}
-        {% endif %}
-
-        {% if tournaments_finished %}
-            <li class="dropdown-separator"></li>
-            <li class="dropdown-title">Archives</li>
-            {% for t in tournaments_finished %}
-                <li>
-                    <a href="{{ url_for('main.tournament', slug=t.slug) }}">
-                        {{ t.name }}
-                    </a>
-                </li>
-            {% endfor %}
-        {% endif %}
-
-    </ul>
-	<li class="nav-dropdown">
-    <span class="nav-link">Restream ▾</span>
-
-    <div class="dropdown-menu">
-
-        <span class="dropdown-title">Restream</span>
-
-        <ul>
-            <!-- Planning (placeholder) -->
+          <li class="dropdown-title">À venir</li>
+          {% for t in tournaments_upcoming %}
             <li>
-                <a href="{{ url_for('restream.planning') }}">
-                    Planning
-                </a>
+              <a href="{{ url_for('main.tournament', slug=t.slug) }}">
+                {{ t.name }}
+              </a>
             </li>
+          {% endfor %}
+        {% endif %}
 
-            {% if restreams %}
-                <li class="dropdown-divider"></li>
+        <li class="dropdown-separator"></li>
+        <li>
+          <a href="{{ url_for('main.tournaments') }}">Tous les tournois</a>
+        </li>
+      </ul>
+    </li>
 
-                {% for r in restreams %}
-                    <li>
-                        <a href="{{ url_for('restream.view', slug=r['slug']) }}">
-                            {{ r['title'] }}
-                        </a>
-                    </li>
-                {% endfor %}
-            {% endif %}
+    <!-- Restream : dropdown existant, mais structure HTML corrigée -->
+    <li class="nav-dropdown">
+      <span class="nav-link">Restream ▾</span>
 
-            {% if has_role("restreamer") %}
-                <li class="dropdown-divider"></li>
+      <ul class="dropdown-menu">
+        <li class="dropdown-title">Restream</li>
 
-                <li>
-                    <a href="{{ url_for('restream.manage') }}">
-                        ⚙ Gérer les restreams
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
+        <li>
+          <a href="{{ url_for('restream.planning') }}?filter=restream">Planning des restream</a>
+        </li>
 
-    </div>
-</li>
+        {% if restreams %}
+          <li class="dropdown-separator"></li>
+          {% for r in restreams %}
+            <li>
+              <a href="{{ url_for('restream.view', slug=r['slug']) }}">
+                {{ r['title'] }}
+              </a>
+            </li>
+          {% endfor %}
+        {% endif %}
 
-</li>
+        {% if has_role("restreamer") %}
+          <li class="dropdown-separator"></li>
+          <li>
+            <a href="{{ url_for('restream.manage') }}">⚙ Gérer les restreams</a>
+          </li>
+        {% endif %}
+      </ul>
+    </li>
 
-</li>
+    <!-- Guides placeholder (pas de lien) -->
+    <li>
+      <span class="nav-link is-disabled">Guides</span>
+    </li>
 
+    <!-- Contact placeholder (pas de lien) -->
+    <li>
+      <a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a>
+    </li>
+
+  </ul>
 </nav>
+
 
 
 
@@ -159,6 +154,8 @@
 </main>
 
 <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+
 
 {% block scripts %}{% endblock %}
 

@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import json
 import math
 from app.modules.tournaments import ensure_public_tournament
+from collections import defaultdict
 
 main_bp = Blueprint("main", __name__)
 
@@ -881,4 +882,161 @@ def tournament_bracket(slug):
         tournament=tournament,
         metadata=metadata,
         phases=processed_phases,
+    )
+
+@main_bp.get("/tournaments")
+def tournaments():
+    db = get_db()
+
+    # -------------------------------------------------
+    # Tournois internes (BDD) + infos de jeu + last_match_at
+    # -------------------------------------------------
+    rows = db.execute(
+        """
+        SELECT
+            t.id,
+            t.name,
+            t.slug,
+            t.status,
+            t.game_id,
+            g.name AS game_name,
+            MAX(m.scheduled_at) AS last_match_at
+        FROM tournaments t
+        LEFT JOIN games g
+            ON g.id = t.game_id
+        LEFT JOIN matches m
+            ON m.tournament_id = t.id
+        WHERE t.source = 'internal'
+          AND UPPER(TRIM(t.name)) NOT LIKE '[CASUAL%'
+        GROUP BY t.id
+        """
+    ).fetchall()
+
+    internal = []
+    for r in rows:
+        item = dict(r)
+
+        # Statut public v1 : draft -> upcoming
+        status = (item.get("status") or "").strip().lower()
+        if status == "draft":
+            status = "upcoming"
+        item["public_status"] = status
+
+        # Nom de jeu pour grouping
+        item["game_name"] = item.get("game_name") or "Autre"
+
+        internal.append(item)
+
+    # -------------------------------------------------
+    # Tournois externes (config) : SSR uniquement
+    # - On conserve l'ordre du fichier
+    # - On les met en "finished" par défaut si pas de status
+    # -------------------------------------------------
+    external_cfg = current_app.config.get("TOURNAMENTS", [])
+    external = []
+    for t in external_cfg:
+        status = (t.get("status") or "finished").strip().lower()
+        if status == "draft":
+            status = "upcoming"
+
+        external.append({
+            "id": None,
+            "name": t.get("name"),
+            "slug": t.get("slug"),
+            "public_status": status,
+            "game_name": "The Legend of Zelda : Skyward Sword Randomizer",
+            "source": "external",
+            # pas de last_match_at fiable pour l'externe
+            "last_match_at": None,
+        })
+
+    # -------------------------------------------------
+    # Grouping : status -> game -> [tournois]
+    # -------------------------------------------------
+    sections = {
+        "active": defaultdict(list),
+        "upcoming": defaultdict(list),
+        "finished": defaultdict(list),
+    }
+
+    # Internes
+    for t in internal:
+        s = t["public_status"]
+        if s not in sections:
+            # fallback : si statut inattendu -> archives
+            s = "finished"
+        sections[s][t["game_name"]].append(t)
+
+    # Externes : on les injecte, en conservant l'ordre
+    for t in external:
+        s = t["public_status"]
+        if s not in sections:
+            s = "finished"
+        sections[s][t["game_name"]].append(t)
+
+    # -------------------------------------------------
+    # Tri par section
+    # -------------------------------------------------
+    def sort_active_or_upcoming(lst):
+        # tri par nom (dans chaque jeu)
+        return sorted(lst, key=lambda x: (x.get("name") or "").lower())
+
+    def sort_finished(lst):
+        # 1) Split : avec date / sans date
+        with_date = []
+        no_date = []
+
+        for t in lst:
+            if t.get("last_match_at"):
+                with_date.append(t)
+            else:
+                no_date.append(t)
+
+        # 2) Trier uniquement ceux qui ont une date : plus récent -> plus ancien
+        # (les strings datetime ISO se trient correctement en lexicographique si format homogène)
+        with_date.sort(
+            key=lambda t: (
+                t["last_match_at"],
+                (t.get("name") or "").lower()
+            ),
+            reverse=True
+        )
+
+        # 3) Concat : datés d'abord, puis non datés dans l'ordre original (donc ordre fichier conservé)
+        return with_date + no_date
+
+
+    # Appliquer les tris
+    for game_name, lst in sections["active"].items():
+        sections["active"][game_name] = sort_active_or_upcoming(lst)
+
+    for game_name, lst in sections["upcoming"].items():
+        sections["upcoming"][game_name] = sort_active_or_upcoming(lst)
+
+    for game_name, lst in sections["finished"].items():
+        sections["finished"][game_name] = sort_finished(lst)
+
+    # Ordonner les jeux (affichage) : alphabétique
+    def ordered_games(d):
+        return sorted(d.keys(), key=lambda x: (x or "").lower())
+
+    ordered = {
+        "active": ordered_games(sections["active"]),
+        "upcoming": ordered_games(sections["upcoming"]),
+        "finished": ordered_games(sections["finished"]),
+    }
+
+    return render_template(
+        "tournaments/index.html",
+        sections=sections,
+        ordered_games=ordered,
+    )
+
+@main_bp.get("/contact")
+def contact():
+    return render_template(
+        "pages/contact.html",
+        discord_invite_url=current_app.config.get("DISCORD_INVITE_URL", ""),
+        discord_server_name=current_app.config.get("DISCORD_SERVER_NAME", "notre Discord"),
+        contact_email=current_app.config.get("CONTACT_EMAIL", ""),
     )

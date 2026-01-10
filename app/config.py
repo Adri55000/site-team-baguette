@@ -287,7 +287,7 @@ TOURNAMENTS = [
     },
     {
         "slug": "cup-2022",
-        "name": "Placeholder for Coop S1 et S2",
+        "name": "Placeholder for S2",
         "type": "external",
         "status": "finished",
         "links": [

@@ -12,8 +12,35 @@
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 1.2rem;
   color: var(--text-primary);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Liens top-level (a.nav-link + span.nav-link) */
+.nav-link {
+  display: inline-block;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+}
+
+/* Placeholder non cliquable (Guides/Contact tant que non dispo) */
+.nav-link.is-disabled {
+  opacity: 0.7;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ===== DROPDOWN ===== */
@@ -22,26 +49,23 @@
   position: relative;
 }
 
+/* Trigger dropdown : <span> ou <a class="nav-link"> */
 .nav-dropdown > span,
 .nav-dropdown > .nav-link {
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 0.3rem 0.4rem;
-  border-radius: var(--border-radius-sm);
-  color: var(--text-primary);
+  display: inline-block;
 }
 
-.nav-dropdown > span:hover,
-.nav-dropdown > .nav-link:hover {
-  background: var(--bg-hover);
+/* Ouvrir au hover (souris) ET au focus (clavier) */
+.nav-dropdown:hover > .dropdown-menu,
+.nav-dropdown:focus-within > .dropdown-menu {
+  display: block;
 }
 
 /* ===== MENU ===== */
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 0.4rem);
+  top: calc(100% + 0.2rem);
   left: 0;
   min-width: 220px;
 
@@ -54,33 +78,31 @@
   padding: 0.4rem 0;
 
   z-index: 1000;
+
+  /* menu is a <ul>, so reset list spacing */
+  list-style: none;
+  margin: 0;
 }
 
-.nav-dropdown:hover > .dropdown-menu {
-  display: block;
-}
-
-/* ===== MENU CONTENT ===== */
-
-.dropdown-menu ul {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
+/* items */
 .dropdown-menu li {
+  margin: 0;
   padding: 0;
 }
 
+/* links in dropdown */
 .dropdown-menu a {
   display: block;
   padding: 0.45rem 0.8rem;
   font-size: 0.9rem;
   color: var(--text-primary);
+  text-decoration: none;
 }
 
-.dropdown-menu a:hover {
+.dropdown-menu a:hover,
+.dropdown-menu a:focus-visible {
   background: var(--bg-hover);
+  outline: none;
 }
 
 /* ===== TITRES & SÉPARATEURS ===== */
@@ -143,4 +165,22 @@
 
 .theme-btn:hover {
   background: var(--bg-hover);
+}
+
+/* Focus visible (clavier) sur les liens et triggers */
+.nav-link:focus-visible,
+.dropdown-menu a:focus-visible {
+  outline: 2px solid var(--border-color);
+  outline-offset: 2px;
+}
+
+/* Ligne informative non cliquable dans le dropdown */
+.dropdown-title.dropdown-note {
+  text-transform: none;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.nav-dropdown.is-open > .dropdown-menu {
+  display: block;
 }

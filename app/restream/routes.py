@@ -49,7 +49,7 @@ def view(slug):
     db = get_db()
     restream = db.execute(
         """
-        SELECT r.title, r.slug, r.twitch_url, r.created_at, r.restreamer_name, r.commentator_name, r.indices_template, r.tracker_type,
+        SELECT r.title, r.slug, r.twitch_url, r.created_at, r.restreamer_name, r.commentator_name, r.tracker_name, r.indices_template, r.tracker_type,
                u.username AS creator
         FROM restreams r
         JOIN users u ON u.id = r.created_by
@@ -85,6 +85,9 @@ def planning():
 
     tournament_id = request.args.get("tournament", type=int)
     show_past = request.args.get("show_past")
+    
+    filter_kind = request.args.get("filter", type=str)
+    restream_only = (filter_kind == "restream")
 
     # -------------------------------------------------
     # Filtres SQL communs
@@ -98,6 +101,16 @@ def planning():
 
     if not show_past:
         where.append("m.scheduled_at >= datetime('now')")
+        
+    if restream_only:
+        where.append("""
+            EXISTS (
+                SELECT 1
+                FROM restreams r2
+                WHERE r2.match_id = m.id
+                  AND r2.is_active = 1
+            )
+        """)
 
     where_sql = " AND ".join(where)
 
@@ -251,7 +264,11 @@ def planning():
         matches=matches,
         tournaments=tournaments,
         page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        filter_kind=filter_kind,
+        restream_only=restream_only,
+        tournament_id=tournament_id,
+        show_past=show_past,
     )
 
 

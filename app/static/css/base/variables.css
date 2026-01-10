@@ -108,6 +108,19 @@
   --indices-shadow-accent: rgba(0, 0, 0, 0.35);
   
   --indices-col-overlay: rgba(0, 0, 0, 0.03);
+  
+	/* =========================================================
+	   LAYOUT / SPACING TOKENS (v1)
+	   (à ajouter dans :root et dans .dark-mode)
+	========================================================= */
+	--layout-page-max: 980px;
+
+	--space-1: 0.4rem;
+	--space-2: 0.7rem;
+	--space-3: 1rem;
+	--space-4: 1.2rem;
+	--space-5: 1.6rem;
+
 
 
 }

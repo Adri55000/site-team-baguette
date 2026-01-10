@@ -31,7 +31,10 @@ def create_app():
     app.config["DATABASE"] = os.path.join(app.instance_path, "database.db")
     
     app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 Mo
-
+    
+    app.config['DISCORD_INVITE_URL'] = "https://discord.gg/rHJDPc2FcZ"
+    app.config['DISCORD_SERVER_NAME'] = "Team Baguette"
+    app.config['CONTACT_EMAIL'] = "contact.teambaguette@gmail.com"
     
     # S'assurer que le dossier instance existe
     try:

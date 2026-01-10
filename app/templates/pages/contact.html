@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="p-contact">
+  <header class="p-contact__header">
+    <h1 class="p-contact__title">Contacter l’équipe</h1>
+    <p class="p-contact__muted">
+      Une question, un bug, une idée ? Le plus simple est de passer par Discord.
+    </p>
+
+    {% if discord_invite_url %}
+      <div class="p-contact__actions">
+        <a class="btn btn-primary"
+           href="{{ discord_invite_url }}"
+           target="_blank" rel="noopener noreferrer">
+          Rejoindre {{ discord_server_name }}
+        </a>
+      </div>
+      <p class="p-contact__muted p-contact__muted--small">
+        Réponse généralement plus rapide sur Discord.
+      </p>
+    {% else %}
+      <div class="p-contact__alert p-contact__alert--warning">
+        Le lien Discord n’est pas encore configuré.
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="p-contact__grid">
+    <article class="p-contact__panel">
+      <h2 class="p-contact__h2">Comment ça marche</h2>
+      <ol class="p-contact__list">
+        <li>Rejoins le Discord</li>
+        <li>Explique ton besoin en 2–3 lignes</li>
+        <li>On te répond ou on te redirige</li>
+      </ol>
+      <p class="p-contact__muted">Astuce : ajoute un lien + une capture si c’est visuel.</p>
+    </article>
+
+    <article class="p-contact__panel">
+      <h2 class="p-contact__h2">Tu viens pour quoi ?</h2>
+
+      <details class="p-contact__details" open>
+        <summary class="p-contact__summary"><strong>Signaler un bug</strong></summary>
+        <ul class="p-contact__list p-contact__list--tight">
+          <li>Ce que tu faisais</li>
+          <li>Ce que tu attendais</li>
+          <li>Ce qui s’est passé</li>
+          <li>Lien + capture si possible</li>
+        </ul>
+      </details>
+
+      <details class="p-contact__details">
+        <summary class="p-contact__summary"><strong>Proposer une amélioration</strong></summary>
+        <ul class="p-contact__list p-contact__list--tight">
+          <li>L’idée en une phrase</li>
+          <li>Pourquoi c’est utile</li>
+          <li>Pour qui (joueurs, orga, viewers…)</li>
+        </ul>
+      </details>
+
+      <details class="p-contact__details">
+        <summary class="p-contact__summary"><strong>Tournoi / restream / overlay</strong></summary>
+        <ul class="p-contact__list p-contact__list--tight">
+          <li>Nom du tournoi (ou lien)</li>
+          <li>Ton pseudo</li>
+          <li>Ce que tu veux faire / modifier</li>
+        </ul>
+      </details>
+    </article>
+  </div>
+
+  <article class="p-contact__panel p-contact__panel--full">
+    <h2 class="p-contact__h2">Pas Discord ?</h2>
+    {% if contact_email %}
+      <p>
+        Tu peux aussi nous contacter par email :
+        <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+      </p>
+    {% else %}
+      <p class="p-contact__muted">En v1, le support se fait uniquement via Discord.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

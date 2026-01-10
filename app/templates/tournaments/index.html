@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Tournois – Team Baguette{% endblock %}
+
+{% block content %}
+<section class="page tournaments-page">
+  <h2 class="tournaments-page__title">Tournois</h2>
+
+  {% set labels = {"active":"En cours","upcoming":"À venir","finished":"Archives"} %}
+
+  {% for status in ["active", "upcoming", "finished"] %}
+    <div class="tournaments-block">
+      <h3 class="tournaments-block__title">{{ labels[status] }}</h3>
+
+      {% set games = ordered_games[status] %}
+      {% if not games %}
+        <p class="tournaments-block__empty">Aucun tournoi dans cette section.</p>
+      {% else %}
+        {% for game_name in games %}
+          <div class="tournaments-game">
+            <h4 class="tournaments-game__title">{{ game_name }}</h4>
+
+            <ul class="tlist">
+              {% for t in sections[status][game_name] %}
+                <li class="tlist__item">
+                  <a class="tlist__link" href="{{ url_for('main.tournament', slug=t.slug) }}">
+                    <span class="tlist__name">{{ t.name }}</span>
+                    <span class="tlist__chev" aria-hidden="true">→</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  {% endfor %}
+</section>
+
+{% endblock %}
