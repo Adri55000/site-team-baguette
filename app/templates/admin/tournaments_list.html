@@ -6,9 +6,9 @@
 {% endblock %}
 
 {% set STATUS_LABELS = {
-    "draft": {{ _("Brouillon") }},
-    "active": {{ _("En cours") }},
-    "finished": {{ _("Terminé") }}
+    "draft":  _("Brouillon"),
+    "active": _("En cours"),
+    "finished": _("Terminé")
 } %}
 
 {% block content %}
@@ -62,7 +62,7 @@
                 <td class="col-name">{{ t.name }}</td>
                 <td>{{ t.game_name or "—" }}</td>
 				<td>
-					{{ ngettext("%(count)s équipe","%(count)s équipes",t.team_count) | format(count=t.team_count) }}
+					{{ ngettext("%(count)s équipe", "%(count)s équipes", t.team_count, count=t.team_count) }}
 				</td>
                 <td>{{ STATUS_LABELS.get(t.status, t.status) }}</td>
                 <td>{{ t.source }}</td>

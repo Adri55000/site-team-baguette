@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-04 19:23+0100\n"
+"POT-Creation-Date: 2026-02-04 20:29+0100\n"
 "PO-Revision-Date: 2026-02-03 16:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -534,7 +534,9 @@ msgstr "Schedule"
 msgid "Tournois"
 msgstr "Tournaments"
 
-#: app/templates/admin/tournaments_form.html:55 app/templates/base.html:33
+#: app/templates/admin/tournaments_form.html:55
+#: app/templates/admin/tournaments_list.html:10
+#: app/templates/admin/tournaments_list.html:30 app/templates/base.html:33
 #: app/templates/tournaments/index.html:10
 #: app/templates/tournaments/internal.html:33
 msgid "En cours"
@@ -764,6 +766,7 @@ msgstr "Color (optionnal)"
 #: app/templates/admin/games.html:42 app/templates/admin/players_list.html:21
 #: app/templates/admin/teams_list.html:26
 #: app/templates/admin/tournaments_form.html:209
+#: app/templates/admin/tournaments_list.html:40
 msgid "Ajouter"
 msgstr "Add"
 
@@ -850,6 +853,7 @@ msgstr "Search"
 #: app/templates/admin/players_list.html:31
 #: app/templates/admin/teams_list.html:35
 #: app/templates/admin/tournaments_form.html:105
+#: app/templates/admin/tournaments_list.html:50
 #: app/templates/admin/translations/tournament_detail.html:37
 #: app/templates/admin/translations/tournaments_list.html:30
 #: app/templates/admin/translations/tournaments_list.html:31
@@ -862,6 +866,7 @@ msgid "Racetime"
 msgstr "Racetime"
 
 #: app/templates/admin/players_list.html:33
+#: app/templates/admin/tournaments_list.html:55
 msgid "Créé le"
 msgstr "Created on"
 
@@ -871,6 +876,7 @@ msgstr "Created on"
 #: app/templates/admin/teams_list.html:38
 #: app/templates/admin/tournaments/teams.html:42
 #: app/templates/admin/tournaments_form.html:108
+#: app/templates/admin/tournaments_list.html:56
 #: app/templates/admin/trackers/index.html:20
 #: app/templates/admin/trackers/presets_list.html:28
 #: app/templates/admin/users_list.html:52
@@ -884,6 +890,7 @@ msgstr "No player found."
 #: app/templates/admin/players_list.html:75
 #: app/templates/admin/teams_list.html:71
 #: app/templates/admin/tournaments/teams.html:200
+#: app/templates/admin/tournaments_list.html:102
 #: app/templates/admin/users_list.html:102
 #: app/templates/restream/planning.html:165
 msgid "Précédent"
@@ -892,6 +899,7 @@ msgstr "Back"
 #: app/templates/admin/players_list.html:82
 #: app/templates/admin/teams_list.html:78
 #: app/templates/admin/tournaments/teams.html:207
+#: app/templates/admin/tournaments_list.html:109
 #: app/templates/admin/users_list.html:109
 #: app/templates/restream/planning.html:170
 msgid "Page"
@@ -900,6 +908,7 @@ msgstr "Page"
 #: app/templates/admin/players_list.html:88
 #: app/templates/admin/teams_list.html:84
 #: app/templates/admin/tournaments/teams.html:219
+#: app/templates/admin/tournaments_list.html:118
 #: app/templates/admin/users_list.html:115
 #: app/templates/restream/planning.html:183
 msgid "Suivant"
@@ -972,6 +981,7 @@ msgid "Nom du tournoi"
 msgstr "Tournament name"
 
 #: app/templates/admin/tournaments_form.html:36
+#: app/templates/admin/tournaments_list.html:51
 msgid "Jeu"
 msgstr "Game"
 
@@ -981,16 +991,21 @@ msgstr "Select"
 
 #: app/templates/admin/matches/index.html:200
 #: app/templates/admin/tournaments_form.html:52
+#: app/templates/admin/tournaments_list.html:53
 #: app/templates/admin/users_list.html:51
 msgid "Statut"
 msgstr "Status"
 
 #: app/templates/admin/tournaments_form.html:54
+#: app/templates/admin/tournaments_list.html:9
+#: app/templates/admin/tournaments_list.html:29
 msgid "Brouillon"
 msgstr "Draft"
 
 #: app/templates/admin/matches/index.html:215
 #: app/templates/admin/tournaments_form.html:56
+#: app/templates/admin/tournaments_list.html:11
+#: app/templates/admin/tournaments_list.html:31
 #: app/templates/restream/planning.html:120
 #: app/templates/tournaments/archive_base.html:25
 #: app/templates/tournaments/internal.html:35
@@ -1051,6 +1066,54 @@ msgstr "Phase name"
 #: app/templates/admin/tournaments_form.html:202
 msgid "Qualifiés"
 msgstr "Qualified players"
+
+#: app/templates/admin/tournaments_list.html:2
+#: app/templates/admin/tournaments_list.html:17
+msgid "Gestion des tournois"
+msgstr "Tournament management"
+
+#: app/templates/admin/tournaments_list.html:24
+msgid "Rechercher un tournoi…"
+msgstr "Search for a player..."
+
+#: app/templates/admin/tournaments_list.html:28
+msgid "Tous les statuts"
+msgstr "All status"
+
+#: app/templates/admin/tournaments_list.html:34
+#: app/templates/admin/translations/groups_list.html:22
+#: app/templates/admin/translations/phases_list.html:20
+#: app/templates/admin/translations/tournaments_list.html:20
+msgid "Filtrer"
+msgstr "Filter"
+
+#: app/templates/admin/matches/index.html:70
+#: app/templates/admin/tournaments_list.html:52
+msgid "Équipes"
+msgstr "Teams"
+
+#: app/templates/admin/tournaments_list.html:54
+msgid "Source"
+msgstr "Type"
+
+#: app/templates/admin/tournaments_list.html:65
+#, python-format
+msgid "%(count)s équipe"
+msgid_plural "%(count)s teams"
+msgstr[0] "All teams"
+msgstr[1] ""
+
+#: app/templates/admin/tournaments_list.html:73
+msgid "Gérer les infos"
+msgstr "Manage infos"
+
+#: app/templates/admin/tournaments_list.html:78
+msgid "Gérer les inscriptions"
+msgstr "Manage registrations"
+
+#: app/templates/admin/tournaments_list.html:85
+msgid "Aucun tournoi trouvé."
+msgstr "No tournament found."
 
 #: app/templates/admin/users_list.html:2 app/templates/admin/users_list.html:12
 msgid "Gestion des utilisateurs"
@@ -1220,10 +1283,6 @@ msgstr "New tie-break"
 #: app/templates/admin/matches/index.html:65
 msgid "Confrontations"
 msgstr "Confrontations"
-
-#: app/templates/admin/matches/index.html:70
-msgid "Équipes"
-msgstr "Teams"
 
 #: app/templates/admin/matches/index.html:71
 msgid "Stage"
@@ -1559,12 +1618,6 @@ msgstr "Group"
 #: app/templates/admin/translations/tournaments_list.html:18
 msgid "Afficher uniquement les manquants"
 msgstr "Show only missing"
-
-#: app/templates/admin/translations/groups_list.html:22
-#: app/templates/admin/translations/phases_list.html:20
-#: app/templates/admin/translations/tournaments_list.html:20
-msgid "Filtrer"
-msgstr "Filter"
 
 #: app/templates/admin/translations/groups_list.html:26
 msgid "Retour tournois"
