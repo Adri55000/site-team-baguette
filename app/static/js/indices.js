@@ -47,7 +47,7 @@ function updateCategoryView(category, lines) {
     if (!tableWrapper) return;
 
     const tbody = tableWrapper.querySelector("tbody");
-    const isOneColumn = tableWrapper.classList.contains("one-column");
+    const isOneColumn = tableWrapper.classList.contains("columns-1");
 
     tbody.innerHTML = "";
 
