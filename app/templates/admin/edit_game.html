@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Modifier le jeu{% endblock %}
+{% block title %}{{ _("Modifier le jeu") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -8,14 +8,14 @@
 {% block content %}
 <div class="admin-games-page">
 
-    <h1>Modifier un jeu</h1>
+    <h1>{{ _("Modifier un jeu") }}</h1>
 
     <div class="admin-card">
 
         <form method="POST" class="admin-form">
 
             <div class="form-group">
-                <label for="full_name">Nom complet</label>
+                <label for="full_name">{{ _("Nom complet") }}</label>
                 <input type="text"
                        id="full_name"
                        name="full_name"
@@ -24,7 +24,7 @@
             </div>
 
             <div class="form-group">
-                <label for="short_name">Abréviation</label>
+                <label for="short_name">{{ _("Abréviation") }}</label>
                 <input type="text"
                        id="short_name"
                        name="short_name"
@@ -33,7 +33,7 @@
             </div>
 
             <div class="form-group">
-                <label for="color">Couleur</label>
+                <label for="color">{{ _("Couleur") }}</label>
 
                 <div class="color-picker-wrapper">
                     <div id="colorPreview" class="color-preview"></div>
@@ -45,10 +45,10 @@
             </div>
 
             <div class="edit-game-actions">
-                <button type="submit" class="btn-primary">Enregistrer</button>
+                <button type="submit" class="btn-primary">{{ _("Enregistrer") }}</button>
 
                 <a href="{{ url_for('admin.games_list') }}" class="btn-secondary">
-                    Annuler
+                    {{ _("Annuler") }}
                 </a>
             </div>
 

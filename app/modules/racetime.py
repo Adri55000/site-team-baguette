@@ -21,7 +21,7 @@
 # - Else if any player is DNF => team is DNF
 
 from __future__ import annotations
-
+from flask_babel import gettext as _
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -66,7 +66,7 @@ def normalize_room_to_path(racetime_room: str) -> str:
     """
     room = (racetime_room or "").strip()
     if not room:
-        raise RacetimeRoomInvalid("Empty racetime_room")
+        raise RacetimeRoomInvalid(_("Empty racetime_room"))
 
     if room.startswith(("http://", "https://")):
         parsed = urlparse(room)
@@ -77,7 +77,7 @@ def normalize_room_to_path(racetime_room: str) -> str:
     parts = [p for p in path.split("/") if p]
     if len(parts) < 2:
         raise RacetimeRoomInvalid(
-            "racetime_room must look like '<category>/<race_slug>' or a full URL"
+            _("racetime_room must look like '<category>/<race_slug>' or a full URL")
         )
 
     # Keep only "<category>/<race>"
@@ -221,12 +221,12 @@ def fetch_race_data(racetime_room: str, *, timeout: float = 6.0) -> Dict[str, An
         resp.raise_for_status()
         data = resp.json()
         if not isinstance(data, dict):
-            raise RacetimeFetchError("Invalid racetime payload (not a dict)")
+            raise RacetimeFetchError(_("Invalid racetime payload (not a dict)"))
         return data
     except RacetimeRoomInvalid:
         raise
     except Exception as e:
-        raise RacetimeFetchError("Failed to fetch racetime data") from e
+        raise RacetimeFetchError(_("Failed to fetch racetime data")) from e
 
 
 # ----------------------------

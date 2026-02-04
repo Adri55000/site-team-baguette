@@ -13,7 +13,7 @@
     <h1 class="restream-title">{{ restream.title }}</h1>
 
     <div class="restream-meta">
-      Créé par <b>{{ restream.creator }}</b>
+      {{ _("Créé par") }} <b>{{ restream.creator }}</b>
       · {{ restream.created_at }}
     </div>
   </header>
@@ -24,14 +24,14 @@
 	{% if restream.indices_template != "none" %}
     <a href="{{ url_for('restream.restream_indices', slug=restream.slug) }}"
        class="btn btn-primary btn-large restream-indices-cta">
-      🔎 Accéder aux indices
+      🔎 {{ _("Accéder aux indices") }}
     </a>
 	{% endif %}
 
 	
 	{% if can_edit %}
 		<a class="btn btn-primary btn-large restream-indices-cta" href="{{ url_for('restream.restream_live', slug=restream.slug) }}">
-		Live
+		{{ _("Gestion en direct") }}
 		</a>
 	{% endif %}
 
@@ -39,7 +39,7 @@
       <a href="{{ restream.twitch_url }}"
          target="_blank"
          class="btn btn-secondary">
-        📺 Chaîne Twitch
+        📺 {{ _("Chaîne Twitch") }}
       </a>
     {% endif %}
 
@@ -50,19 +50,19 @@
 	or restream.tracker_name %}
 
 		<section class="restream-view-staff">
-			<h2>Équipe du restream</h2>
+			<h2>{{ _("Équipe du restream") }}</h2>
 
 			<ul class="restream-staff-list">
 				{% if restream.restreamer_name %}
-					<li><strong>Restream :</strong> {{ restream.restreamer_name }}</li>
+					<li><strong>{{ _("Restream :") }}</strong> {{ restream.restreamer_name }}</li>
 				{% endif %}
 
 				{% if restream.commentator_name %}
-					<li><strong>Commentaires :</strong> {{ restream.commentator_name }}</li>
+					<li><strong>{{ _("Commentaires :") }}</strong> {{ restream.commentator_name }}</li>
 				{% endif %}
 
 				{% if restream.tracker_name %}
-					<li><strong>Tracking :</strong> {{ restream.tracker_name }}</li>
+					<li><strong>{{ _("Tracking :") }}</strong> {{ restream.tracker_name }}</li>
 				{% endif %}
 			</ul>
 		</section>
@@ -73,8 +73,8 @@
   <!-- INFOS / EXTENSIONS FUTURES -->
   <section class="restream-view-info">
     <p class="restream-hint">
-      Cette page sert de point d’accès au restream.
-      Les indices sont mis à jour en temps réel.
+      {{ _("Cette page sert de point d’accès au restream.") }}
+      {{ _("Les indices sont mis à jour en temps réel.") }}
     </p>
   </section>
 

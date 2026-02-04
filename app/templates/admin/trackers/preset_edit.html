@@ -2,7 +2,11 @@
 {% from "restream/_tracker_ssr_macro.html" import render_tracker with context %}
 
 {% block title %}
-{% if mode == "new" %}Créer{% else %}Éditer{% endif %} un preset – {{ tracker_label }}
+{% if mode == "new" %}
+  {{ _("Créer un preset – %(label)s", label=tracker_label) }}
+{% else %}
+  {{ _("Éditer un preset – %(label)s", label=tracker_label) }}
+{% endif %}
 {% endblock %}
 
 {% block head %}
@@ -12,24 +16,28 @@
 
 {% block content %}
 <h1>
-    {% if mode == "new" %}Créer{% else %}Éditer{% endif %} un preset – {{ tracker_label }}
+    {% if mode == "new" %}
+	  {{ _("Créer un preset – %(label)s", label=tracker_label) }}
+	{% else %}
+	  {{ _("Éditer un preset – %(label)s", label=tracker_label) }}
+	{% endif %}
 </h1>
 
 <form method="post" class="admin-form">
     <div class="form-row">
-        <label for="label">Nom du preset</label>
+        <label for="label">{{ _("Nom du preset") }}</label>
         <input id="label" name="label" type="text" value="{{ label }}" required>
     </div>
 
     <div class="form-row">
-        <label for="notes">Notes</label>
+        <label for="notes">{{ _("Notes") }}</label>
         <textarea class="admin-input" id="notes" name="notes" rows="3">{{ notes }}</textarea>
     </div>
 
     <input type="hidden" id="participant_json" name="participant_json" value="{}">
 
 
-    <h2>État du tracker (1 slot)</h2>
+    <h2>{{ _("État du tracker (1 slot)") }}</h2>
 
     {# Zone tracker : on utilise le template_block du tracker (dépend de tracker_type) #}
     <div class="tracker-admin-scope">
@@ -46,11 +54,11 @@
 
     <div class="admin-actions">
         <button type="submit" class="btn btn-primary">
-            💾 Enregistrer
+            💾 {{ _("Enregistrer") }}
         </button>
 
         <a href="{{ url_for('admin.admin_trackers_presets', tracker_type=tracker_type) }}" class="btn btn-secondary">
-            Annuler
+            {{ _("Annuler") }}
         </a>
     </div>
 </form>

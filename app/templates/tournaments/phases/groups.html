@@ -14,9 +14,9 @@
                 <table class="group-table">
                     <thead>
                         <tr>
-                            <th class="group-col-team">Équipe</th>
-                            <th class="group-col-num">J</th>
-                            <th class="group-col-num">V</th>
+                            <th class="group-col-team">{{ _("Équipe") }}</th>
+                            <th class="group-col-num">{{ _("J") }}</th>
+                            <th class="group-col-num">{{ _("V") }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,6 +43,6 @@
 
 {% else %}
     <p class="tournament-placeholder">
-        Aucun groupe à afficher pour cette phase.
+        {{ _("Aucun groupe à afficher pour cette phase.") }}
     </p>
 {% endif %}

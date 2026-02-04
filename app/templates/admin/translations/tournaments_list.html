@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Gérer les traductions de tournois") }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ _("Traductions – Tournois") }} ({{ lang }})</h1>
+
+<form method="get" style="margin-bottom: 12px;">
+  <input type="hidden" name="lang" value="{{ lang }}">
+  <label>
+    <input type="checkbox" name="only_missing" value="1"
+           {% if only_missing %}checked{% endif %}>
+    {{ _("Afficher uniquement les manquants") }}
+  </label>
+  <button type="submit" class="btn btn-secondary">{{ _("Filtrer") }}</button>
+
+  <a class="btn btn-secondary" href="{{ url_for('admin.translations_hub', lang=lang) }}">
+    ← {{ _("Retour hub") }}
+  </a>
+</form>
+
+<table border="1" cellpadding="6" style="width:100%; border-collapse: collapse;">
+  <tr>
+    <th>{{ _("Slug") }}</th>
+    <th>{{ _("Nom") }} (DB)</th>
+    <th>{{ _("Nom") }} ({{ lang }})</th>
+    <th>{{ _("Metadata") }} ({{ lang }})</th>
+    <th>{{ _("Groupes") }} ({{ lang }})</th>
+    <th>{{ _("Action") }}</th>
+  </tr>
+
+  {% for row in rows %}
+  <tr>
+    <td>{{ row.slug }}</td>
+    <td>{{ row.name_db }}</td>
+    <td style="text-align:center;">{{ '✅' if row.name_done else '❌' }}</td>
+    <td style="text-align:center;">{{ '✅' if row.metadata_done else '❌' }}</td>
+
+    <td style="text-align:center;">
+      {% if row.groups_total == 0 %}
+        —
+      {% else %}
+        {{ row.groups_done }}/{{ row.groups_total }}
+        {% if row.groups_done == row.groups_total %}✅{% endif %}
+      {% endif %}
+    </td>
+
+    <td>
+      <a href="{{ url_for('admin.translations_tournament_detail', slug=row.slug, lang=lang) }}">
+        {{ _("Éditer") }}
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}
-Modifier le restream
+{{ _("Modifier le restream") }}
 {% endblock %}
 
 {% block content %}
 
 <div class="restream-edit-page">
 
-  <h1>Modifier le restream</h1>
+  <h1>{{ _("Modifier le restream") }}</h1>
 
   <form method="post" class="restream-edit-form">
 
     <!-- TITLE -->
     <div class="form-group">
-      <label for="title">Titre du restream</label>
+      <label for="title">{{ _("Titre du restream") }}</label>
       <input
         type="text"
         name="title"
@@ -26,13 +26,13 @@ Modifier le restream
 	
 	<!-- TRACKER TYPE -->
     <div class="form-group">
-      <label for="tracker_type">Tracker</label>
+      <label for="tracker_type">{{ _("Tracker") }}</label>
       <select name="tracker_type" id="tracker_type" required>
 
         <option value="none"
           {% if restream.tracker_type == "none" %}selected{% endif %}
         >
-          Aucun tracker
+          {{ _("Aucun tracker") }}
         </option>
 
         {% if available_tracker_types %}
@@ -50,13 +50,13 @@ Modifier le restream
 
     <!-- INDICES TEMPLATE -->
     <div class="form-group">
-      <label for="indices_template">Indices</label>
+      <label for="indices_template">{{ _("Indices") }}</label>
       <select name="indices_template" id="indices_template" required>
 
         <option value="none"
           {% if restream.indices_template == "none" %}selected{% endif %}
         >
-          Aucun indice
+          {{ _("Aucun indice") }}
         </option>
 
         {% if available_indices_templates %}
@@ -74,7 +74,7 @@ Modifier le restream
 
     <!-- TWITCH -->
     <div class="form-group">
-      <label for="twitch_url">Lien Twitch</label>
+      <label for="twitch_url">{{ _("Lien Twitch") }}</label>
       <input
         type="url"
         name="twitch_url"
@@ -84,11 +84,11 @@ Modifier le restream
       >
     </div>
 
-    <h2>Équipe du restream</h2>
+    <h2>{{ _("Équipe du restream") }}</h2>
 
     <!-- NAMES -->
     <div class="form-group">
-      <label for="restreamer_name">Restream</label>
+      <label for="restreamer_name">{{ _("Restream") }}</label>
       <input
         type="text"
         name="restreamer_name"
@@ -98,7 +98,7 @@ Modifier le restream
     </div>
 
     <div class="form-group">
-      <label for="commentator_name">Commentaires</label>
+      <label for="commentator_name">{{ _("Commentaires") }}</label>
       <input
         type="text"
         name="commentator_name"
@@ -108,7 +108,7 @@ Modifier le restream
     </div>
 
     <div class="form-group">
-      <label for="tracker_name">Tracking</label>
+      <label for="tracker_name">{{ _("Tracking") }}</label>
       <input
         type="text"
         name="tracker_name"
@@ -120,11 +120,11 @@ Modifier le restream
     <!-- ACTIONS -->
     <div class="form-actions">
       <button type="submit" class="btn btn-primary">
-        Enregistrer
+        {{ _("Enregistrer") }}
       </button>
 
       <a href="{{ url_for('restream.manage') }}" class="btn btn-secondary">
-        Annuler
+        {{ _("Annuler") }}
       </a>
     </div>
 

@@ -10,7 +10,7 @@
 
     <div class="tournament-header-left">
         <h1 class="tournament-title">
-            {{ tournament.name }}
+            {{ tournament.display_name }}
             {% if metadata.edition %}
                 <span class="tournament-edition">
                     {{ metadata.edition }}
@@ -28,11 +28,11 @@
     <div class="tournament-header-right">
         <div class="tournament-status tournament-status--{{ public_status }}">
             {% if public_status == "upcoming" %}
-				À venir
+				{{ _("À venir") }}
 			{% elif public_status == "active" %}
-				En cours
+				{{ _("En cours") }}
 			{% elif public_status == "finished" %}
-				Terminé
+				{{ _("Terminé") }}
 			{% endif %}
 
         </div>
@@ -57,7 +57,7 @@
 {% if metadata.organizers %}
 <section class="tournament-section tournament-infos">
 
-    <h2>Organisateurs</h2>
+    <h2>{{ _("Organisateurs") }}</h2>
 
     <ul class="tournament-info-list">
 
@@ -75,7 +75,7 @@
 <!-- ========================= -->
 <section class="tournament-section tournament-participants">
 
-    <h2>Participants</h2>
+    <h2>{{ _("Participants") }}</h2>
 
     {% if teams %}
         <div class="class=tournament-list tournament-participants-grid">
@@ -90,7 +90,7 @@
 
     {% else %}
         <p class="tournament-placeholder">
-            Les participants seront affichés prochainement.
+            {{ _("Les participants seront affichés prochainement.") }}
         </p>
     {% endif %}
 
@@ -102,7 +102,7 @@
 {% if metadata.highlights %}
 <section class="tournament-section tournament-results">
 
-    <h2>Résultats marquants</h2>
+    <h2>{{ _("Résultats marquants") }}</h2>
 
     <ul class="tournament-results-list">
         {% for h in metadata.highlights %}
@@ -121,7 +121,7 @@
 <!-- ========================= -->
 <section class="tournament-section tournament-links">
 
-    <h2>Consulter le tournoi</h2>
+    <h2>{{ _("Consulter le tournoi") }}</h2>
 
     <div class="tournament-links-actions">
 
@@ -129,14 +129,14 @@
             href="{{ url_for('main.tournament_results', slug=tournament.slug) }}"
             class="btn"
         >
-            📊 Résultats complets
+            📊 {{ _("Résultats complets") }}
         </a>
 
         <a
             href="{{ url_for('main.tournament_bracket', slug=tournament.slug) }}"
             class="btn"
         >
-            🧩 Bracket & groupes
+            🧩 {{ _("Bracket & groupes") }}
         </a>
 
     </div>
@@ -149,7 +149,7 @@
 {% if metadata.external_links %}
 <section class="tournament-section tournament-content">
 
-    <h2>Liens externes</h2>
+    <h2>{{ _("Liens externes") }}</h2>
 
     <ul class="tournament-links">
         {% for label, url in metadata.external_links.items() %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-    {{ "Modifier" if player else "Ajouter" }} un joueur
+    {{ _("Modifier un joueur") if player else _("Ajouter un joueur") }}
 {% endblock %}
 
 {% block head %}
@@ -10,7 +10,7 @@
 {% block content %}
 
 <h1>
-    {{ "Modifier" if player else "Ajouter" }} un joueur
+    {{ _("Modifier un joueur") if player else _("Ajouter un joueur") }}
 </h1>
 
 <div class="admin-card">
@@ -19,7 +19,7 @@
     <form method="post" class="admin-form">
 
         <div class="admin-form-group">
-            <label for="name">Nom du joueur</label>
+            <label for="name">{{ _("Nom du joueur") }}</label>
             <input type="text"
                    id="name"
                    name="name"
@@ -29,26 +29,26 @@
         </div>
 
         <div class="admin-form-group">
-            <label for="racetime_user">Racetime user</label>
+            <label for="racetime_user">{{ _("Racetime user") }}</label>
             <input type="text"
                    id="racetime_user"
                    name="racetime_user"
                    class="admin-input"
                    value="{{ player.racetime_user if player and player.racetime_user else '' }}"
-                   placeholder="username#1234">
+                   placeholder="{{ _('username#1234') }}">
             <p class="admin-help">
-                Identifiant racetime au format <code>username#1234</code> (optionnel).
+                {{ _("Identifiant racetime au format <code>username#1234</code> (optionnel).") }}
             </p>
         </div>
 
         <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary">
-                Enregistrer
+                {{ _("Enregistrer") }}
             </button>
 
             <a href="{{ url_for('admin.players_list') }}"
                class="btn btn-secondary">
-                Annuler
+                {{ _("Annuler") }}
             </a>
         </div>
 
@@ -58,11 +58,11 @@
     <hr>
 
     <!-- SUPPRESSION -->
-    <h3>Suppression</h3>
+    <h3>{{ _("Suppression") }}</h3>
 
     {% if can_delete %}
         <p class="admin-warning">
-            Cette action est définitive.
+            {{ _("Cette action est définitive.") }}
         </p>
 
         <form method="post"
@@ -70,13 +70,13 @@
               onsubmit="return confirm('Supprimer définitivement ce joueur ?');">
 
             <button type="submit" class="btn btn-danger">
-                Supprimer le joueur
+                {{ _("Supprimer le joueur") }}
             </button>
         </form>
     {% else %}
         <p class="admin-info">
-            Ce joueur est utilisé dans des équipes, tournois ou matchs.
-            La suppression est impossible.
+            {{ _("Ce joueur est utilisé dans des équipes, tournois ou matchs.") }}
+            {{ _("La suppression est impossible.") }}
         </p>
     {% endif %}
     {% endif %}

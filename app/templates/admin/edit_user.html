@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Modifier un utilisateur{% endblock %}
+{% block title %}{{ _("Modifier un utilisateur") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<h1>Modifier l'utilisateur : {{ user.username }}</h1>
+<h1>{{ _("Modifier l'utilisateur :")}} {{ user.username }}</h1>
 
 <div class="admin-card">
 
@@ -16,53 +16,53 @@
 
         <!-- Sélection du rôle -->
         <div class="admin-form-group">
-            <label for="role">Rôle</label>
+            <label for="role">{{ _("Rôle") }}</label>
             <select name="role" id="role" class="admin-input short">
-                <option value="invité"     {{ 'selected' if user.role=='invité' }}>Invité</option>
-                <option value="éditeur"    {{ 'selected' if user.role=='éditeur' }}>Éditeur</option>
-                <option value="restreamer" {{ 'selected' if user.role=='restreamer' }}>Restreamer</option>
-                <option value="admin"      {{ 'selected' if user.role=='admin' }}>Admin</option>
+                <option value="invité"     {{ 'selected' if user.role=='invité' }}>{{ _("Invité") }}</option>
+                <option value="éditeur"    {{ 'selected' if user.role=='éditeur' }}>{{ _("Éditeur") }}</option>
+                <option value="restreamer" {{ 'selected' if user.role=='restreamer' }}>{{ _("Restreamer") }}</option>
+                <option value="admin"      {{ 'selected' if user.role=='admin' }}>{{ _("Admin") }}</option>
             </select>
         </div>
 
         <!-- Statut actif/inactif -->
         <div class="admin-form-group">
-            <label>Compte actif</label>
+            <label>{{ _("Compte actif") }}</label>
             <div class="checkbox-row">
                 <input type="checkbox" name="is_active" id="is_active"
                        {% if user.is_active %}checked{% endif %}>
-                <label for="is_active" class="checkbox-label">Actif</label>
+                <label for="is_active" class="checkbox-label">{{ _("Actif") }}</label>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="{{ url_for('admin.users_list') }}" class="btn">Annuler</a>
+        <button type="submit" class="btn btn-primary">{{ _("Enregistrer") }}</button>
+        <a href="{{ url_for('admin.users_list') }}" class="btn">{{ _("Annuler") }}</a>
     </form>
 
     <hr>
 
     <!-- Gestion avatar -->
-    <h3>Avatar</h3>
+    <h3>{{ _("Avatar") }}</h3>
     <div class="avatar-section">
         {% if user.avatar_filename %}
             <img src="{{ url_for('static', filename='avatars/' + user.avatar_filename) }}"
                  class="avatar-admin">
         {% else %}
-            <p><i>Aucun avatar</i></p>
+            <p><i>{{ _("Aucun avatar") }}</i></p>
         {% endif %}
 
         <form method="POST" action="{{ url_for('admin.reset_avatar', user_id=user.id) }}">
-            <button type="submit" class="btn btn-warning">Réinitialiser l'avatar</button>
+            <button type="submit" class="btn btn-warning">{{ _("Réinitialiser l'avatar") }}</button>
         </form>
     </div>
 
     <hr>
 
     <!-- Gestion mot de passe -->
-    <h3>Mot de passe</h3>
-    <p>Pour des raisons de sécurité, les mots de passe ne peuvent pas être affichés.</p>
+    <h3>{{ _("Mot de passe") }}</h3>
+    <p>{{ _("Pour des raisons de sécurité, les mots de passe ne peuvent pas être affichés.") }}</p>
     <form method="POST" action="{{ url_for('admin.reset_password', user_id=user.id) }}">
-        <button type="submit" class="btn btn-danger">Réinitialiser le mot de passe</button>
+        <button type="submit" class="btn btn-danger">{{ _("Réinitialiser le mot de passe") }}</button>
     </form>
 
 </div>

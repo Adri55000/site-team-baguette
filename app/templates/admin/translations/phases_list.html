@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Gérer les traductions des phases") }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ _("Traductions – Phases") }} ({{ lang }})</h1>
+
+<form method="get" style="margin-bottom: 12px;">
+  <input type="hidden" name="lang" value="{{ lang }}">
+  <label>
+    <input type="checkbox" name="only_missing" value="1"
+           {% if only_missing %}checked{% endif %}>
+    {{ _("Afficher uniquement les manquants") }}
+  </label>
+  <button type="submit" class="btn btn-secondary">{{ _("Filtrer") }}</button>
+
+  <a class="btn btn-secondary" href="{{ url_for('admin.translations_hub', lang=lang) }}">
+    ← {{ _("Retour hub") }}
+  </a>
+</form>
+
+<form method="post" action="{{ url_for('admin.translations_phases_save', lang=lang, only_missing=('1' if only_missing else None)) }}">
+  <table border="1" cellpadding="6" style="width:100%; border-collapse: collapse;">
+    <tr>
+      <th style="width:80px;">ID</th>
+      <th>{{ _("Nom (DB)") }}</th>
+      <th style="width:50%;">{{ _("Traduction") }} ({{ lang }})</th>
+      <th style="width:80px;">{{ _("État") }}</th>
+    </tr>
+
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.id }}</td>
+      <td>{{ row.name_db }}</td>
+      <td>
+        <input type="text"
+               name="phase_{{ row.id }}"
+               value="{{ row.name_tr }}"
+               style="width:100%;">
+      </td>
+      <td style="text-align:center;">
+        {{ "✅" if row.done else "❌" }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div style="margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button type="submit" class="btn btn-primary">{{ _("Enregistrer") }}</button>
+    <span style="opacity:.75;">
+      {{ _("Laisser vide pour supprimer la traduction (fallback DB).") }}
+    </span>
+  </div>
+</form>
+
+{% endblock %}
+

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Gérer les matchs{% endblock %}
+{% block title %}{{ _("Gérer les matchs") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -8,13 +8,13 @@
 {% block content %}
 <div class="admin-dashboard">
 
-<h1>Gérer les matchs</h1>
+<h1>{{ _("Gérer les matchs") }}</h1>
 
 <!-- Sélection du tournoi -->
 <div class="admin-card admin-user-toolbar">
     <form method="get" action="{{ url_for('admin.admin_matches') }}">
         <select name="tournament_id" required>
-            <option value="">— Sélectionner un tournoi —</option>
+            <option value="">— {{ _("Sélectionner un tournoi") }} —</option>
             {% for t in tournaments %}
                 <option value="{{ t.id }}"
                     {% if selected_tournament and t.id == selected_tournament.id %}selected{% endif %}>
@@ -24,7 +24,7 @@
         </select>
 		{% if selected_tournament %}
 			<select name="phase_id">
-				<option value="">— Toutes les phases —</option>
+				<option value="">— {{ _("Toutes les phases") }} —</option>
 				{% for p in phases %}
 					<option value="{{ p.id }}"
 						{% if selected_phase_id and p.id == selected_phase_id %}selected{% endif %}>
@@ -34,13 +34,13 @@
 			</select>
 		{% endif %}
 
-        <button class="btn">Afficher</button>
+        <button class="btn">{{ _("Afficher") }}</button>
     </form>
 </div>
 
 {% if selected_tournament %}
 <p class="admin-subtitle">
-    Tournoi : <strong>{{ selected_tournament.name }}</strong>
+    {{ _("Tournoi :") }} <strong>{{ selected_tournament.name }}</strong>
 </p>
 
 <!-- Actions -->
@@ -49,30 +49,30 @@
         <a class="btn btn-primary"
            href="{{ url_for('admin.admin_confrontation_create',
                             tournament_id=selected_tournament.id, phase_id=selected_phase_id) }}">
-            Nouvelle confrontation
+            {{ _("Nouvelle confrontation") }}
         </a>
 
         <a class="btn btn-secondary"
            href="{{ url_for('admin.admin_match_create',
                             tournament_id=selected_tournament.id) }}">
-            Nouveau tie-break
+            {{ _("Nouveau tie-break") }}
         </a>
     {% endif %}
 </div>
 
 <!-- Confrontations -->
 <div class="admin-card">
-<h2>Confrontations</h2>
+<h2>{{ _("Confrontations") }}</h2>
 
 <table class="admin-table">
 <thead>
 <tr>
-    <th>Équipes</th>
-    <th>Stage</th>
-	<th>Round</th>
-    <th>BO</th>
-    <th>Progression</th>
-    <th class="actions">Actions</th>
+    <th>{{ _("Équipes") }}</th>
+    <th>{{ _("Stage") }}</th>
+	<th>{{ _("Round") }}</th>
+    <th>{{ _("BO") }}</th>
+    <th>{{ _("Progression") }}</th>
+    <th class="actions">{{ _("Actions") }}</th>
 </tr>
 </thead>
 
@@ -87,7 +87,7 @@
 			<tr class="admin-phase-header" data-phase="{{ c.phase_id }}">
 				<td colspan="6">
 					<strong>
-						Phase {{ c.phase_position }} — {{ c.phase_name }}
+						{{ _("Phase") }} {{ c.phase_position }} — {{ c.phase_name }}
 					</strong>
 				</td>
 			</tr>
@@ -105,22 +105,26 @@
                 </div>
 
                 <div class="text-muted">
-                    {{ wins }} victoire{{ 's' if wins != 1 }} sur {{ c.best_of }}
+                    {{ ngettext(
+						"%(wins)s victoire sur %(total)s",
+						"%(wins)s victoires sur %(total)s",
+						wins
+					) | format(wins=wins, total=c.best_of) }}
                 </div>
 
                 <div class="admin-series-status">
                     {% if c.match_count == 0 %}
-                        <span class="badge badge-muted">Aucun match</span>
+                        <span class="badge badge-muted">{{ _("Aucun match") }}</span>
                     {% elif c.winner_team_id %}
-                        <span class="badge badge-success">Confrontation gagnée</span>
+                        <span class="badge badge-success">{{ _("Confrontation gagnée") }}</span>
                     {% else %}
-                        <span class="badge badge-warning">Confrontation en cours</span>
+                        <span class="badge badge-warning">{{ _("Confrontation en cours") }}</span>
                     {% endif %}
                 </div>
 
                 {% if c.winner_team_id %}
                 <div class="text-muted">
-                    Vainqueur :
+                    {{ _("Vainqueur :") }}
                     <span class="badge badge-success">
                         {{ c.winner_name | team_name }}
                     </span>
@@ -135,7 +139,12 @@
             <td>
                 <span class="text-muted">
                     {{ wins }} / {{ c.match_count }}
-                    match{{ 's' if c.match_count != 1 }} joué{{ 's' if c.match_count != 1 }}
+                    {{ ngettext(
+						"%(count)s match joué",
+						"%(count)s matchs joués",
+						c.match_count
+					) | format(count=c.match_count) }}
+
                 </span>
             </td>
 
@@ -143,14 +152,14 @@
                 <a class="btn btn-secondary-small"
                    href="{{ url_for('admin.admin_confrontation_matches',
                                     series_id=c.id) }}">
-                    Gérer les matchs
+                    {{ _("Gérer les matchs") }}
                 </a>
 
                 {% if selected_tournament.status != "finished" %}
                     <a class="btn btn-secondary-small"
                        href="{{ url_for('admin.admin_confrontation_edit',
                                         series_id=c.id) }}">
-                        Modifier
+                        {{ _("Modifier") }}
                     </a>
 
                     {% if c.match_count == 0 %}
@@ -160,7 +169,7 @@
                           class="inline-form">
                         <button class="btn btn-danger-small"
                                 onclick="return confirm('Supprimer cette confrontation ?')">
-                            Supprimer
+                            {{ _("Supprimer") }}
                         </button>
                     </form>
                     {% endif %}
@@ -171,7 +180,7 @@
 {% else %}
     <tr>
         <td colspan="6" class="admin-empty">
-            Aucune confrontation pour ce tournoi.
+            {{ _("Aucune confrontation pour ce tournoi.") }}
         </td>
     </tr>
 {% endif %}
@@ -181,15 +190,15 @@
 
 <!-- Tie-breaks -->
 <div class="admin-card">
-<h2>Tie-breaks / matchs indépendants</h2>
+<h2>{{ _("Tie-breaks / matchs indépendants") }}</h2>
 
 <table class="admin-table">
 <thead>
 <tr>
-    <th>ID</th>
-    <th>Date</th>
-    <th>Statut</th>
-    <th class="actions">Actions</th>
+    <th>{{ _("ID") }}</th>
+    <th>{{ _("Date") }}</th>
+    <th>{{ _("Statut") }}</th>
+    <th class="actions">{{ _("Actions") }}</th>
 </tr>
 </thead>
 
@@ -203,19 +212,19 @@
         </td>
         <td>
             {% if m.is_completed %}
-                <span class="badge badge-success">Terminé</span>
+                <span class="badge badge-success">{{ _("Terminé") }}</span>
             {% else %}
-                <span class="badge badge-muted">À jouer</span>
+                <span class="badge badge-muted">{{ _("À jouer") }}</span>
             {% endif %}
         </td>
         <td class="actions">
             <a class="btn btn-primary-small"
                href="{{ url_for('admin.admin_match_results', match_id=m.id) }}">
-                Saisir les résultats
+                {{ _("Saisir les résultats") }}
             </a>
             <a class="btn btn-secondary-small"
                href="{{ url_for('admin.admin_match_edit', match_id=m.id) }}">
-                Modifier
+                {{ _("Modifier") }}
             </a>
             {% if selected_tournament.status != "finished" and not m.is_completed %}
             <form method="post"
@@ -223,7 +232,7 @@
                   class="inline-form">
                 <button class="btn btn-danger-small"
                         onclick="return confirm('Supprimer ce tie-break ?')">
-                    Supprimer
+                    {{ _("Supprimer") }}
                 </button>
             </form>
             {% endif %}
@@ -233,7 +242,7 @@
 {% else %}
     <tr>
         <td colspan="4" class="admin-empty">
-            Aucun tie-break.
+            {{ _("Aucun tie-break.") }}
         </td>
     </tr>
 {% endif %}

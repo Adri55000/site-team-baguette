@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %}
-Planning des matchs
+{{ _("Planning des matchs") }}
 {% endblock %}
 
 {% block content %}
 <div class="restream-planning">
 
-    <h1>Planning des matchs</h1>
+    <h1>{{ _("Planning des matchs") }}</h1>
 
     <!-- ========================= -->
     <!-- Filtres -->
@@ -18,9 +18,9 @@ Planning des matchs
 		{% endif %}
 
         <div class="restream-planning-filters-group">
-            <label for="tournament">Tournoi</label>
+            <label for="tournament">{{ _("Tournoi") }}</label>
             <select name="tournament" id="tournament">
-                <option value="">Tous les tournois</option>
+                <option value="">{{ _("Tous les tournois") }}</option>
                 {% for t in tournaments %}
                     <option
                         value="{{ t.id }}"
@@ -28,7 +28,7 @@ Planning des matchs
                             selected
                         {% endif %}
                     >
-                        {{ t.name }}
+                        {{ t.display_name or t.name }}
                     </option>
                 {% endfor %}
             </select>
@@ -44,13 +44,13 @@ Planning des matchs
                         checked
                     {% endif %}
                 >
-                Afficher les matchs passés
+                {{ _("Afficher les matchs passés") }}
             </label>
         </div>
 
         <div class="restream-planning-filters-actions">
             <button type="submit">
-                Appliquer
+                {{ _("Appliquer") }}
             </button>
         </div>
 
@@ -63,7 +63,7 @@ Planning des matchs
 
         {% if not matches %}
             <div class="restream-planning-empty">
-                Aucun match à afficher.
+                {{ _("Aucun match à afficher.") }}
             </div>
         {% else %}
 
@@ -117,11 +117,11 @@ Planning des matchs
 
                         {% if m.is_completed %}
                             <span class="restream-planning-badge restream-planning-badge--done">
-                                Terminé
+                                {{ _("Terminé") }}
                             </span>
                         {% else %}
                             <span class="restream-planning-badge restream-planning-badge--upcoming">
-                                À venir
+                                {{ _("À venir") }}
                             </span>
                         {% endif %}
 
@@ -130,11 +130,11 @@ Planning des matchs
                                 href="{{ url_for('restream.view', slug=m.restream_slug) }}"
                                 class="restream-planning-badge restream-planning-badge--restream"
                             >
-                                Restream prévu
+                                {{ _("Restream prévu") }}
                             </a>
                         {% else %}
                             <span class="restream-planning-badge restream-planning-badge--none">
-                                Pas de restream
+                                {{ _("Pas de restream") }}
                             </span>
                         {% endif %}
 
@@ -162,12 +162,12 @@ Planning des matchs
 						filter=filter_kind
 					) }}"
                 >
-                    ← Précédent
+                    ← {{ _("Précédent") }}
                 </a>
             {% endif %}
 
             <span class="restream-planning-pagination-info">
-                Page {{ page }} / {{ total_pages }}
+                {{ _("Page") }} {{ page }} / {{ total_pages }}
             </span>
 
             {% if page < total_pages %}
@@ -180,7 +180,7 @@ Planning des matchs
 						filter=filter_kind
 					) }}"
                 >
-                    Suivant →
+                    {{ _("Suivant") }} →
                 </a>
             {% endif %}
 

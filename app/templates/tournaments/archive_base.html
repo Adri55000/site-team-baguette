@@ -15,14 +15,14 @@
 
     {% if tournament.year %}
       <div class="tournament-edition">
-        Édition {{ tournament.year }}
+        {{ _("Édition %(year)s", year=tournament.year) }}
       </div>
     {% endif %}
   </div>
 
   <div class="tournament-header-right">
     <div class="tournament-status">
-      Terminé
+      {{ _("Terminé") }}
     </div>
   </div>
 
@@ -38,10 +38,10 @@
 
   {% if tournament.organizers %}
     <section class="tournament-section tournament-organizers">
-      <h2>Organisateurs</h2>
+      <h2>{{ _("Organisateurs") }}</h2>
       <ul>
         {% for organizer in tournament.organizers %}
-          <li>{{ organizer }}</li>
+          <li>{{organizer}}</li>
         {% endfor %}
       </ul>
     </section>
@@ -49,10 +49,10 @@
 
   {% if tournament.participants %}
     <section class="tournament-section tournament-participants">
-      <h2>Participants</h2>
+      <h2>{{ _("Participants") }}</h2>
 		<ul class="tournament-list tournament-participants-grid">
 			{% for participant in tournament.participants %}
-			<li>{{ participant }}</li>
+			<li>{{participant}}</li>
 			{% endfor %}
 		</ul>
 
@@ -61,7 +61,7 @@
 
   {% if tournament.results %}
     <section class="tournament-section tournament-results">
-      <h2>Résultats marquants</h2>
+      <h2>{{ _("Résultats marquants") }}</h2>
       <ul class="tournament-results-list">
         {% for item in tournament.results %}
           <li>

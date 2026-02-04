@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Traduire un tournoi") }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ _("Tournoi") }} : {{ tournament.slug }} ({{ lang }})</h1>
+
+<p>
+  <strong>{{ _("Groupes") }} :</strong>
+  {% if groups_total == 0 %}
+    —
+  {% else %}
+    {{ groups_done }}/{{ groups_total }}
+    {% if groups_done == groups_total %}✅{% endif %}
+  {% endif %}
+</p>
+
+<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 12px;">
+  <a class="btn btn-secondary"
+     href="{{ url_for('admin.translations_tournament_groups', slug=tournament.slug, lang=lang) }}">
+    {{ _("Traduire les groupes") }}
+  </a>
+
+  <a class="btn btn-secondary"
+     href="{{ url_for('admin.translations_tournaments', lang=lang) }}">
+    ← {{ _("Retour liste") }}
+  </a>
+</div>
+
+<form method="post" style="display:flex; flex-direction:column; gap:16px; max-width: 1000px;">
+  <section>
+    <h2>{{ _("Nom") }}</h2>
+    <p><strong>{{ _("DB") }} :</strong> {{ tournament.name_db }}</p>
+    <label>
+      {{ _("Traduction") }} ({{ lang }})
+      <input type="text" name="name_tr" value="{{ translation.name }}" style="width:100%;">
+    </label>
+    <p style="opacity:.75; margin-top:6px;">
+      {{ _("Laisser vide pour supprimer la traduction (fallback DB).") }}
+    </p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>{{ _("Metadata (JSON)") }}</h2>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <button type="button" class="btn btn-secondary" onclick="copyDbMetadataToTranslation()">
+        {{ _("Copier DB → traduction") }}
+      </button>
+    </div>
+
+    <h3 style="margin-top:12px;">{{ _("DB") }}</h3>
+    <pre id="metadata_db" style="max-height: 240px; overflow:auto; padding:10px; border:1px solid rgba(0,0,0,.15);">{{ tournament.metadata_db }}</pre>
+
+    <h3 style="margin-top:12px;">{{ _("Traduction") }} ({{ lang }})</h3>
+    <textarea id="metadata_tr" name="metadata_tr" rows="14" style="width:100%;">{{ translation.metadata }}</textarea>
+
+    <p style="opacity:.75; margin-top:6px;">
+      {{ _("Doit être un JSON valide. Laisser vide pour supprimer la traduction (fallback DB).") }}
+    </p>
+  </section>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button type="submit" class="btn btn-primary">{{ _("Enregistrer") }}</button>
+  </div>
+</form>
+
+<script>
+function copyDbMetadataToTranslation() {
+  const dbText = document.getElementById("metadata_db").textContent.trim();
+  const ta = document.getElementById("metadata_tr");
+  ta.value = dbText;
+  ta.focus();
+}
+</script>
+
+{% endblock %}

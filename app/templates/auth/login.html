@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Connexion{% endblock %}
+{% block title %}{{ _("Connexion") }}{% endblock %}
 
 {% block content %}
 
 <div class="auth-page">
   <div class="auth-card">
 
-    <h1>Connexion</h1>
+    <h1>{{ _("Connexion") }}</h1>
 
     <!-- ===== Messages ===== -->
     <div class="auth-messages">
@@ -22,7 +22,7 @@
 
       <div class="form-group">
         <label for="username" class="form-label">
-          Nom d'utilisateur
+          {{ _("Nom d'utilisateur") }}
         </label>
         <input type="text"
                id="username"
@@ -33,7 +33,7 @@
 
       <div class="form-group">
         <label for="password" class="form-label">
-          Mot de passe
+          {{ _("Mot de passe") }}
         </label>
         <input type="password"
                id="password"
@@ -44,7 +44,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          Se connecter
+          {{ _("Se connecter") }}
         </button>
       </div>
 
@@ -52,7 +52,7 @@
 
     <div class="auth-links">
       <a href="{{ url_for('auth.register') }}">
-        Créer un compte
+        {{ _("Créer un compte") }}
       </a>
     </div>
 

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Traductions des groupes") }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>
+  {{ _("Groupes") }} – {{ tournament.name }} ({{ lang }})
+</h1>
+
+<form method="get" style="margin-bottom: 12px;">
+  <input type="hidden" name="lang" value="{{ lang }}">
+  <label>
+    <input type="checkbox" name="only_missing" value="1"
+           {% if only_missing %}checked{% endif %}>
+    {{ _("Afficher uniquement les manquants") }}
+  </label>
+  <button type="submit" class="btn btn-secondary">{{ _("Filtrer") }}</button>
+
+  <a class="btn btn-secondary"
+     href="{{ url_for('admin.translations_tournaments', lang=lang) }}">
+    ← {{ _("Retour tournois") }}
+  </a>
+</form>
+
+<form method="post"
+      action="{{ url_for('admin.translations_tournament_groups',
+                          slug=tournament.slug,
+                          lang=lang,
+                          only_missing=('1' if only_missing else None)) }}">
+
+  <table border="1" cellpadding="6" style="width:100%; border-collapse: collapse;">
+    <tr>
+      <th>{{ _("Groupe (DB)") }}</th>
+      <th>{{ _("Traduction") }} ({{ lang }})</th>
+      <th style="width:80px;">{{ _("État") }}</th>
+    </tr>
+
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.group_name }}</td>
+      <td>
+        <input type="text"
+               name="group_{{ row.group_name }}"
+               value="{{ row.translation }}"
+               style="width:100%;">
+      </td>
+      <td style="text-align:center;">
+        {{ "✅" if row.done else "❌" }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div style="margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button type="submit" class="btn btn-primary">{{ _("Enregistrer") }}</button>
+    <span style="opacity:.75;">
+      {{ _("Laisser vide pour supprimer la traduction (fallback DB).") }}
+    </span>
+  </div>
+</form>
+
+{% endblock %}

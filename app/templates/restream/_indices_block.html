@@ -2,7 +2,7 @@
 <div class="restream-indices-page">
 
   <h1 class="restream-indices-title">
-    Indices – {{ restream.title }}
+    {{ _("Indices") }} – {{ restream.title }}
   </h1>
 
   <div class="restream-indices-grid">
@@ -19,7 +19,7 @@
 
         {% if current_user.is_authenticated and has_role("éditeur") %}
           <button class="edit-btn" data-category="{{ key }}">
-            Éditer
+            {{ _("Éditer") }}
           </button>
         {% endif %}
       </div>
@@ -52,21 +52,21 @@
       <form class="edit-form hidden" data-category="{{ key }}">
 
         <textarea rows="6" spellcheck="false">
-{% for row in category["items"] -%}
-{% if category["columns"] == 2 -%}
-{{ row[0] }} | {{ row[1] }}
-{% else -%}
-{{ row[0] }}
-{% endif -%}
-{% endfor %}
+			{% for row in category["items"] -%}
+				{% if category["columns"] == 2 -%}
+					{{ row[0] }} | {{ row[1] }}
+				{% else -%}
+					{{ row[0] }}
+				{% endif -%}
+			{% endfor %}
         </textarea>
 
         <div class="edit-actions">
           <button type="submit" class="btn btn-primary">
-            Enregistrer
+            {{ _("Enregistrer") }}
           </button>
           <button type="button" class="btn btn-secondary cancel-btn">
-            Annuler
+            {{ _("Annuler") }}
           </button>
         </div>
 
@@ -81,10 +81,10 @@
   {% if current_user.is_authenticated and has_role("restreamer") %}
   <div class="restream-indices-global-actions">
     <button id="reset-all-btn" class="btn btn-danger">
-      Réinitialiser tous les indices
+      {{ _("Réinitialiser tous les indices") }}
     </button>
     <p class="restream-indices-warning">
-      Action réservée aux restreamers. Cette opération est irréversible.
+      {{ _("Action réservée aux restreamers. Cette opération est irréversible.") }}
     </p>
   </div>
   {% endif %}

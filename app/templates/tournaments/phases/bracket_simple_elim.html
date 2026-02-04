@@ -31,18 +31,18 @@
                                 <div class="bracket-team">
                                     <span class="bracket-team-name">
                                         {% set t = s.team1 %}
-										{% if t.id and t.name and t.name != "À déterminer" %}
+										{% if t.id and t.name and not t.is_tbd %}
 										  {{ t.name | team_name }}
 										{% elif t.source_series_id %}
 										  {% if t.source_type == "winner" %}
-											Vainqueur de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("Vainqueur de %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% elif t.source_type == "loser" %}
-											Perdant de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("Perdant de %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% else %}
-											De {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("De %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% endif %}
 										{% else %}
-										  {{ t.name | team_name }}
+										  {{ t.name | team_name if t.name else _("À déterminer") }}
 										{% endif %}
                                     </span>
 
@@ -55,18 +55,18 @@
                                 <div class="bracket-team">
                                     <span class="bracket-team-name">
                                         {% set t = s.team2 %}
-										{% if t.id and t.name and t.name != "À déterminer" %}
+										{% if t.id and t.name and not t.is_tbd %}
 										  {{ t.name | team_name }}
 										{% elif t.source_series_id %}
 										  {% if t.source_type == "winner" %}
-											Vainqueur de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("Vainqueur de %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% elif t.source_type == "loser" %}
-											Perdant de {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("Perdant de %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% else %}
-											De {{ t.source_label or ('Série #' ~ t.source_series_id) }}
+											{{ _("De %(series)s", series=(t.source_label or _("Série #%(id)s", id=t.source_series_id))) }}
 										  {% endif %}
 										{% else %}
-										  {{ t.name | team_name }}
+										  {{ t.name | team_name if t.name else _("À déterminer") }}
 										{% endif %}
                                     </span>
 

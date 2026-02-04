@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Gérer les jeux{% endblock %}
+{% block title %}{{ _("Gérer les jeux") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -9,25 +9,25 @@
 {% block content %}
 <div class="admin-games-page">
 
-    <h1>Gestion des jeux</h1>
+    <h1>{{ _("Gestion des jeux") }}</h1>
 
     <div class="admin-card">
-        <h2>Ajouter un jeu</h2>
+        <h2>{{ _("Ajouter un jeu") }}</h2>
 
         <form method="POST" action="{{ url_for('admin.games_add') }}" class="admin-form">
 
             <div class="form-group">
-                <label for="name">Nom complet</label>
+                <label for="name">{{ _("Nom complet") }}</label>
                 <input type="text" id="name" name="name" required>
             </div>
 
             <div class="form-group">
-                <label for="short_name">Abréviation</label>
+                <label for="short_name">{{ _("Abréviation") }}</label>
                 <input type="text" id="short_name" name="short_name" required>
             </div>
 
             <div class="form-group">
-			<label for="color">Couleur (optionnel)</label>
+			<label for="color">{{ _("Couleur (optionnel)") }}</label>
 
 				<div class="color-picker-wrapper">
 					<div id="colorPreview" class="color-preview"></div>
@@ -39,7 +39,7 @@
 
             <div class="admin-actions-footer">
 				<button type="submit" class="btn-primary">
-					Ajouter
+					{{ _("Ajouter") }}
 				</button>
 			</div>
 
@@ -47,7 +47,7 @@
     </div>
 
     <section class="admin-card">
-    <h2>Liste des jeux</h2>
+    <h2>{{ _("Liste des jeux") }}</h2>
 
     {% if games %}
         <ul class="game-list">
@@ -67,7 +67,7 @@
                      <div class="game-right">
 						<a class="btn-secondary-small"
 							href="{{ url_for('admin.game_edit', game_id=g.id) }}">
-							Modifier
+							{{ _("Modifier") }}
 						</a>
 					</div>
 
@@ -76,7 +76,7 @@
         </ul>
 
     {% else %}
-        <p>Aucun jeu enregistré.</p>
+        <p>{{ _("Aucun jeu enregistré.") }}</p>
     {% endif %}
 </section>
 

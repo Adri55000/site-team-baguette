@@ -2,7 +2,7 @@
 
 {% block archive_content %}
 
-<h2>Ressources</h2>
+<h2>{{ _("Ressources") }}</h2>
 
 {% if tournament.links %}
   <ul class="tournament-links">
@@ -15,7 +15,7 @@
     {% endfor %}
   </ul>
 {% else %}
-  <p>Aucune ressource n’est disponible pour ce tournoi.</p>
+  <p>{{ _("Aucune ressource n’est disponible pour ce tournoi.") }}</p>
 {% endif %}
 
 {% endblock %}

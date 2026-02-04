@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-from flask import Flask, flash, redirect, url_for
+from flask import Flask, flash, redirect, url_for, request
+from flask_babel import Babel
 import os
 from datetime import datetime
 from app.config import TOURNAMENTS
@@ -10,6 +11,7 @@ from app.jinja_filters import display_team_name
 from app.errors import register_error_handlers
 from pathlib import Path
 from app.modules.tournaments import is_casual_tournament, overlay_player_name
+from flask_babel import gettext as _
 
 login_manager = LoginManager()
 
@@ -35,6 +37,19 @@ def create_app():
     app.config['DISCORD_INVITE_URL'] = "https://discord.gg/rHJDPc2FcZ"
     app.config['DISCORD_SERVER_NAME'] = "Team Baguette"
     app.config['CONTACT_EMAIL'] = "contact.teambaguette@gmail.com"
+    
+    # Gestion de la langue
+    app.config['BABEL_DEFAULT_LOCALE'] = "fr"
+    app.config['BABEL_SUPPORTED_LOCALES'] = ["fr","en"]
+    
+    def select_locale():
+        lang = request.cookies.get("lang")
+        if lang in app.config["BABEL_SUPPORTED_LOCALES"]:
+            return lang
+        return app.config['BABEL_DEFAULT_LOCALE']
+
+    
+    Babel(app, locale_selector=select_locale)
     
     # S'assurer que le dossier instance existe
     try:
@@ -73,7 +88,7 @@ def create_app():
     
     @login_manager.unauthorized_handler
     def unauthorized():
-        flash("Vous devez être connecté pour accéder à cette page.", "error")
+        flash(_("Vous devez être connecté pour accéder à cette page."), "error")
         return redirect(url_for("auth.login"))
         
     @login_manager.user_loader
@@ -104,6 +119,13 @@ def create_app():
             return has_required_role(current_user.role, role)
 
         return dict(has_role=has_role)
+        
+    @app.context_processor
+    def inject_current_lang():
+        lang = request.cookies.get("lang", "fr")
+        return {
+            "current_lang": lang
+        }
 
     # Import des blueprints
     from .auth.routes import auth_bp

@@ -20,32 +20,32 @@
 
     <!-- Planning (existe déjà : restream.planning) -->
     <li>
-      <a class="nav-link" href="{{ url_for('restream.planning') }}">Planning</a>
+      <a class="nav-link" href="{{ url_for('restream.planning') }}">{{ _("Planning") }}</a>
     </li>
 
     <!-- Tournois : on garde le dropdown (en cours / à venir),
          mais on ajoute "Tous les tournois" en placeholder pour l'instant -->
     <li class="nav-dropdown">
-      <span class="nav-link">Tournois ▾</span>
+      <span class="nav-link">{{ _("Tournois") }} ▾</span>
 
       <ul class="dropdown-menu">
         {% if tournaments_active %}
-          <li class="dropdown-title">En cours</li>
+          <li class="dropdown-title">{{ _("En cours") }}</li>
           {% for t in tournaments_active %}
             <li>
               <a href="{{ url_for('main.tournament', slug=t.slug) }}">
-                {{ t.name }}
+                {{ t.display_name or t.name }}
               </a>
             </li>
           {% endfor %}
         {% endif %}
 
         {% if tournaments_upcoming %}
-          <li class="dropdown-title">À venir</li>
+          <li class="dropdown-title">{{ _("À venir") }}</li>
           {% for t in tournaments_upcoming %}
             <li>
               <a href="{{ url_for('main.tournament', slug=t.slug) }}">
-                {{ t.name }}
+                {{ t.display_name or t.name }}
               </a>
             </li>
           {% endfor %}
@@ -53,20 +53,20 @@
 
         <li class="dropdown-separator"></li>
         <li>
-          <a href="{{ url_for('main.tournaments') }}">Tous les tournois</a>
+          <a href="{{ url_for('main.tournaments') }}">{{ _("Tous les tournois")}}</a>
         </li>
       </ul>
     </li>
 
     <!-- Restream : dropdown existant, mais structure HTML corrigée -->
     <li class="nav-dropdown">
-      <span class="nav-link">Restream ▾</span>
+      <span class="nav-link">{{ _("Restream")}} ▾</span>
 
       <ul class="dropdown-menu">
-        <li class="dropdown-title">Restream</li>
+        <li class="dropdown-title">{{ _("Restream")}}</li>
 
         <li>
-          <a href="{{ url_for('restream.planning') }}?filter=restream">Planning des restream</a>
+          <a href="{{ url_for('restream.planning') }}?filter=restream">{{ _("Planning des restream")}}</a>
         </li>
 
         {% if restreams %}
@@ -83,7 +83,7 @@
         {% if has_role("restreamer") %}
           <li class="dropdown-separator"></li>
           <li>
-            <a href="{{ url_for('restream.manage') }}">⚙ Gérer les restreams</a>
+            <a href="{{ url_for('restream.manage') }}">⚙ {{ _("Gérer les restreams")}}</a>
           </li>
         {% endif %}
       </ul>
@@ -91,12 +91,12 @@
 
     <!-- Guides placeholder (pas de lien) -->
     <li>
-      <span class="nav-link is-disabled">Guides</span>
+      <span class="nav-link is-disabled">{{ _("Guides")}}</span>
     </li>
 
     <!-- Contact placeholder (pas de lien) -->
     <li>
-      <a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a>
+      <a class="nav-link" href="{{ url_for('main.contact') }}">{{ _("Contact")}}</a>
     </li>
 
   </ul>
@@ -107,7 +107,7 @@
 
 <div class="right-zone">
 {% if current_user.is_authenticated and current_user.role == "admin" %}
-    <a href="{{ url_for('admin.dashboard') }}" class="btn admin-btn">Admin</a>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn admin-btn">{{ _("Admin")}}</a>
 {% endif %}
 
     {% if current_user.is_authenticated %}
@@ -122,16 +122,45 @@
                 <b>{{ current_user.username }}</b>
             </span>
 
-            <a href="{{ url_for('auth.logout') }}" class="btn">Déconnexion</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn">{{ _("Déconnexion")}}</a>
         </div>
     {% else %}
-        <a href="{{ url_for('auth.login') }}" class="btn">Connexion</a>
-        <a href="{{ url_for('auth.register') }}" class="btn">S'inscrire</a>
+        <a href="{{ url_for('auth.login') }}" class="btn">{{ _("Connexion")}}</a>
+        <a href="{{ url_for('auth.register') }}" class="btn">{{ _("S'inscrire")}}</a>
     {% endif %}
 
     <!-- Bouton thème -->
     <button id="theme-toggle" class="theme-btn">☀</button>
+	
+	<!-- Bouton langue -->
+	<div class="lang-switch" data-lang>
+	  <button type="button" class="lang-trigger" aria-haspopup="true" aria-expanded="false">
+		<img
+		  class="lang-flag-img"
+		  src="{{ url_for('static', filename='icons/flags/' ~ current_lang ~ '.svg') }}"
+		  alt=""
+		  aria-hidden="true"
+		>
+		<span class="lang-code">{{ current_lang|upper }}</span>
+	  </button>
 
+	  <div class="lang-menu" role="menu">
+		<a class="lang-item"
+		   data-lang="fr"
+		   href="{{ url_for('main.set_lang', lang='fr') }}"
+		   aria-label="Français">
+		  <img class="lang-flag-img" src="{{ url_for('static', filename='icons/flags/fr.svg') }}" alt="">
+		</a>
+
+		<a class="lang-item"
+		   data-lang="en"
+		   href="{{ url_for('main.set_lang', lang='en') }}"
+		   aria-label="English">
+		  <img class="lang-flag-img" src="{{ url_for('static', filename='icons/flags/en.svg') }}" alt="">
+		</a>
+
+	  </div>
+	</div>
 </div>
 
 
@@ -148,13 +177,14 @@
     </div>
   {% endif %}
 {% endwith %}
-
+<!-- DEBUG LANG: {{ current_lang }} -->
 <main>
     {% block content %}{% endblock %}
 </main>
 
 <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lang.js') }}"></script>
 
 
 {% block scripts %}{% endblock %}

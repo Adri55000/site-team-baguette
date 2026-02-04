@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Match{% endblock %}
+{% block title %}{{ _("Match") }}{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
 {% endblock %}
@@ -7,24 +7,24 @@
 {% block content %}
 <div class="admin-dashboard">
 
-<h1>Créer un match</h1>
+<h1>{{ _("Créer un match") }}</h1>
 
 <form method="post" class="admin-card admin-form">
 
     {% if series %}
         <input type="hidden" name="series_id" value="{{ series.id }}">
         <p class="admin-subtitle">
-            Confrontation : {{ series['team1_name'] | team_name  }} vs {{ series['team2_name'] | team_name  }}
+            {{ _("Confrontation :") }} {{ series['team1_name'] | team_name  }} vs {{ series['team2_name'] | team_name  }}
         </p>
     {% else %}
         <p class="admin-subtitle">
-            Tie-break — sélection des équipes
+            {{ _("Tie-break — sélection des équipes") }}
         </p>
 
-        <label>Équipes participantes</label>
+        <label>{{ _("Équipes participantes") }}</label>
 
 <input type="text"
-       placeholder="Rechercher une équipe…"
+       placeholder="{{ _('Rechercher une équipe…') }}"
        class="admin-search"
        onkeyup="filterTeams(this.value)">
 
@@ -41,27 +41,27 @@
 
     <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
 
-    <label>Date / heure prévue</label>
+    <label>{{ _("Date / heure prévue") }}</label>
     <input type="datetime-local"
        name="scheduled_at"
        value="{{ match.scheduled_at[:16] if match and match.scheduled_at else '' }}">
 
-	<label for="racetime_room">Racetime room</label>
+	<label for="racetime_room">{{ _("Racetime room") }}</label>
 	<input type="text"
 		   id="racetime_room"
 		   name="racetime_room"
 		   class="admin-input"
 		   value="{{ match.racetime_room if match and match.racetime_room else '' }}"
-		   placeholder="https://racetime.gg/ssr/abcdef">
+		   placeholder="https://racetime.gg/lozssr/abcdef">
 
 	<p class="admin-help">
-		URL de la room racetime (optionnel).
+		{{ _("URL de la room racetime (optionnel).") }}
 	</p>
 
 	{% if match and match.racetime_room %}
 	<p>
 		<a href="{{ match.racetime_room }}" target="_blank" class="btn btn-secondary-small">
-			Ouvrir la room racetime
+			{{ _("Ouvrir la room racetime") }}
 		</a>
 	</p>
 	{% endif %}
@@ -69,13 +69,13 @@
 
     <div class="admin-actions-footer">
         <button class="btn btn-primary">
-            Enregistrer
+            {{ _("Enregistrer") }}
         </button>
 
         <a href="{{ url_for('admin.admin_matches',
                              tournament_id=tournament.id) }}"
            class="btn btn-secondary">
-            Annuler
+            {{ _("Annuler") }}
         </a>
     </div>
 

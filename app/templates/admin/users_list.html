@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Gestion des utilisateurs{% endblock %}
+{% block title %}{{ _("Gestion des utilisateurs") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -9,25 +9,25 @@
 {% block content %}
 <div class="admin-dashboard">
 
-    <h1>Gestion des utilisateurs</h1>
+    <h1>{{ _("Gestion des utilisateurs") }}</h1>
 
     <!-- 🔎 Barre outils -->
     <div class="admin-card admin-user-toolbar">
         <form method="get" action="{{ url_for('admin.users_list') }}">
 		<input type="text"
            name="q"
-           placeholder="Rechercher un utilisateur…"
+           placeholder="{{ _('Rechercher un utilisateur…') }}"
            value="{{ search or '' }}">
 
 		<select name="role">
-        <option value="">Tous les rôles</option>
-        <option value="admin" {{ 'selected' if role=='admin' }}>Admin</option>
-        <option value="restreamer" {{ 'selected' if role=='restreamer' }}>Restreamer</option>
-        <option value="éditeur" {{ 'selected' if role=='éditeur' }}>Éditeur</option>
-        <option value="invité" {{ 'selected' if role=='invité' }}>Invité</option>
+        <option value="">{{ _("Tous les rôles") }}</option>
+        <option value="admin" {{ 'selected' if role=='admin' }}>{{ _("Admin") }}</option>
+        <option value="restreamer" {{ 'selected' if role=='restreamer' }}>{{ _("Restreamer") }}</option>
+        <option value="éditeur" {{ 'selected' if role=='éditeur' }}>{{ _("Éditeur") }}</option>
+        <option value="invité" {{ 'selected' if role=='invité' }}>{{ _("Invité") }}</option>
 		</select>
 
-    <button class="btn">Rechercher</button>
+    <button class="btn">{{ _("Rechercher") }}</button>
 </form>
 
     </div>
@@ -35,21 +35,21 @@
     <div class="admin-card">
 	{% if search or role %}
 	<p class="admin-filter-info">
-    Filtres actifs :
-    {% if search %} recherche = “{{ search }}” {% endif %}
-    {% if role %} rôle = {{ role }} {% endif %}
+    {{ _("Filtres actifs :") }}
+    {% if search %} {{ _("recherche =") }} “{{ search }}” {% endif %}
+    {% if role %} {{ _("rôle =") }} {{ role }} {% endif %}
 	</p>
 	{% endif %}
 
         <table class="admin-table" id="userTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Avatar</th>
-                    <th>Pseudo</th>
-                    <th>Rôle</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
+                    <th>{{ _("ID") }}</th>
+                    <th>{{ _("Avatar") }}</th>
+                    <th>{{ _("Pseudo") }}</th>
+                    <th>{{ _("Rôle") }}</th>
+                    <th>{{ _("Statut") }}</th>
+                    <th>{{ _("Actions") }}</th>
                 </tr>
             </thead>
 
@@ -72,22 +72,22 @@
 
                     <td>
                         {% if u.is_active %}
-                            <span class="badge-active">Actif</span>
+                            <span class="badge-active">{{ _("Actif") }}</span>
                         {% else %}
-                            <span class="badge-inactive">Désactivé</span>
+                            <span class="badge-inactive">{{ _("Désactivé") }}</span>
                         {% endif %}
                     </td>
 
                     <td>
                         <a href="{{ url_for('admin.edit_user', user_id=u.id) }}"
-                           class="btn-secondary-small">Modifier</a>
+                           class="btn-secondary-small">{{ _("Modifier") }}</a>
                     </td>
                 </tr>
             {% endfor %}
 			{% else %}
 				<tr>
 				<td colspan="6" class="admin-empty">
-				Aucun utilisateur ne correspond aux filtres.
+				{{ _("Aucun utilisateur ne correspond aux filtres.") }}
 				</td>
 				</tr>
 			{% endif %}
@@ -99,20 +99,20 @@
     {% if page > 1 %}
         <a class="btn"
            href="{{ url_for('admin.users_list', page=page-1, q=search, role=role) }}">
-            ← Précédent
+            ← {{ _("Précédent") }}
         </a>
     {% else %}
         <span></span>
     {% endif %}
 
     <span class="admin-pagination-info">
-        Page {{ page }} / {{ total_pages }}
+        {{ _("Page") }} {{ page }} / {{ total_pages }}
     </span>
 
     {% if page < total_pages %}
         <a class="btn"
            href="{{ url_for('admin.users_list', page=page+1, q=search, role=role) }}">
-            Suivant →
+            {{ _("Suivant") }} →
         </a>
     {% else %}
         <span></span>

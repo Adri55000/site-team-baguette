@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{{ tournament.name }} – Groupes & Bracket
+{{ tournament.display_name }} – {{ _("Progression du tournoi") }}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
 
     <div class="tournament-header-left">
         <h1 class="tournament-title">
-            {{ tournament.name }}
+            {{ tournament.display_name }}
             {% if metadata.edition %}
                 <span class="tournament-edition">
                     {{ metadata.edition }}
@@ -32,7 +32,7 @@
 
 <section class="tournament-section">
     <a href="{{ url_for('main.tournament', slug=tournament.slug) }}">
-        ← Retour au tournoi
+        ← {{ _("Retour au tournoi") }}
     </a>
 </section>
 
@@ -43,7 +43,7 @@
 
     {% if not phases %}
         <p class="tournament-placeholder">
-            Aucune phase à afficher pour ce tournoi.
+            {{ _("Aucune phase à afficher pour ce tournoi.") }}
         </p>
     {% endif %}
 
@@ -55,7 +55,7 @@
 
 				{% if phase.data.qualifiers_per_group %}
 					<span class="phase-badge">
-					Les {{ phase.data.qualifiers_per_group }} premiers se qualifient
+						{{ _("Les %(count)s premiers se qualifient", count=phase.data.qualifiers_per_group) }}
 					</span>
 				{% endif %}
 			</div>
@@ -67,7 +67,7 @@
                 {% include "tournaments/phases/bracket_simple_elim.html" %}
             {% else %}
                 <p class="tournament-placeholder">
-                    Type de phase non supporté.
+                    {{ _("Type de phase non supporté.") }}
                 </p>
             {% endif %}
 

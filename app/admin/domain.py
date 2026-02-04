@@ -1,4 +1,5 @@
 # app/admin/domain.py
+from flask_babel import gettext as _
 
 def can_delete_player(conn, player_id):
     # Cas 1 : équipe multi-joueurs
@@ -16,7 +17,7 @@ def can_delete_player(conn, player_id):
     """, (player_id,)).fetchone()
 
     if in_multi_team:
-        return False, "Impossible de supprimer ce joueur : il fait partie d’une équipe multi-joueurs."
+        return False, _("Impossible de supprimer ce joueur : il fait partie d’une équipe multi-joueurs.")
 
     # Cas 2 : utilisé dans un match
     used_in_match = conn.execute("""
@@ -28,7 +29,7 @@ def can_delete_player(conn, player_id):
     """, (player_id,)).fetchone()
 
     if used_in_match:
-        return False, "Impossible de supprimer ce joueur : il est utilisé dans des matchs."
+        return False, _("Impossible de supprimer ce joueur : il est utilisé dans des matchs.")
 
     return True, None
 
@@ -38,6 +39,6 @@ def can_delete_team(conn, team_id):
     """, (team_id,)).fetchone()
 
     if used:
-        return False, "Impossible de supprimer cette équipe : elle est utilisée dans des matchs."
+        return False, _("Impossible de supprimer cette équipe : elle est utilisée dans des matchs.")
 
     return True, None

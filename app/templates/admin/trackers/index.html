@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Gérer les trackers
+{{ _("Gérer les trackers") }}
 {% endblock %}
 
 {% block head %}
@@ -9,15 +9,15 @@ Gérer les trackers
 {% endblock %}
 
 {% block content %}
-<h1>Gérer les trackers</h1>
+<h1>{{ _("Gérer les trackers") }}</h1>
 
 {% if trackers %}
     <table class="admin-table">
 	  <thead>
 		<tr>
-		  <th>Tracker</th>
-		  <th>Presets</th>
-		  <th>Actions</th>
+		  <th>{{ _("Tracker") }}</th>
+		  <th>{{ _("Presets") }}</th>
+		  <th>{{ _("Actions") }}</th>
 		</tr>
 	  </thead>
 	  <tbody>
@@ -28,7 +28,7 @@ Gérer les trackers
 		  <td>
 			<a class="btn btn-primary"
 			   href="{{ url_for('admin.admin_trackers_presets', tracker_type=tracker.tracker_type) }}">
-			  Gérer les presets
+			  {{ _("Gérer les presets") }}
 			</a>
 		  </td>
 		</tr>
@@ -36,6 +36,6 @@ Gérer les trackers
 	  </tbody>
 	</table>
 {% else %}
-    <p>Aucun tracker disponible.</p>
+    <p>{{ _("Aucun tracker disponible.") }}</p>
 {% endif %}
 {% endblock %}

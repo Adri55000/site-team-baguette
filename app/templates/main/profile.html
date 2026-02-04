@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Profil{% endblock %}
+{% block title %}{{ _("Profil") }}{% endblock %}
 
 {% block content %}
 
@@ -23,39 +23,39 @@
     <!-- ===== INFOS ===== -->
     <section class="profile-section">
       <p>
-        <strong>Créé le :</strong>
+        <strong>{{ _("Créé le :") }}</strong>
         {{ user["created_at"] | format_datetime }}
       </p>
 
       <p>
-        <strong>Dernière connexion :</strong>
+        <strong>{{ _("Dernière connexion :") }}</strong>
         {% if user["last_login"] %}
           {{ user["last_login"] | format_datetime }}
         {% else %}
-          Jamais
+          {{ _("Jamais") }}
         {% endif %}
       </p>
     </section>
 
     <!-- ===== DESCRIPTION & LIENS ===== -->
     <section class="profile-section">
-      <h2>À propos</h2>
+      <h2>{{ _("À propos") }}</h2>
 
       <form method="POST" class="form">
 
         <div class="form-group">
           <label for="description" class="form-label">
-            Description
+            {{ _("Description") }}
           </label>
           <textarea
             name="description"
             id="description"
             class="form-textarea"
-            placeholder="Parlez un peu de vous…"
+            placeholder="{{ ('Parlez un peu de vous…') }}"
           >{{ user["description"] or ""}}</textarea>
         </div>
 
-        <h3>Liens & contacts</h3>
+        <h3>{{ _("Liens & contacts") }}</h3>
 
         {% for key, label in {
           "racetime": "Racetime",
@@ -84,14 +84,14 @@
 				value="{{ links.get('discord', '') }}"
 				placeholder="ex: TeamBaguette ou TeamBaguette#1234">
 			<small class="form-hint">
-			Pseudo ou identifiant Discord (pas un lien)
+			{{ _("Pseudo ou identifiant Discord (pas un lien)") }}
 			</small>
 		</div>
 
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">
-            Enregistrer les changements
+            {{ _("Enregistrer les changements") }}
           </button>
         </div>
 
@@ -100,7 +100,7 @@
 
     <!-- ===== AVATAR ===== -->
     <section class="profile-section">
-      <h2>Avatar</h2>
+      <h2>{{ _("Avatar") }}</h2>
 
       <form
         action="{{ url_for('auth.upload_avatar') }}"
@@ -114,7 +114,7 @@
 
         <div class="form-actions">
           <button type="submit" class="btn btn-secondary">
-            Changer l’avatar
+            {{ _("Changer l’avatar") }}
           </button>
         </div>
       </form>
@@ -122,16 +122,16 @@
 	
 	<!-- ===== SECURITE ===== -->
 	<section class="profile-section">
-	<h2>Sécurité</h2>
+	<h2>{{ _("Sécurité") }}</h2>
 
 	<p class="profile-role">
-		Paramètres sensibles de votre compte.
+		{{ _("Paramètres sensibles de votre compte.") }}
 	</p>
 
 	<div class="profile-actions">
 		<a href="{{ url_for('main.change_password') }}"
 			class="btn btn-secondary">
-			Modifier mon mot de passe
+			{{ _("Modifier mon mot de passe") }}
 		</a>
 	</div>
 	</section>
@@ -141,11 +141,11 @@
     <div class="profile-actions">
 	<a href="{{ url_for('main.public_profile', user_id=user_id) }}"
 		class="btn btn-secondary">
-		Voir mon profil public
+		{{ _("Voir mon profil public") }}
 	</a>
 
 	<a href="{{ url_for('main.home') }}" class="btn btn-secondary">
-		Retour
+		{{ _("Retour") }}
 	</a>
 	</div>
 

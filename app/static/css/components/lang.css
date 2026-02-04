@@ -1,0 +1,80 @@
+/* Language dropdown – uses project variables only */
+
+.lang-switch{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* bouton */
+.lang-trigger{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 10px;
+  border-radius: var(--border-radius-md);
+
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.lang-trigger:hover{
+  background: var(--bg-hover);
+}
+
+.lang-flag{ font-size: 16px; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", emoji, sans-serif;}
+.lang-code{ font-size: 12px; opacity: .85; }
+
+/* menu caché par défaut */
+.lang-menu{
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+
+  padding: 8px;
+  border-radius: var(--border-radius-lg);
+
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+
+  z-index: 9999;
+  gap: 8px;
+}
+
+/* menu visible uniquement quand ouvert */
+.lang-switch.is-open .lang-menu{
+  display: flex;
+}
+
+.lang-item{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 32px;
+
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+
+  background: transparent;
+  border: 1px solid transparent;
+
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-primary);
+
+
+.lang-flag-img {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border-radius: 4px; /* optionnel, si tu veux des coins légèrement arrondis */
+}

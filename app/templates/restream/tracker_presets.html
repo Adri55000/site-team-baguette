@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %}
-Charger un preset — {{ tracker_label }}
+{{ _("Charger un preset") }} — {{ tracker_label }}
 {% endblock %}
 
 {% block content %}
 <div class="container tracker-presets">
   <div class="tracker-presets-card">
-    <h1>Charger un preset — {{ tracker_label }}</h1>
+    <h1>{{ _("Charger un preset") }} — {{ tracker_label }}</h1>
 
     <form method="post"
           action="{{ url_for('restream.restream_tracker_presets_apply', slug=restream_slug) }}"
@@ -17,9 +17,9 @@ Charger un preset — {{ tracker_label }}
         <thead>
           <tr>
             <th></th>
-            <th>Nom</th>
-            <th>Notes</th>
-            <th>Maj</th>
+            <th>{{ _("Nom") }}</th>
+            <th>{{ _("Notes") }}</th>
+            <th>{{ _("Mis à jour") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,10 +39,10 @@ Charger un preset — {{ tracker_label }}
       </table>
 
       <div class="tracker-presets-actions">
-        <button class="btn btn-primary" type="submit">Appliquer</button>
+        <button class="btn btn-primary" type="submit">{{ _("Appliquer") }}</button>
         <a class="btn btn-secondary"
            href="{{ url_for('restream.restream_live', slug=restream_slug) }}">
-          Annuler
+          {{ _("Annuler") }}
         </a>
       </div>
     </form>

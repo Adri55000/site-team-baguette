@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Modifier l’équipe
+{{ _("Modifier l’équipe") }}
 {% endblock %}
 
 {% block head %}
@@ -9,7 +9,7 @@ Modifier l’équipe
 
 {% block content %}
 
-<h1>Modifier l’équipe</h1>
+<h1>{{ _("Modifier l’équipe") }}</h1>
 
 <div class="admin-card">
 
@@ -17,7 +17,7 @@ Modifier l’équipe
 
         <!-- Nom -->
         <div class="admin-form-group">
-            <label for="name">Nom de l’équipe</label>
+            <label for="name">{{ _("Nom de l’équipe") }}</label>
             <input type="text"
                    id="name"
                    name="name"
@@ -28,18 +28,18 @@ Modifier l’équipe
 
         <!-- Filtre -->
         <div class="admin-form-group">
-            <label for="player-filter">Filtrer les joueurs</label>
+            <label for="player-filter">{{ _("Filtrer les joueurs") }}</label>
             <input type="text"
                    id="player-filter"
                    class="admin-input"
-                   placeholder="Rechercher un joueur…">
+                   placeholder="{{ _('Rechercher un joueur…') }}">
         </div>
 
         <div class="admin-form-group two-columns">
 
     <!-- MULTI SELECT -->
     <div>
-        <label for="players">Joueurs (2 minimum)</label>
+        <label for="players">{{ _("Joueurs (2 minimum)") }}</label>
         <select name="players"
                 id="players"
                 class="admin-input"
@@ -56,7 +56,7 @@ Modifier l’équipe
 
     <!-- SÉLECTION -->
     <div>
-        <label>Joueurs sélectionnés</label>
+        <label>{{ _("Joueurs sélectionnés") }}</label>
         <ul id="selected-players" class="selected-list"></ul>
     </div>
 
@@ -65,12 +65,12 @@ Modifier l’équipe
 
         <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary">
-                Enregistrer
+                {{ _("Enregistrer") }}
             </button>
 
             <a href="{{ url_for('admin.teams_list') }}"
                class="btn btn-secondary">
-                Annuler
+                {{ _("Annuler") }}
             </a>
         </div>
 
@@ -78,12 +78,12 @@ Modifier l’équipe
 
     {% if can_delete %}
     <hr>
-    <h3>Suppression</h3>
+    <h3>{{ _("Suppression") }}</h3>
     <form method="post"
           action="{{ url_for('admin.teams_delete', team_id=team.id) }}"
           onsubmit="return confirm('Supprimer définitivement cette équipe ?');">
         <button class="btn btn-danger">
-            Supprimer l’équipe
+            {{ _("Supprimer l’équipe") }}
         </button>
     </form>
     {% endif %}

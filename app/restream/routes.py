@@ -24,6 +24,9 @@ from app.modules.overlay.registry import resolve_overlay_pack_for_match
 from app.modules.tournaments import overlay_tournament_name
 from app.modules.racetime import fetch_race_data, extract_entrants_overlay_info, extract_interview_top8
 
+from flask_babel import get_locale as babel_get_locale, gettext as _
+from app.modules.i18n import get_translation
+
 # === Dossiers ===
 
 def indices_sessions_dir() -> Path:
@@ -161,9 +164,11 @@ def planning():
                 m.series_id,
 
                 t.id AS tournament_id,
+                t.slug AS tournament_slug,
                 t.name AS tournament_name,
 
                 s.stage AS series_stage,
+                p.id AS phase_id,
                 p.name AS phase_name,
 
                 r.slug AS restream_slug,
@@ -209,19 +214,26 @@ def planning():
 
             if match_id not in matches_map:
                 matches_map[match_id] = {
-                    "match_id": match_id,
-                    "scheduled_at": row["scheduled_at"],
-                    "is_completed": row["is_completed"],
-                    "tournament_id": row["tournament_id"],
-                    "tournament_name": row["tournament_name"],
-                    "series_id": row["series_id"],
-                    "stage_label": row["series_stage"] or "Tie-break",
-                    "phase_name": row["phase_name"],
-                    "restream_slug": row["restream_slug"],
-                    "restream_title": row["restream_title"],
-                    "teams": [],
-                    "game_number": None,  # rempli plus bas
-                }
+                "match_id": match_id,
+                "scheduled_at": row["scheduled_at"],
+                "is_completed": row["is_completed"],
+                "series_id": row["series_id"],
+
+                "tournament_id": row["tournament_id"],
+                "tournament_slug": row["tournament_slug"],
+                "tournament_name": row["tournament_name"],
+
+                "phase_id": row["phase_id"],
+                "phase_name": row["phase_name"],
+
+                "stage_label": row["series_stage"] or _("Tie-break"),
+
+                "restream_slug": row["restream_slug"],
+                "restream_title": row["restream_title"],
+
+                "teams": [],
+                "game_number": None,
+            }
 
             if row["team_name"]:
                 matches_map[match_id]["teams"].append(row["team_name"])
@@ -247,17 +259,45 @@ def planning():
         # Respect de l'ordre paginé
         # -------------------------------------------------
         matches = [matches_map[mid] for mid in match_ids if mid in matches_map]
+        
+        # -------------------------------------------------
+        # Traductions affichage (tournoi + phase)
+        # -------------------------------------------------
+        lang = str(babel_get_locale() or "fr").strip().lower()
+
+        for m in matches:
+            # tournoi
+            tslug = m.get("tournament_slug")
+            if tslug:
+                t_tr = get_translation("tournament", tslug, "name", lang)
+                if t_tr:
+                    m["tournament_name"] = t_tr
+
+            # phase (si présente)
+            pid = m.get("phase_id")
+            if pid is not None:
+                p_tr = get_translation("tournament_phase", str(pid), "name", lang)
+                if p_tr:
+                    m["phase_name"] = p_tr
 
     # -------------------------------------------------
     # Liste des tournois (filtre)
     # -------------------------------------------------
     tournaments = db.execute(
         """
-        SELECT id, name
+        SELECT id, slug, name
         FROM tournaments
         ORDER BY created_at DESC
         """
     ).fetchall()
+
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournaments = [dict(t) for t in tournaments]
+    for t in tournaments:
+        tr = get_translation("tournament", t["slug"], "name", lang) if t.get("slug") else None
+        t["display_name"] = tr if tr else t.get("name")
+
 
     return render_template(
         "restream/planning.html",
@@ -290,6 +330,7 @@ def manage():
             m.scheduled_at,
             m.is_completed,
 
+            t.slug AS tournament_slug,
             t.name AS tournament_name,
 
             GROUP_CONCAT(
@@ -322,6 +363,8 @@ def manage():
 
     now = datetime.utcnow()
     restreams = []
+    
+    lang = str(babel_get_locale() or "fr").strip().lower()
 
     for r in rows:
         scheduled_dt = None
@@ -338,11 +381,22 @@ def manage():
         else:
             status = "upcoming"
 
-        restreams.append({
+        item = {
             **dict(r),
             "status": status,
             "is_active": bool(r["is_active"]),
-        })
+        }
+
+        # -------------------------------------------------
+        # Traduction affichage (tournoi)
+        # -------------------------------------------------
+        tslug = item.get("tournament_slug")
+        if tslug:
+            t_tr = get_translation("tournament", tslug, "name", lang)
+            if t_tr:
+                item["tournament_name"] = t_tr
+
+        restreams.append(item)
 
 
     return render_template(
@@ -373,7 +427,7 @@ def create():
         tracker_name = request.form.get("tracker_name") or None
 
         if not title or not match_id or not indices_template or not tracker_type:
-            flash("Tous les champs obligatoires doivent être remplis.", "error")
+            flash(_("Tous les champs obligatoires doivent être remplis."), "error")
             return redirect(url_for("restream.create"))
 
         # Vérification métier : match valide et sans restream
@@ -392,15 +446,15 @@ def create():
         ).fetchone()
 
         if not match:
-            flash("Match invalide ou déjà associé à un restream.", "error")
+            flash(_("Match invalide ou déjà associé à un restream."), "error")
             return redirect(url_for("restream.create"))
 
         if not is_valid_indices_template(indices_template):
-            flash("Template d’indices invalide.", "error")
+            flash(_("Template d’indices invalide."), "error")
             return redirect(url_for("restream.create"))
 
         if not is_valid_tracker_type(tracker_type):
-            flash("Tracker invalide.", "error")
+            flash(_("Tracker invalide."), "error")
             return redirect(url_for("restream.create"))
 
         slug = slugify(title)
@@ -451,7 +505,7 @@ def create():
         )
         db.commit()
 
-        flash("Restream créé avec succès.", "success")
+        flash(_("Restream créé avec succès."), "success")
         return redirect(url_for("restream.manage"))
 
     # ------------------------------------------------------------------
@@ -463,6 +517,7 @@ def create():
         SELECT
             m.id,
             m.scheduled_at,
+            t.slug AS tournament_slug,
             t.name AS tournament_name,
             GROUP_CONCAT(
                 CASE
@@ -486,6 +541,19 @@ def create():
         ORDER BY m.scheduled_at ASC
         """
     ).fetchall()
+    
+    # -------------------------------------------------
+    # Traductions affichage (tournoi)
+    # -------------------------------------------------
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    matches = [dict(m) for m in matches]
+    for m in matches:
+        tslug = m.get("tournament_slug")
+        if tslug:
+            t_tr = get_translation("tournament", tslug, "name", lang)
+            if t_tr:
+                m["tournament_name"] = t_tr
 
     return render_template(
         "restream/create.html",
@@ -531,7 +599,7 @@ def enable_restream(slug):
         copyfile(template_path, session_path)
 
 
-    flash("Restream réactivé.", "success")
+    flash(_("Restream réactivé."), "success")
     return redirect(url_for("restream.manage"))
 
 
@@ -562,7 +630,7 @@ def disable_restream(slug):
         session_file.unlink()
 
 
-    flash("Restream désactivé.", "success")
+    flash(_("Restream désactivé."), "success")
     return redirect(url_for("restream.manage"))
 
 
@@ -763,15 +831,15 @@ def edit(slug):
         new_tracker_type = request.form.get("tracker_type")
 
         if not title or not new_indices_template or not new_tracker_type:
-            flash("Tous les champs obligatoires doivent être remplis.", "error")
+            flash(_("Tous les champs obligatoires doivent être remplis."), "error")
             return redirect(url_for("restream.edit", slug=slug))
             
         if not is_valid_indices_template(new_indices_template):
-            flash("Template d’indices invalide.", "error")
+            flash(_("Template d’indices invalide."), "error")
             return redirect(url_for("restream.edit", slug=slug))
             
         if not is_valid_tracker_type(new_tracker_type):
-            flash("Tracker invalide.", "error")
+            flash(_("Tracker invalide."), "error")
             return redirect(url_for("restream.edit", slug=slug))
 
         # --------------------------------------------------------------
@@ -789,7 +857,7 @@ def edit(slug):
                 template_path = get_indices_template_path(new_indices_template)
 
                 if not template_path.exists():
-                    flash("Template d’indices introuvable.", "error")
+                    flash(_("Template d’indices introuvable."), "error")
                     return redirect(url_for("restream.edit", slug=slug))
 
                 session_path.parent.mkdir(parents=True, exist_ok=True)
@@ -834,7 +902,7 @@ def edit(slug):
         )
         db.commit()
 
-        flash("Restream mis à jour.", "success")
+        flash(_("Restream mis à jour."), "success")
         return redirect(url_for("restream.manage"))
 
     return render_template(
@@ -1223,7 +1291,7 @@ def restream_tracker_presets_apply(slug: str):
     session["version"] = int(session.get("version", 0)) + 1
     save_session_restream(int(restream["id"]), session)
 
-    flash("Preset chargé sur tous les slots.", "success")
+    flash(_("Preset chargé sur tous les slots."), "success")
     return redirect(url_for("restream.restream_live", slug=slug))
 
 
@@ -1281,7 +1349,7 @@ def restream_tracker_reset(slug: str):
     session["version"] = int(session.get("version", 0)) + 1
     save_session_restream(int(restream["id"]), session)
 
-    flash("Tracker reset (preset par défaut).", "success")
+    flash(_("Tracker reset (preset par défaut)."), "success")
     return redirect(url_for("restream.restream_live", slug=slug))
     
 @restream_bp.post("/<slug>/final-time/<int:slot>/toggle")
@@ -1340,7 +1408,7 @@ def restream_toggle_final_time(slug: str, slot: int):
     save_session_restream(int(restream["id"]), session)
 
     flash(
-        f"Temps final Joueur {slot} : {'ON' if target['show_final_time'] else 'OFF'}.",
+        _("Temps final Joueur %(slot)s : %(state)s .", slot=slot, state= 'ON' if target['show_final_time'] else 'OFF'),
         "success",
     )
     return redirect(url_for("restream.restream_live", slug=slug))
@@ -1367,11 +1435,11 @@ def live_set_room_racetime(slug: str):
 
     # petite validation “safe” (évite les valeurs vides / trop longues)
     if not room:
-        flash("Room racetime vide.", "error")
+        flash(_("Room racetime vide."), "error")
         return redirect(url_for("restream.restream_live", slug=slug))
 
     if len(room) > 200:
-        flash("Room racetime trop longue.", "error")
+        flash(_("Room racetime trop longue."), "error")
         return redirect(url_for("restream.restream_live", slug=slug))
 
     db.execute(
@@ -1384,7 +1452,7 @@ def live_set_room_racetime(slug: str):
     )
     db.commit()
 
-    flash("Room racetime enregistrée sur le match.", "success")
+    flash(_("Room racetime enregistrée sur le match."), "success")
     return redirect(url_for("restream.restream_live", slug=slug))
     
 ###############################################
@@ -1618,7 +1686,7 @@ def restream_overlay_intro(slug: str):
     # tournament name
     row = db.execute(
         """
-        SELECT t.name AS tournament_name
+        SELECT t.name AS tournament_name, t.slug AS tournament_slug
         FROM matches m
         JOIN tournaments t ON t.id = m.tournament_id
         WHERE m.id = ?
@@ -1626,7 +1694,17 @@ def restream_overlay_intro(slug: str):
         (restream["match_id"],),
     ).fetchone()
 
-    tournament_name = overlay_tournament_name(row["tournament_name"]) if row and row["tournament_name"] else ""
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournament_name_raw = row["tournament_name"] if row else ""
+    tslug = row["tournament_slug"] if row else None
+
+    if tslug:
+        tr = get_translation("tournament", tslug, "name", lang)
+        if tr:
+            tournament_name_raw = tr
+
+    tournament_name = overlay_tournament_name(tournament_name_raw) if tournament_name_raw else ""
 
     overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
     
@@ -1679,6 +1757,7 @@ def restream_overlay_next(slug: str):
         """
         SELECT
             t.id AS tournament_id,
+            t.slug AS tournament_slug,
             t.name AS tournament_name
         FROM matches m
         JOIN tournaments t ON t.id = m.tournament_id
@@ -1688,8 +1767,18 @@ def restream_overlay_next(slug: str):
     ).fetchone()
 
     tournament_id = row["tournament_id"] if row else None
-    tournament_name = overlay_tournament_name(row["tournament_name"]) if row and row["tournament_name"] else ""
-    
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournament_name_raw = row["tournament_name"] if row else ""
+    tslug = row["tournament_slug"] if row else None
+
+    if tslug:
+        tr = get_translation("tournament", tslug, "name", lang)
+        if tr:
+            tournament_name_raw = tr
+
+    tournament_name = overlay_tournament_name(tournament_name_raw) if tournament_name_raw else ""
+        
 
     overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
 
@@ -1822,7 +1911,7 @@ def restream_overlay_interview(slug: str):
     # --------------------------------------------------------------
     row = db.execute(
         """
-        SELECT t.name AS tournament_name
+        SELECT t.slug AS tournament_slug, t.name AS tournament_name
         FROM matches m
         JOIN tournaments t ON t.id = m.tournament_id
         WHERE m.id = ?
@@ -1830,11 +1919,18 @@ def restream_overlay_interview(slug: str):
         (restream["match_id"],),
     ).fetchone()
 
-    tournament_name = (
-        overlay_tournament_name(row["tournament_name"])
-        if row and row["tournament_name"]
-        else ""
-    )
+
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournament_name_raw = row["tournament_name"] if row and row["tournament_name"] else ""
+    tslug = row["tournament_slug"] if row else None
+
+    if tslug:
+        tr = get_translation("tournament", tslug, "name", lang)
+        if tr:
+            tournament_name_raw = tr
+
+    tournament_name = overlay_tournament_name(tournament_name_raw) if tournament_name_raw else ""
 
     overlay_pack = resolve_overlay_pack_for_match(db, restream["match_id"])
 

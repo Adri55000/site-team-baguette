@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Presets – {{ tracker_label }}
+{{ _("Presets") }} – {{ tracker_label }}
 {% endblock %}
 
 {% block head %}
@@ -9,12 +9,12 @@ Presets – {{ tracker_label }}
 {% endblock %}
 
 {% block content %}
-<h1>Presets – {{ tracker_label }}</h1>
+<h1>{{ _("Presets") }} – {{ tracker_label }}</h1>
 
 <div class="admin-actions">
     <a href="{{ url_for('admin.admin_trackers_preset_new', tracker_type=tracker_type) }}"
        class="btn btn-primary">
-        ➕ Créer un preset
+        ➕ {{ _("Créer un preset") }}
     </a>
 </div>
 
@@ -22,10 +22,10 @@ Presets – {{ tracker_label }}
 <table class="admin-table">
     <thead>
         <tr>
-            <th>Nom du preset</th>
-            <th>Dernière modification</th>
-			<th>Notes</th>
-            <th>Actions</th>
+            <th>{{ _("Nom du preset") }}</th>
+            <th>{{ _("Dernière modification") }}</th>
+			<th>{{ _("Notes") }}</th>
+            <th>{{ _("Actions") }}</th>
         </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@ Presets – {{ tracker_label }}
                         preset_slug=preset.slug
                     ) }}"
                    class="btn btn-secondary">
-                    ✏️ Éditer
+                    ✏️ {{ _("Éditer") }}
                 </a>
 
                 <form method="post"
@@ -61,7 +61,7 @@ Presets – {{ tracker_label }}
 					  onsubmit="return confirm('Supprimer définitivement ce preset ?');"
 					  style="display:inline;">
 					<button type="submit" class="btn btn-danger">
-						🗑️ Supprimer
+						🗑️ {{ _("Supprimer") }}
 					</button>
 				</form>
             </td>
@@ -70,11 +70,11 @@ Presets – {{ tracker_label }}
     </tbody>
 </table>
 {% else %}
-<p>Aucun preset n’existe pour ce tracker.</p>
+<p>{{ _("Aucun preset n’existe pour ce tracker.") }}</p>
 {% endif %}
 
 <a href="{{ url_for('admin.admin_trackers_index') }}"
    class="btn btn-link">
-    ← Retour aux trackers
+    ← {{ _("Retour aux trackers") }}
 </a>
 {% endblock %}

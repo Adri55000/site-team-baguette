@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Créer un compte{% endblock %}
+{% block title %}{{ _("Créer un compte") }}{% endblock %}
 
 {% block content %}
 
 <div class="auth-page">
   <div class="auth-card">
 
-    <h1>Créer un compte</h1>
+    <h1>{{ _("Créer un compte") }}</h1>
 
     <!-- ===== Messages ===== -->
     <div class="auth-messages">
@@ -28,7 +28,7 @@
 
       <div class="form-group">
         <label for="username" class="form-label">
-          Nom d'utilisateur
+          {{ _("Nom d'utilisateur") }}
         </label>
         <input type="text"
                id="username"
@@ -39,7 +39,7 @@
 
       <div class="form-group">
         <label for="password" class="form-label">
-          Mot de passe
+          {{ _("Mot de passe") }}
         </label>
         <input type="password"
                id="password"
@@ -50,7 +50,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          Créer le compte
+          {{ _("Créer le compte") }}
         </button>
       </div>
 
@@ -58,7 +58,7 @@
 
     <div class="auth-links">
       <a href="{{ url_for('auth.login') }}">
-        J’ai déjà un compte
+        {{ _("J’ai déjà un compte") }}
       </a>
     </div>
 

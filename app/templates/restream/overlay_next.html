@@ -24,7 +24,7 @@
       {% if next %}
         <!-- Match prévu -->
         <div class="next-message">
-          Merci d'avoir suivi - Prochain Match
+          {{ _("Merci d'avoir suivi - Prochain Match") }}
         </div>
 
         <div class="next-player next-player-left">
@@ -40,17 +40,17 @@
         </div>
 
         <div class="next-datetime">
-          {{ next.datetime_label }} (heure française)
+          {{ next.datetime_label }} {{ _("(heure française)") }}
         </div>
 
       {% else %}
         <!-- Pas de match prévu -->
         <div class="next-message">
-          Merci d'avoir suivi
+          {{ _("Merci d'avoir suivi") }}
         </div>
 
         <div class="next-waiting">
-          Prochain match en attente de programmation
+          {{ _("Prochain match en attente de programmation") }}
         </div>
       {% endif %}
 

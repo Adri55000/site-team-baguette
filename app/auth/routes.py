@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, flash, url_for, current_app
+from flask_babel import gettext as _
 from . import auth_bp
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -27,12 +28,12 @@ def register():
         errors = []
 
         if not username:
-            errors.append("Le nom d'utilisateur est obligatoire.")
+            errors.append(_("Le nom d'utilisateur est obligatoire."))
         elif len(username) > 30:
-            errors.append("Le nom d'utilisateur ne doit pas dépasser 30 caractères.")
+            errors.append(_("Le nom d'utilisateur ne doit pas dépasser 30 caractères."))
 
         if len(password) < 6:
-            errors.append("Le mot de passe doit contenir au moins 6 caractères.")
+            errors.append(_("Le mot de passe doit contenir au moins 6 caractères."))
 
         if errors:
             return render_template(
@@ -55,13 +56,13 @@ def register():
             )
             db.commit()
 
-            flash("Compte créé avec succès ! Vous pouvez maintenant vous connecter.", "success")
+            flash(_("Compte créé avec succès ! Vous pouvez maintenant vous connecter."), "success")
             return redirect(url_for("auth.login"))
             
         except sqlite3.IntegrityError:
             return render_template(
                 "auth/register.html",
-                errors=["Nom d'utilisateur déjà utilisé."],
+                errors=[_("Nom d'utilisateur déjà utilisé.")],
                 username=username
             )
 
@@ -80,7 +81,7 @@ def login():
         password = request.form.get("password", "")
 
         if not username or not password:
-            flash("Nom d'utilisateur et mot de passe obligatoires.", "error")
+            flash(_("Nom d'utilisateur et mot de passe obligatoires."), "error")
             return redirect(url_for("auth.login"))
 
         row = db.execute("""
@@ -101,7 +102,7 @@ def login():
             user = User(row)
             
             if not user.is_active:
-                flash("Votre compte a été désactivé.", "error")
+                flash(_("Votre compte a été désactivé."), "error")
                 return redirect(url_for("auth.login"))
             
             login_user(user)
@@ -113,10 +114,10 @@ def login():
             db.commit()
             
 
-            flash(f"Connecté en tant que {user.username}", "success")
+            flash(_("Connecté en tant que %(name)s", name=user.username), "success")
             return redirect(url_for("main.home"))
 
-        flash("Nom d'utilisateur ou mot de passe incorrect", "error")
+        flash(_("Nom d'utilisateur ou mot de passe incorrect"), "error")
         return redirect(url_for("auth.login"))
 
     return render_template("auth/login.html")
@@ -127,7 +128,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Vous êtes déconnecté.", "info")
+    flash(_("Vous êtes déconnecté."), "info")
     return redirect(url_for("main.home"))
 
 
@@ -140,7 +141,7 @@ def upload_avatar():
 
     file = request.files.get("avatar")
     if not file:
-        flash("Aucun fichier sélectionné.", "error")
+        flash(_("Aucun fichier sélectionné."), "error")
         return redirect(url_for("main.profile"))
 
     # Vérifier extension
@@ -148,19 +149,19 @@ def upload_avatar():
     ext = file.filename.rsplit(".", 1)[-1].lower()
 
     if ext not in allowed:
-        flash("Format d'image non supporté (PNG, JPG, JPEG).", "error")
+        flash(_("Format d'image non supporté (PNG, JPG, JPEG)."), "error")
         return redirect(url_for("main.profile"))
 
     # Charger l'image en mémoire
     try:
         img = Image.open(file)
     except Exception:
-        flash("Fichier image invalide ou corrompu.", "error")
+        flash(_("Fichier image invalide ou corrompu."), "error")
         return redirect(url_for("main.profile"))
 
     # Vérifier dimensions maximales
     if img.width > 3000 or img.height > 3000:
-        flash("L'image est trop grande (max 3000x3000 pixels).", "error")
+        flash(_("L'image est trop grande (max 3000x3000 pixels)."), "error")
         return redirect(url_for("main.profile"))
 
     # Conversion RGB si nécessaire
@@ -196,5 +197,5 @@ def upload_avatar():
     )
     db.commit()
 
-    flash("Avatar mis à jour avec succès !", "success")
+    flash(_("Avatar mis à jour avec succès !"), "success")
     return redirect(url_for("main.profile"))

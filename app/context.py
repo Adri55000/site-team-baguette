@@ -2,6 +2,8 @@
 
 from app.database import get_db
 from flask import current_app
+from flask_babel import get_locale
+from app.modules.i18n import get_translation
 
 def inject_tournaments():
     db = get_db()
@@ -19,27 +21,38 @@ def inject_tournaments():
     ).fetchall()
 
     internal = []
+    lang = str(get_locale() or "fr").lower()
     for t in internal_rows:
         status = t["status"]
+        slug = t["slug"]
+        name_db = t["name"]
+
+        name_tr = get_translation("tournament", slug, "name", lang)
+        display_name = name_tr if name_tr else name_db
         if status == "draft":
             status = "upcoming"
 
         internal.append(
             {
-                "slug": t["slug"],
-                "name": t["name"],
+                "slug": slug,
+                "name": name_db,                 # garde la source DB
+                "display_name": display_name,    # nouveau champ pour l’UI
                 "status": status,
             }
         )
 
-    external = current_app.config.get("TOURNAMENTS", [])
+    external = []
+    for t in current_app.config.get("TOURNAMENTS", []):
+        t = dict(t)
+        t.setdefault("display_name", t.get("name"))
+        external.append(t)
     tournaments = internal + external
 
     # ------------------------------------------------------------------
     # Tri stable (au minimum), pour éviter un ordre “random”
     # ------------------------------------------------------------------
     def by_name(x):
-        return (x.get("name") or "").lower()
+        return (x.get("display_name") or x.get("name") or "").lower()
 
     active_all = sorted([t for t in tournaments if t.get("status") == "active"], key=by_name)
     upcoming_all = sorted([t for t in tournaments if t.get("status") == "upcoming"], key=by_name)

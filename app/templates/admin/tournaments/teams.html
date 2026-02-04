@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Équipes du tournoi{% endblock %}
+{% block title %}{{ _("Équipes du tournoi") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -8,12 +8,12 @@
 {% block content %}
 <div class="admin-dashboard">
 
-    <h1>Équipes du tournoi</h1>
+    <h1>{{ _("Équipes du tournoi") }}</h1>
     <p class="admin-subtitle">{{ tournament.name }}</p>
 
 	{% if tournament.status != "draft" %}
 	<div class="admin-info-banner">
-		Les inscriptions sont verrouillées car le tournoi est terminé.
+		{{ _("Les inscriptions sont verrouillées car le tournoi est terminé.") }}
 	</div>
 	{% endif %}
 
@@ -29,17 +29,17 @@
     <!-- ÉQUIPES INSCRITES -->
     <!-- ========================= -->
     <div class="admin-card">
-        <h2>Équipes inscrites</h2>
+        <h2>{{ _("Équipes inscrites") }}</h2>
 		<form method="post" action="{{ url_for('admin.admin_tournament_teams_update_groups', tournament_id=tournament.id) }}">
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Équipe</th>
-                    <th>Joueurs</th>
-                    <th>Groupe</th>
-					<th>Position</th>
-                    <th>Seed</th>
-                    <th>Actions</th>
+                    <th>{{ _("Équipe") }}</th>
+                    <th>{{ _("Joueurs") }}</th>
+                    <th>{{ _("Groupe") }}</th>
+					<th>{{ _("Position") }}</th>
+                    <th>{{ _("Seed") }}</th>
+                    <th>{{ _("Actions") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
 							name="group_name_{{ team.id }}"
 							value="{{ team.group_name or '' }}"
 							list="group-names"
-							placeholder="Ex: Groupe A"
+							placeholder="{{ _('Ex: Groupe A') }}"
 							class="input"
 						>
 					</td>
@@ -64,7 +64,7 @@
 							type="number"
 							name="position_{{ team.id }}"
 							value="{{ team.position if team.position is not none else '' }}"
-							placeholder="(tie-break)"
+							placeholder="{{ _('(tie-break)') }}"
 							class="input input--sm"
 							min="1"
 						>			
@@ -78,7 +78,7 @@
                                 tournament_id=tournament.id,
                                 team_id=team.id
                               ) }}">
-                            <button class="btn-secondary-small">Retirer</button>
+                            <button class="btn-secondary-small">{{ _("Retirer") }}</button>
                         </form>
                         {% else %}
                             <span class="text-muted">—</span>
@@ -89,13 +89,13 @@
             {% else %}
                 <tr>
                     <td colspan="5" class="admin-empty">
-                        Aucune équipe inscrite.
+                        {{ _("Aucune équipe inscrite.") }}
                     </td>
                 </tr>
             {% endif %}
             </tbody>
         </table>
-		<button type="submit" class="btn btn-primary">Enregistrer groupes</button>
+		<button type="submit" class="btn btn-primary">{{ _("Enregistrer groupes") }}</button>
 		</form>
     </div>
 
@@ -109,18 +109,18 @@
 
             <input type="text"
                    name="q"
-                   placeholder="Rechercher une équipe…"
+                   placeholder="{{ _('Rechercher une équipe…') }}"
                    value="{{ search or '' }}">
 
             <select name="team_size">
-                <option value="all">Toutes les équipes</option>
-                <option value="solo" {{ 'selected' if team_size == 'solo' }}>Solo</option>
-                <option value="multi" {{ 'selected' if team_size == 'multi' }}>Multi</option>
-                <option value="2" {{ 'selected' if team_size == '2' }}>Exactement 2</option>
-                <option value="3" {{ 'selected' if team_size == '3' }}>Exactement 3</option>
+                <option value="all">{{ _("Toutes les équipes") }}</option>
+                <option value="solo" {{ 'selected' if team_size == 'solo' }}>{{ _("Solo") }}</option>
+                <option value="multi" {{ 'selected' if team_size == 'multi' }}>{{ _("Multi") }}</option>
+                <option value="2" {{ 'selected' if team_size == '2' }}>{{ _("Exactement 2") }}</option>
+                <option value="3" {{ 'selected' if team_size == '3' }}>{{ _("Exactement 3") }}</option>
             </select>
 
-            <button class="btn">Rechercher</button>
+            <button class="btn">{{ _("Rechercher") }}</button>
         </form>
     </div>
     {% endif %}
@@ -130,9 +130,9 @@
     <!-- ========================= -->
     {% if search or team_size != 'all' %}
     <p class="admin-filter-info">
-        Filtres actifs :
-        {% if search %} recherche = “{{ search }}” {% endif %}
-        {% if team_size != 'all' %} taille = {{ team_size }} {% endif %}
+        {{ _("Filtres actifs :") }}
+        {% if search %} {{ _("recherche =") }} “{{ search }}” {% endif %}
+        {% if team_size != 'all' %} {{ _("taille =") }} {{ team_size }} {% endif %}
     </p>
     {% endif %}
 
@@ -144,10 +144,10 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Équipe</th>
-                    <th>Joueurs</th>
-                    <th>Nb</th>
-                    <th>Action</th>
+                    <th>{{ _("Équipe") }}</th>
+                    <th>{{ _("Joueurs") }}</th>
+                    <th>{{ _("Nb") }}</th>
+                    <th>{{ _("Action") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -165,7 +165,7 @@
                               ) }}">
                             <input type="hidden" name="team_id" value="{{ team.id }}">
                             <button class="btn-secondary-small">
-                                Inscrire
+                                {{ _("Inscrire") }}
                             </button>
                         </form>
                     </td>
@@ -174,7 +174,7 @@
             {% else %}
                 <tr>
                     <td colspan="4" class="admin-empty">
-                        Aucune équipe disponible avec ces filtres.
+                        {{ _("Aucune équipe disponible avec ces filtres.") }}
                     </td>
                 </tr>
             {% endif %}
@@ -197,14 +197,14 @@
                     q=search,
                     team_size=team_size
                ) }}">
-                ← Précédent
+                ← {{ _("Précédent") }}
             </a>
         {% else %}
             <span></span>
         {% endif %}
 
         <span class="admin-pagination-info">
-            Page {{ page }} / {{ total_pages }}
+            {{ _("Page") }} {{ page }} / {{ total_pages }}
         </span>
 
         {% if page < total_pages %}
@@ -216,7 +216,7 @@
                     q=search,
                     team_size=team_size
                ) }}">
-                Suivant →
+                {{ _("Suivant") }} →
             </a>
         {% else %}
             <span></span>
@@ -229,7 +229,7 @@
 <div class="admin-actions-footer">
     <a href="{{ url_for('admin.tournaments_list') }}"
        class="btn btn-secondary">
-        ← Retour au tournoi
+        ← {{ _("Retour au tournoi") }}
     </a>
 </div>
 

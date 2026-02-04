@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Gestion des joueurs{% endblock %}
+{% block title %}{{ _("Gestion des joueurs") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -7,18 +7,18 @@
 
 {% block content %}
 <div class="admin-dashboard">
-<h1>Gestion des joueurs</h1>
+<h1>{{ _("Gestion des joueurs") }}</h1>
 
 <div class="admin-card admin-user-toolbar">
     <form method="get" action="{{ url_for('admin.players_list') }}">
-	<input type="text" name="q" value="{{ search or '' }}" placeholder="Rechercher un joueur...">
-	<button type="submit" class="btn">Rechercher</button>
+	<input type="text" name="q" value="{{ search or '' }}" placeholder="{{ _('Rechercher un joueur...') }}">
+	<button type="submit" class="btn">{{ _("Rechercher") }}</button>
 	</form>
 
 
     <a href="{{ url_for('admin.players_create') }}"
        class="btn btn-primary">
-        Ajouter
+        {{ _("Ajouter") }}
     </a>
 </div>
 
@@ -28,10 +28,10 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th>Nom</th>
-				<th>Racetime</th>
-                <th>Créé le</th>
-                <th class="actions">Actions</th>
+                <th>{{ _("Nom") }}</th>
+				<th>{{ _("Racetime") }}</th>
+                <th>{{ _("Créé le") }}</th>
+                <th class="actions">{{ _("Actions") }}</th>
             </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@
                 <td class="actions">
 					<a href="{{ url_for('admin.players_edit', player_id=p.id) }}"
 						class="btn">
-						Modifier
+						{{ _("Modifier") }}
 					</a>
 				</td>
 
@@ -58,7 +58,7 @@
         {% else %}
             <tr>
                 <td colspan="3" class="empty">
-                    Aucun joueur trouvé.
+                    {{ _("Aucun joueur trouvé.") }}
                 </td>
             </tr>
         {% endfor %}
@@ -72,20 +72,20 @@
     {% if page > 1 %}
         <a class="btn"
            href="{{ url_for('admin.players_list', page=page-1, q=search) }}">
-            ← Précédent
+            ← {{ _("Précédent") }}
         </a>
     {% else %}
         <span></span>
     {% endif %}
 
     <span>
-        Page {{ page }} / {{ total_pages }}
+        {{ _("Page") }} {{ page }} / {{ total_pages }}
     </span>
 
     {% if page < total_pages %}
         <a class="btn"
            href="{{ url_for('admin.players_list', page=page+1, q=search) }}">
-            Suivant →
+            {{ _("Suivant") }} →
         </a>
     {% else %}
         <span></span>

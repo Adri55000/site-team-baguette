@@ -1,4 +1,5 @@
 import re
+from flask_babel import gettext as _
 from math import ceil
 from app.database import get_db
 
@@ -28,7 +29,7 @@ def parse_final_time(value: str):
     """
 
     if not value:
-        raise InvalidResultFormat("Résultat manquant")
+        raise InvalidResultFormat(_("Résultat manquant"))
 
     value = value.strip().upper()
 
@@ -40,7 +41,7 @@ def parse_final_time(value: str):
     match = TIME_PATTERN.match(value)
     if not match:
         raise InvalidResultFormat(
-            "Format invalide. Utiliser HH:MM:SS ou DNF/DQ."
+            _("Format invalide. Utiliser HH:MM:SS ou DNF/DQ.")
         )
 
     hours, minutes, seconds = map(int, match.groups())

@@ -1,0 +1,48 @@
+{
+  "updated_at": "2026-02-04T13:38:00",
+  "label": "[EN] SSR — Season 4",
+  "categories": {
+    "path": {
+      "label": "Path",
+      "columns": 2,
+      "items": []
+    },
+    "always": {
+      "label": "Always",
+      "columns": 2,
+      "items": [
+        ["Water Dragon Reward", ""],
+        ["Batreaux 50", ""]
+      ]
+    },
+    "sometimes": {
+      "label": "Sometimes",
+      "columns": 2,
+      "items": []
+    },
+    "triforce": {
+      "label": "Triforce",
+      "columns": 2,
+      "items": [
+	  ["Courage", ""],
+      ["Wisdom", ""],
+      ["Power", ""]
+	  ]
+    },
+    "barren": {
+      "label": "Barren",
+      "columns": 1,
+      "items": []
+    },
+    "chants": {
+      "label": "Songs",
+      "columns": 2,
+      "items": [
+        ["Farore's Courage", ""],
+        ["Nayru's Wisdom", ""],
+        ["Din's Power", ""],
+        ["Song of the Hero", ""]
+      ]
+    }
+  }
+}

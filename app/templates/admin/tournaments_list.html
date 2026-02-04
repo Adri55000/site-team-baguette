@@ -1,43 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Gestion des tournois{% endblock %}
+{% block title %}{{ _("Gestion des tournois") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
 {% endblock %}
 
 {% set STATUS_LABELS = {
-    "draft": "Brouillon",
-    "active": "En cours",
-    "finished": "Terminé"
+    "draft": {{ _("Brouillon") }},
+    "active": {{ _("En cours") }},
+    "finished": {{ _("Terminé") }}
 } %}
 
 {% block content %}
 <div class="admin-dashboard">
 
-<h1>Gestion des tournois</h1>
+<h1>{{ _("Gestion des tournois") }}</h1>
 
 <!-- TOOLBAR -->
 <div class="admin-card admin-user-toolbar">
     <form method="get" action="{{ url_for('admin.tournaments_list') }}">
         <input type="text"
                name="q"
-               placeholder="Rechercher un tournoi…"
+               placeholder="{{ _('Rechercher un tournoi…') }}"
                value="{{ search or '' }}">
 
         <select name="status">
-            <option value="">Tous les statuts</option>
-            <option value="draft" {{ 'selected' if status == 'draft' }}>Brouillon</option>
-            <option value="active" {{ 'selected' if status == 'active' }}>En cours</option>
-            <option value="finished" {{ 'selected' if status == 'finished' }}>Terminé</option>
+            <option value="">{{ _("Tous les statuts") }}</option>
+            <option value="draft" {{ 'selected' if status == 'draft' }}>{{ _("Brouillon") }}</option>
+            <option value="active" {{ 'selected' if status == 'active' }}>{{ _("En cours") }}</option>
+            <option value="finished" {{ 'selected' if status == 'finished' }}>{{ _("Terminé") }}</option>
         </select>
 
-        <button type="submit" class="btn">Filtrer</button>
+        <button type="submit" class="btn">{{ _("Filtrer") }}</button>
     </form>
 
     <div class="admin-toolbar-actions">
         <a href="{{ url_for('admin.tournaments_create') }}"
            class="btn btn-primary">
-            Ajouter
+            {{ _("Ajouter") }}
         </a>
     </div>
 </div>
@@ -47,13 +47,13 @@
     <table class="admin-table">
         <thead>
             <tr>
-                <th class="col-name">Nom</th>
-                <th>Jeu</th>
-				<th>Équipes</th>
-                <th>Statut</th>
-                <th>Source</th>
-                <th>Créé le</th>
-                <th class="actions">Actions</th>
+                <th class="col-name">{{ _("Nom") }}</th>
+                <th>{{ _("Jeu") }}</th>
+				<th>{{ _("Équipes") }}</th>
+                <th>{{ _("Statut") }}</th>
+                <th>{{ _("Source") }}</th>
+                <th>{{ _("Créé le") }}</th>
+                <th class="actions">{{ _("Actions") }}</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +62,7 @@
                 <td class="col-name">{{ t.name }}</td>
                 <td>{{ t.game_name or "—" }}</td>
 				<td>
-					{{ t.team_count }} équipe{{ 's' if t.team_count != 1 }}
+					{{ ngettext("%(count)s équipe","%(count)s équipes",t.team_count) | format(count=t.team_count) }}
 				</td>
                 <td>{{ STATUS_LABELS.get(t.status, t.status) }}</td>
                 <td>{{ t.source }}</td>
@@ -70,19 +70,19 @@
                 <td class="actions">
                     <a href="{{ url_for('admin.admin_tournament_edit', tournament_id=t.id) }}"
                        class="btn btn-secondary-small">
-                        Gérer les infos
+                        {{ _("Gérer les infos") }}
                     </a>
 
                     <a href="{{ url_for('admin.admin_tournament_teams', tournament_id=t.id) }}"
                        class="btn btn-secondary-small">
-                        Gérer les inscriptions
+                        {{ _("Gérer les inscriptions") }}
                     </a>
                 </td>
             </tr>
         {% else %}
             <tr>
                 <td colspan="6" class="empty">
-                    Aucun tournoi trouvé.
+                    {{ _("Aucun tournoi trouvé.") }}
                 </td>
             </tr>
         {% endfor %}
@@ -99,14 +99,14 @@
                             page=page-1,
                             q=search,
                             status=status) }}">
-            ← Précédent
+            ← {{ _("Précédent") }}
         </a>
     {% else %}
         <span></span>
     {% endif %}
 
     <span class="admin-pagination-info">
-        Page {{ page }} / {{ total_pages }}
+        {{ _("Page") }} {{ page }} / {{ total_pages }}
     </span>
 
     {% if page < total_pages %}
@@ -115,7 +115,7 @@
                             page=page+1,
                             q=search,
                             status=status) }}">
-            Suivant →
+            {{ _("Suivant") }} →
         </a>
     {% else %}
         <span></span>

@@ -1,0 +1,2630 @@
+# French translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-02-04 19:23+0100\n"
+"PO-Revision-Date: 2026-02-03 16:59+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/__init__.py:91
+msgid "Vous devez être connecté pour accéder à cette page."
+msgstr ""
+
+#: app/admin/domain.py:20
+msgid ""
+"Impossible de supprimer ce joueur : il fait partie d’une équipe multi-"
+"joueurs."
+msgstr ""
+
+#: app/admin/domain.py:32
+msgid "Impossible de supprimer ce joueur : il est utilisé dans des matchs."
+msgstr ""
+
+#: app/admin/domain.py:42
+msgid "Impossible de supprimer cette équipe : elle est utilisée dans des matchs."
+msgstr ""
+
+#: app/admin/routes.py:96 app/admin/routes.py:137 app/main/routes.py:149
+#: app/main/routes.py:166
+msgid "Utilisateur introuvable."
+msgstr ""
+
+#: app/admin/routes.py:109
+msgid "Rôle invalide."
+msgstr ""
+
+#: app/admin/routes.py:121
+msgid "Modifications enregistrées."
+msgstr ""
+
+#: app/admin/routes.py:157
+msgid "Avatar réinitialisé."
+msgstr ""
+
+#: app/admin/routes.py:177
+#, python-format
+msgid ""
+"Mot de passe temporaire généré : %(pswd)s — l’utilisateur devra le "
+"changer à la prochaine connexion."
+msgstr ""
+
+#: app/admin/routes.py:204
+msgid "Nom et abréviation obligatoires."
+msgstr ""
+
+#: app/admin/routes.py:254
+msgid "Jeu ajouté avec succès."
+msgstr ""
+
+#: app/admin/routes.py:267
+msgid "Impossible de supprimer ce jeu : il est utilisé par un tournoi."
+msgstr ""
+
+#: app/admin/routes.py:273
+msgid "Jeu supprimé."
+msgstr ""
+
+#: app/admin/routes.py:287
+msgid "Jeu introuvable."
+msgstr ""
+
+#: app/admin/routes.py:307
+msgid "Jeu modifié avec succès."
+msgstr ""
+
+#: app/admin/routes.py:374
+msgid "Joueur créé avec succès."
+msgstr ""
+
+#: app/admin/routes.py:470
+msgid "Joueur supprimé."
+msgstr ""
+
+#: app/admin/routes.py:561
+msgid "Équipe créée avec succès."
+msgstr ""
+
+#: app/admin/routes.py:585
+msgid "Équipe supprimée."
+msgstr ""
+
+#: app/admin/routes.py:755
+msgid "Le nom du tournoi est obligatoire."
+msgstr ""
+
+#: app/admin/routes.py:758
+msgid "Le préfixe [CASUAL] est réservé aux tournois système."
+msgstr ""
+
+#: app/admin/routes.py:761
+msgid "Un jeu doit être sélectionné."
+msgstr ""
+
+#: app/admin/routes.py:764 app/admin/routes.py:834
+msgid "Statut de tournoi invalide."
+msgstr ""
+
+#: app/admin/routes.py:780
+msgid "Tournoi créé avec succès."
+msgstr ""
+
+#: app/admin/routes.py:841
+msgid "Un tournoi terminé ne peut pas être réactivé."
+msgstr ""
+
+#: app/admin/routes.py:851
+msgid "Impossible d'activer le tournoi : aucune phase n'est définie."
+msgstr ""
+
+#: app/admin/routes.py:868
+msgid "Tournoi mis à jour."
+msgstr ""
+
+#: app/admin/routes.py:893 app/admin/routes.py:1046 app/admin/routes.py:1101
+#: app/admin/routes.py:1133 app/admin/routes.py:1221 app/admin/routes.py:1350
+#: app/admin/routes.py:1841 app/admin/routes.py:2399
+msgid "Tournoi introuvable."
+msgstr ""
+
+#: app/admin/routes.py:1050 app/admin/routes.py:1105
+msgid "Impossible de modifier les équipes d’un tournoi actif ou terminé."
+msgstr ""
+
+#: app/admin/routes.py:1059
+msgid "Équipe introuvable."
+msgstr ""
+
+#: app/admin/routes.py:1071
+msgid "Cette équipe est déjà inscrite à ce tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1083
+msgid "Équipe inscrite avec succès."
+msgstr ""
+
+#: app/admin/routes.py:1117
+msgid "Équipe retirée du tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1139
+msgid "Modification des groupes impossible : tournoi non en draft."
+msgstr ""
+
+#: app/admin/routes.py:1176
+#, python-format
+msgid "Position invalide pour l'équipe %(name)s."
+msgstr ""
+
+#: app/admin/routes.py:1190
+#, python-format
+msgid "Groupes enregistrés (%(name)s équipes)."
+msgstr ""
+
+#: app/admin/routes.py:1341
+msgid "Tournoi manquant."
+msgstr ""
+
+#: app/admin/routes.py:1358
+msgid ""
+"Impossible de créer une confrontation : aucune phase n'est définie pour "
+"ce tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1381 app/admin/routes.py:1616
+msgid "Une phase doit être sélectionnée."
+msgstr ""
+
+#: app/admin/routes.py:1394 app/admin/routes.py:1629
+msgid "Phase invalide pour ce tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1421 app/admin/routes.py:1647
+msgid "Les deux équipes doivent être sélectionnées."
+msgstr ""
+
+#: app/admin/routes.py:1425 app/admin/routes.py:1440 app/admin/routes.py:1651
+#: app/admin/routes.py:1673
+msgid "Les deux équipes doivent être différentes."
+msgstr ""
+
+#: app/admin/routes.py:1429 app/admin/routes.py:1655
+msgid "Les équipes doivent être inscrites au tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1434 app/admin/routes.py:1667
+msgid "Équipe A invalide (non inscrite au tournoi)."
+msgstr ""
+
+#: app/admin/routes.py:1437 app/admin/routes.py:1670
+msgid "Équipe B invalide (non inscrite au tournoi)."
+msgstr ""
+
+#: app/admin/routes.py:1445 app/admin/routes.py:1678
+msgid "Équipe A : choisissez une équipe OU une source, pas les deux."
+msgstr ""
+
+#: app/admin/routes.py:1448 app/admin/routes.py:1681
+msgid "Équipe B : choisissez une équipe OU une source, pas les deux."
+msgstr ""
+
+#: app/admin/routes.py:1452 app/admin/routes.py:1685
+msgid "Équipe A : le type de source doit être winner ou loser."
+msgstr ""
+
+#: app/admin/routes.py:1455 app/admin/routes.py:1688
+msgid "Équipe B : le type de source doit être winner ou loser."
+msgstr ""
+
+#: app/admin/routes.py:1469 app/admin/routes.py:1707
+msgid "Source A invalide (doit être dans la même phase et le même tournoi)."
+msgstr ""
+
+#: app/admin/routes.py:1482 app/admin/routes.py:1720
+msgid "Source B invalide (doit être dans la même phase et le même tournoi)."
+msgstr ""
+
+#: app/admin/routes.py:1518
+msgid "Confrontation créée."
+msgstr ""
+
+#: app/admin/routes.py:1571 app/admin/routes.py:1825 app/admin/routes.py:1991
+msgid "Confrontation introuvable."
+msgstr ""
+
+#: app/admin/routes.py:1580 app/admin/routes.py:2035
+msgid "Tournoi terminé : modification impossible."
+msgstr ""
+
+#: app/admin/routes.py:1693
+msgid "Une confrontation ne peut pas dépendre d'elle-même."
+msgstr ""
+
+#: app/admin/routes.py:1765
+msgid "Confrontation mise à jour."
+msgstr ""
+
+#: app/admin/routes.py:1845
+msgid "Tournoi terminé : création impossible."
+msgstr ""
+
+#: app/admin/routes.py:1900
+msgid "Un tie-break doit contenir au moins 2 équipes."
+msgstr ""
+
+#: app/admin/routes.py:1906
+msgid "Toutes les équipes doivent être inscrites au tournoi."
+msgstr ""
+
+#: app/admin/routes.py:1921
+msgid "Match créé."
+msgstr ""
+
+#: app/admin/routes.py:2026 app/admin/routes.py:2123 app/admin/routes.py:2170
+msgid "Match introuvable."
+msgstr ""
+
+#: app/admin/routes.py:2071
+msgid "Match mis à jour."
+msgstr ""
+
+#: app/admin/routes.py:2099
+msgid "Impossible de supprimer une confrontation avec des matchs."
+msgstr ""
+
+#: app/admin/routes.py:2105
+msgid "Confrontation supprimée."
+msgstr ""
+
+#: app/admin/routes.py:2137
+msgid "Match supprimé."
+msgstr ""
+
+#: app/admin/routes.py:2273
+msgid "Résultats enregistrés."
+msgstr ""
+
+#: app/admin/routes.py:2407 app/admin/routes.py:2483
+msgid "Le nom de la phase est obligatoire."
+msgstr ""
+
+#: app/admin/routes.py:2413 app/admin/routes.py:2489
+msgid "La position de la phase est invalide."
+msgstr ""
+
+#: app/admin/routes.py:2432 app/admin/routes.py:2507
+msgid "Le nombre de qualifiés par groupe est invalide."
+msgstr ""
+
+#: app/admin/routes.py:2449
+msgid "Phase créée."
+msgstr ""
+
+#: app/admin/routes.py:2473 app/admin/routes.py:2550
+msgid "Phase introuvable pour ce tournoi."
+msgstr ""
+
+#: app/admin/routes.py:2526
+msgid "Phase mise à jour."
+msgstr ""
+
+#: app/admin/routes.py:2567
+msgid ""
+"Impossible de supprimer cette phase : des confrontations y sont "
+"rattachées."
+msgstr ""
+
+#: app/admin/routes.py:2580
+msgid "Phase supprimée."
+msgstr ""
+
+#: app/admin/routes.py:2678 app/admin/routes.py:2728
+msgid "Le nom du preset est obligatoire."
+msgstr ""
+
+#: app/admin/routes.py:2691
+msgid "Preset créé."
+msgstr ""
+
+#: app/admin/routes.py:2748
+msgid "Preset enregistré."
+msgstr ""
+
+#: app/admin/routes.py:2784
+msgid "Preset supprimé."
+msgstr ""
+
+#: app/admin/routes.py:2786
+msgid "Preset introuvable."
+msgstr ""
+
+#: app/admin/routes.py:3052
+msgid "Metadata invalide : JSON incorrect."
+msgstr ""
+
+#: app/admin/routes.py:3075
+msgid "Traductions enregistrées."
+msgstr ""
+
+#: app/admin/routes.py:3170
+msgid "Traductions des phases enregistrées."
+msgstr ""
+
+#: app/admin/routes.py:3230
+msgid "Traductions des groupes enregistrées."
+msgstr ""
+
+#: app/auth/routes.py:31
+msgid "Le nom d'utilisateur est obligatoire."
+msgstr ""
+
+#: app/auth/routes.py:33
+msgid "Le nom d'utilisateur ne doit pas dépasser 30 caractères."
+msgstr ""
+
+#: app/auth/routes.py:36
+msgid "Le mot de passe doit contenir au moins 6 caractères."
+msgstr ""
+
+#: app/auth/routes.py:59
+msgid "Compte créé avec succès ! Vous pouvez maintenant vous connecter."
+msgstr ""
+
+#: app/auth/routes.py:65
+msgid "Nom d'utilisateur déjà utilisé."
+msgstr ""
+
+#: app/auth/routes.py:84
+msgid "Nom d'utilisateur et mot de passe obligatoires."
+msgstr ""
+
+#: app/auth/routes.py:105
+msgid "Votre compte a été désactivé."
+msgstr ""
+
+#: app/auth/routes.py:117
+#, python-format
+msgid "Connecté en tant que %(name)s"
+msgstr ""
+
+#: app/auth/routes.py:120
+msgid "Nom d'utilisateur ou mot de passe incorrect"
+msgstr ""
+
+#: app/auth/routes.py:131
+msgid "Vous êtes déconnecté."
+msgstr ""
+
+#: app/auth/routes.py:144
+msgid "Aucun fichier sélectionné."
+msgstr ""
+
+#: app/auth/routes.py:152
+msgid "Format d'image non supporté (PNG, JPG, JPEG)."
+msgstr ""
+
+#: app/auth/routes.py:159
+msgid "Fichier image invalide ou corrompu."
+msgstr ""
+
+#: app/auth/routes.py:164
+msgid "L'image est trop grande (max 3000x3000 pixels)."
+msgstr ""
+
+#: app/auth/routes.py:200
+msgid "Avatar mis à jour avec succès !"
+msgstr ""
+
+#: app/main/routes.py:69
+msgid "Profil mis à jour !"
+msgstr ""
+
+#: app/main/routes.py:129
+msgid "Mot de passe mis à jour avec succès !"
+msgstr ""
+
+#: app/modules/racetime.py:69
+msgid "Empty racetime_room"
+msgstr "racetime_room vide"
+
+#: app/modules/racetime.py:80
+msgid "racetime_room must look like '<category>/<race_slug>' or a full URL"
+msgstr "racetime_room doit ressembler à '<category>/<race_slug>' ou à un URL"
+
+#: app/modules/racetime.py:224
+msgid "Invalid racetime payload (not a dict)"
+msgstr "Payload racetime invalide (ce n’est pas un dictionnaire)"
+
+#: app/modules/racetime.py:229
+msgid "Failed to fetch racetime data"
+msgstr "Impossible de récupérer les données racetime"
+
+#: app/modules/results.py:32
+msgid "Résultat manquant"
+msgstr ""
+
+#: app/modules/results.py:44
+msgid "Format invalide. Utiliser HH:MM:SS ou DNF/DQ."
+msgstr ""
+
+#: app/restream/routes.py:229
+msgid "Tie-break"
+msgstr ""
+
+#: app/restream/routes.py:430 app/restream/routes.py:834
+msgid "Tous les champs obligatoires doivent être remplis."
+msgstr ""
+
+#: app/restream/routes.py:449
+msgid "Match invalide ou déjà associé à un restream."
+msgstr ""
+
+#: app/restream/routes.py:453 app/restream/routes.py:838
+msgid "Template d’indices invalide."
+msgstr ""
+
+#: app/restream/routes.py:457 app/restream/routes.py:842
+msgid "Tracker invalide."
+msgstr ""
+
+#: app/restream/routes.py:508
+msgid "Restream créé avec succès."
+msgstr ""
+
+#: app/restream/routes.py:602
+msgid "Restream réactivé."
+msgstr "Restream réactivé."
+
+#: app/restream/routes.py:633
+msgid "Restream désactivé."
+msgstr ""
+
+#: app/restream/routes.py:860
+msgid "Template d’indices introuvable."
+msgstr ""
+
+#: app/restream/routes.py:905
+msgid "Restream mis à jour."
+msgstr ""
+
+#: app/restream/routes.py:1294
+msgid "Preset chargé sur tous les slots."
+msgstr ""
+
+#: app/restream/routes.py:1352
+msgid "Tracker reset (preset par défaut)."
+msgstr ""
+
+#: app/restream/routes.py:1411
+#, python-format
+msgid "Temps final Joueur %(slot)s : %(state)s ."
+msgstr ""
+
+#: app/restream/routes.py:1438
+msgid "Room racetime vide."
+msgstr ""
+
+#: app/restream/routes.py:1442
+msgid "Room racetime trop longue."
+msgstr ""
+
+#: app/restream/routes.py:1455
+msgid "Room racetime enregistrée sur le match."
+msgstr ""
+
+#: app/templates/base.html:23
+msgid "Planning"
+msgstr "Planning"
+
+#: app/templates/admin/translations/hub.html:25 app/templates/base.html:29
+#: app/templates/tournaments/index.html:7
+msgid "Tournois"
+msgstr "Tournois"
+
+#: app/templates/admin/tournaments_form.html:55 app/templates/base.html:33
+#: app/templates/tournaments/index.html:10
+#: app/templates/tournaments/internal.html:33
+msgid "En cours"
+msgstr "En cours"
+
+#: app/templates/base.html:44 app/templates/restream/index.html:1
+#: app/templates/restream/manage.html:55
+#: app/templates/restream/planning.html:124
+#: app/templates/tournaments/index.html:11
+#: app/templates/tournaments/internal.html:31
+#: app/templates/tournaments/results.html:102
+msgid "À venir"
+msgstr "À venir"
+
+#: app/templates/base.html:56 app/templates/restream/planning.html:23
+msgid "Tous les tournois"
+msgstr "Tous les tournois"
+
+#: app/templates/base.html:63 app/templates/base.html:66
+#: app/templates/restream/create.html:103 app/templates/restream/edit.html:91
+msgid "Restream"
+msgstr "Restream"
+
+#: app/templates/base.html:69
+msgid "Planning des restream"
+msgstr "Planning des restream"
+
+#: app/templates/base.html:86 app/templates/restream/manage.html:4
+#: app/templates/restream/manage.html:15
+msgid "Gérer les restreams"
+msgstr "Gérer les restreams"
+
+#: app/templates/base.html:94
+msgid "Guides"
+msgstr "Guides"
+
+#: app/templates/base.html:99
+msgid "Contact"
+msgstr "Contact"
+
+#: app/templates/admin/edit_user.html:24 app/templates/admin/users_list.html:24
+#: app/templates/base.html:110
+msgid "Admin"
+msgstr "Admin"
+
+#: app/templates/base.html:125
+msgid "Déconnexion"
+msgstr "Déconnexion"
+
+#: app/templates/auth/login.html:2 app/templates/auth/login.html:9
+#: app/templates/base.html:128
+msgid "Connexion"
+msgstr "Connexion"
+
+#: app/templates/base.html:129
+msgid "S'inscrire"
+msgstr "S'inscrire"
+
+#: app/templates/admin/dashboard.html:2
+msgid "Tableau de bord Admin"
+msgstr ""
+
+#: app/templates/admin/dashboard.html:11
+msgid "Tableau de bord administrateur"
+msgstr ""
+
+#: app/templates/admin/dashboard.html:16
+msgid "Gérer les utilisateurs"
+msgstr ""
+
+#: app/templates/admin/dashboard.html:21 app/templates/admin/games.html:3
+#, fuzzy
+msgid "Gérer les jeux"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/dashboard.html:26
+#, fuzzy
+msgid "Gérer les joueurs"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/dashboard.html:31
+#, fuzzy
+msgid "Gérer les équipes"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/dashboard.html:36
+#: app/templates/admin/translations/hub.html:31
+#, fuzzy
+msgid "Gérer les tournois"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/dashboard.html:41
+#: app/templates/admin/matches/index.html:2
+#: app/templates/admin/matches/index.html:11
+#: app/templates/admin/matches/index.html:155
+#, fuzzy
+msgid "Gérer les matchs"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/dashboard.html:45
+#: app/templates/admin/trackers/index.html:4
+#: app/templates/admin/trackers/index.html:12
+#, fuzzy
+msgid "Gérer les trackers"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/dashboard.html:49
+#: app/templates/admin/translations/hub.html:3
+#, fuzzy
+msgid "Gérer les traductions"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/edit_game.html:2
+msgid "Modifier le jeu"
+msgstr ""
+
+#: app/templates/admin/edit_game.html:11
+msgid "Modifier un jeu"
+msgstr ""
+
+#: app/templates/admin/edit_game.html:18 app/templates/admin/games.html:20
+msgid "Nom complet"
+msgstr ""
+
+#: app/templates/admin/edit_game.html:27 app/templates/admin/games.html:25
+msgid "Abréviation"
+msgstr ""
+
+#: app/templates/admin/edit_game.html:36
+msgid "Couleur"
+msgstr ""
+
+#: app/templates/admin/edit_game.html:48 app/templates/admin/edit_user.html:38
+#: app/templates/admin/matches/confrontation_form.html:153
+#: app/templates/admin/matches/match_form.html:72
+#: app/templates/admin/players_form.html:46
+#: app/templates/admin/teams_form.html:68
+#: app/templates/admin/tournaments_form.html:73
+#: app/templates/admin/trackers/preset_edit.html:57
+#: app/templates/admin/translations/groups_list.html:60
+#: app/templates/admin/translations/phases_list.html:54
+#: app/templates/admin/translations/tournament_detail.html:71
+#: app/templates/main/change_password.html:38
+#: app/templates/restream/_indices_block.html:66
+#: app/templates/restream/edit.html:123 app/templates/restream/live.html:70
+#, fuzzy
+msgid "Enregistrer"
+msgstr "Restream"
+
+#: app/templates/admin/edit_game.html:51 app/templates/admin/edit_user.html:39
+#: app/templates/admin/matches/confrontation_form.html:161
+#: app/templates/admin/matches/match_form.html:78
+#: app/templates/admin/players_form.html:51
+#: app/templates/admin/teams_form.html:73
+#: app/templates/admin/tournaments_form.html:78
+#: app/templates/admin/trackers/preset_edit.html:61
+#: app/templates/restream/_indices_block.html:69
+#: app/templates/restream/create.html:139 app/templates/restream/edit.html:127
+#: app/templates/restream/tracker_presets.html:45
+msgid "Annuler"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:2
+msgid "Modifier un utilisateur"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:10
+msgid "Modifier l'utilisateur :"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:19 app/templates/admin/users_list.html:50
+msgid "Rôle"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:21 app/templates/admin/users_list.html:27
+msgid "Invité"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:22 app/templates/admin/users_list.html:26
+msgid "Éditeur"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:23 app/templates/admin/users_list.html:25
+#, fuzzy
+msgid "Restreamer"
+msgstr "Restream"
+
+#: app/templates/admin/edit_user.html:30
+#, fuzzy
+msgid "Compte actif"
+msgstr "Contact"
+
+#: app/templates/admin/edit_user.html:34 app/templates/admin/users_list.html:75
+msgid "Actif"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:45 app/templates/admin/users_list.html:48
+#: app/templates/main/profile.html:103
+msgid "Avatar"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:51
+msgid "Aucun avatar"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:55
+msgid "Réinitialiser l'avatar"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:62 app/templates/auth/login.html:36
+#: app/templates/auth/register.html:42
+msgid "Mot de passe"
+msgstr ""
+
+#: app/templates/admin/edit_user.html:63
+msgid ""
+"Pour des raisons de sécurité, les mots de passe ne peuvent pas être "
+"affichés."
+msgstr ""
+
+#: app/templates/admin/edit_user.html:65
+msgid "Réinitialiser le mot de passe"
+msgstr ""
+
+#: app/templates/admin/games.html:12
+msgid "Gestion des jeux"
+msgstr ""
+
+#: app/templates/admin/games.html:15
+msgid "Ajouter un jeu"
+msgstr ""
+
+#: app/templates/admin/games.html:30
+msgid "Couleur (optionnel)"
+msgstr ""
+
+#: app/templates/admin/games.html:42 app/templates/admin/players_list.html:21
+#: app/templates/admin/teams_list.html:26
+#: app/templates/admin/tournaments_form.html:209
+msgid "Ajouter"
+msgstr ""
+
+#: app/templates/admin/games.html:50
+msgid "Liste des jeux"
+msgstr ""
+
+#: app/templates/admin/games.html:70 app/templates/admin/matches/index.html:162
+#: app/templates/admin/matches/index.html:227
+#: app/templates/admin/players_list.html:52
+#: app/templates/admin/teams_list.html:50
+#: app/templates/admin/tournaments_form.html:152
+#: app/templates/admin/users_list.html:83 app/templates/restream/manage.html:82
+msgid "Modifier"
+msgstr ""
+
+#: app/templates/admin/games.html:79
+msgid "Aucun jeu enregistré."
+msgstr ""
+
+#: app/templates/admin/players_form.html:3
+#: app/templates/admin/players_form.html:13
+msgid "Modifier un joueur"
+msgstr ""
+
+#: app/templates/admin/players_form.html:3
+#: app/templates/admin/players_form.html:13
+msgid "Ajouter un joueur"
+msgstr ""
+
+#: app/templates/admin/players_form.html:22
+msgid "Nom du joueur"
+msgstr ""
+
+#: app/templates/admin/players_form.html:32
+msgid "Racetime user"
+msgstr ""
+
+#: app/templates/admin/players_form.html:38
+msgid "username#1234"
+msgstr ""
+
+#: app/templates/admin/players_form.html:40
+msgid "Identifiant racetime au format <code>username#1234</code> (optionnel)."
+msgstr ""
+
+#: app/templates/admin/players_form.html:61
+#: app/templates/admin/teams_form.html:81
+msgid "Suppression"
+msgstr ""
+
+#: app/templates/admin/players_form.html:65
+msgid "Cette action est définitive."
+msgstr ""
+
+#: app/templates/admin/players_form.html:73
+msgid "Supprimer le joueur"
+msgstr ""
+
+#: app/templates/admin/players_form.html:78
+msgid "Ce joueur est utilisé dans des équipes, tournois ou matchs."
+msgstr ""
+
+#: app/templates/admin/players_form.html:79
+msgid "La suppression est impossible."
+msgstr ""
+
+#: app/templates/admin/players_list.html:2
+#: app/templates/admin/players_list.html:10
+msgid "Gestion des joueurs"
+msgstr ""
+
+#: app/templates/admin/players_list.html:14
+msgid "Rechercher un joueur..."
+msgstr ""
+
+#: app/templates/admin/players_list.html:15
+#: app/templates/admin/teams_list.html:20
+#: app/templates/admin/tournaments/teams.html:123
+#: app/templates/admin/users_list.html:30
+msgid "Rechercher"
+msgstr ""
+
+#: app/templates/admin/players_list.html:31
+#: app/templates/admin/teams_list.html:35
+#: app/templates/admin/tournaments_form.html:105
+#: app/templates/admin/translations/tournament_detail.html:37
+#: app/templates/admin/translations/tournaments_list.html:30
+#: app/templates/admin/translations/tournaments_list.html:31
+#: app/templates/restream/tracker_presets.html:20
+msgid "Nom"
+msgstr ""
+
+#: app/templates/admin/players_list.html:32
+msgid "Racetime"
+msgstr ""
+
+#: app/templates/admin/players_list.html:33
+msgid "Créé le"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:75
+#: app/templates/admin/matches/index.html:201
+#: app/templates/admin/players_list.html:34
+#: app/templates/admin/teams_list.html:38
+#: app/templates/admin/tournaments/teams.html:42
+#: app/templates/admin/tournaments_form.html:108
+#: app/templates/admin/trackers/index.html:20
+#: app/templates/admin/trackers/presets_list.html:28
+#: app/templates/admin/users_list.html:52
+msgid "Actions"
+msgstr ""
+
+#: app/templates/admin/players_list.html:61
+msgid "Aucun joueur trouvé."
+msgstr ""
+
+#: app/templates/admin/players_list.html:75
+#: app/templates/admin/teams_list.html:71
+#: app/templates/admin/tournaments/teams.html:200
+#: app/templates/admin/users_list.html:102
+#: app/templates/restream/planning.html:165
+msgid "Précédent"
+msgstr ""
+
+#: app/templates/admin/players_list.html:82
+#: app/templates/admin/teams_list.html:78
+#: app/templates/admin/tournaments/teams.html:207
+#: app/templates/admin/users_list.html:109
+#: app/templates/restream/planning.html:170
+msgid "Page"
+msgstr ""
+
+#: app/templates/admin/players_list.html:88
+#: app/templates/admin/teams_list.html:84
+#: app/templates/admin/tournaments/teams.html:219
+#: app/templates/admin/users_list.html:115
+#: app/templates/restream/planning.html:183
+msgid "Suivant"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:3 app/templates/admin/teams_form.html:12
+msgid "Modifier l’équipe"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:20
+msgid "Nom de l’équipe"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:31
+msgid "Filtrer les joueurs"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:35
+msgid "Rechercher un joueur…"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:42
+msgid "Joueurs (2 minimum)"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:59
+msgid "Joueurs sélectionnés"
+msgstr ""
+
+#: app/templates/admin/teams_form.html:86
+msgid "Supprimer l’équipe"
+msgstr ""
+
+#: app/templates/admin/teams_list.html:2 app/templates/admin/teams_list.html:10
+msgid "Gestion des équipes"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:27
+#: app/templates/admin/teams_list.html:17
+#: app/templates/admin/tournaments/teams.html:112
+msgid "Rechercher une équipe…"
+msgstr ""
+
+#: app/templates/admin/teams_list.html:36
+#: app/templates/admin/tournaments/teams.html:38
+#: app/templates/admin/tournaments/teams.html:148
+msgid "Joueurs"
+msgstr ""
+
+#: app/templates/admin/teams_list.html:37
+msgid "Taille"
+msgstr ""
+
+#: app/templates/admin/teams_list.html:57
+msgid "Aucune équipe trouvée."
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:3
+#: app/templates/admin/tournaments_form.html:12
+#, fuzzy
+msgid "Modifier un tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/tournaments_form.html:3
+#: app/templates/admin/tournaments_form.html:12
+#, fuzzy
+msgid "Créer un tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/tournaments_form.html:23
+#, fuzzy
+msgid "Nom du tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/tournaments_form.html:36
+msgid "Jeu"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:38
+msgid "Sélectionner"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:200
+#: app/templates/admin/tournaments_form.html:52
+#: app/templates/admin/users_list.html:51
+msgid "Statut"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:54
+msgid "Brouillon"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:215
+#: app/templates/admin/tournaments_form.html:56
+#: app/templates/restream/planning.html:120
+#: app/templates/tournaments/archive_base.html:25
+#: app/templates/tournaments/internal.html:35
+#: app/templates/tournaments/results.html:100
+msgid "Terminé"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:61
+msgid "Informations complémentaires"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:63
+msgid "Informations libres (joueurs marquants, contexte, lien externe, etc.)"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:92
+#, fuzzy
+msgid "Structure du tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/tournaments_form.html:96
+msgid "Aucune phase définie."
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:97
+msgid ""
+"Le tournoi ne pourra pas être activé tant qu'au moins une phase n'est pas"
+" créée."
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:104
+#: app/templates/admin/tournaments_form.html:183
+msgid "Ordre"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:106
+msgid "Type"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:107
+msgid "Qualifiés / groupe"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:172
+#: app/templates/admin/matches/index.html:235
+#: app/templates/admin/tournaments_form.html:163
+#: app/templates/admin/trackers/presets_list.html:64
+msgid "Supprimer"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:174
+msgid "Ajouter une phase"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:190
+msgid "Nom de la phase"
+msgstr ""
+
+#: app/templates/admin/tournaments_form.html:202
+msgid "Qualifiés"
+msgstr ""
+
+#: app/templates/admin/users_list.html:2 app/templates/admin/users_list.html:12
+msgid "Gestion des utilisateurs"
+msgstr ""
+
+#: app/templates/admin/users_list.html:19
+msgid "Rechercher un utilisateur…"
+msgstr ""
+
+#: app/templates/admin/users_list.html:23
+#, fuzzy
+msgid "Tous les rôles"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/tournaments/teams.html:133
+#: app/templates/admin/users_list.html:38
+msgid "Filtres actifs :"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:134
+#: app/templates/admin/users_list.html:39
+msgid "recherche ="
+msgstr ""
+
+#: app/templates/admin/users_list.html:40
+msgid "rôle ="
+msgstr ""
+
+#: app/templates/admin/matches/index.html:198
+#: app/templates/admin/users_list.html:47
+msgid "ID"
+msgstr ""
+
+#: app/templates/admin/users_list.html:49
+msgid "Pseudo"
+msgstr ""
+
+#: app/templates/admin/users_list.html:77
+msgid "Désactivé"
+msgstr ""
+
+#: app/templates/admin/users_list.html:90
+msgid "Aucun utilisateur ne correspond aux filtres."
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:2
+#, fuzzy
+msgid "Confrontation"
+msgstr "Connexion"
+
+#: app/templates/admin/matches/confrontation_form.html:11
+msgid "Modifier une confrontation"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:13
+#: app/templates/admin/matches/index.html:52
+msgid "Nouvelle confrontation"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:18
+#: app/templates/admin/matches/index.html:43
+#, fuzzy
+msgid "Tournoi :"
+msgstr "Tournois"
+
+#: app/templates/admin/matches/confrontation_form.html:25
+#, fuzzy
+msgid "Phase du tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/matches/confrontation_form.html:27
+msgid "Sélectionner une phase"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:42
+msgid "Équipe A"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:44
+#: app/templates/admin/matches/confrontation_form.html:55
+#: app/templates/tournaments/phases/bracket_simple_elim.html:45
+#: app/templates/tournaments/phases/bracket_simple_elim.html:69
+msgid "À déterminer"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:53
+msgid "Équipe B"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:64
+msgid "Stage / contexte"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:82
+#: app/templates/admin/matches/index.html:72
+msgid "Round"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:82
+msgid "(bracket uniquement)"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:91
+msgid "Le champ “round” est utilisé uniquement pour les phases de type bracket."
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:101
+msgid "Progression du bracket"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:103
+msgid ""
+"Pour chaque côté, choisissez soit une équipe directe, soit une source "
+"(vainqueur / perdant d’une autre confrontation), soit laissez vide."
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:106
+msgid "Source Équipe A"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:108
+#: app/templates/admin/matches/confrontation_form.html:128
+msgid "Aucune"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:119
+msgid "Type source Équipe A"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:122
+#: app/templates/admin/matches/confrontation_form.html:142
+#: app/templates/admin/matches/match_results.html:74
+msgid "Vainqueur"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:123
+#: app/templates/admin/matches/confrontation_form.html:143
+msgid "Perdant"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:126
+msgid "Source Équipe B"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:139
+msgid "Type source Équipe B"
+msgstr ""
+
+#: app/templates/admin/matches/confrontation_form.html:147
+msgid "Best of"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:17
+#, fuzzy
+msgid "Sélectionner un tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/matches/index.html:27
+msgid "Toutes les phases"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:37
+msgid "Afficher"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:58
+msgid "Nouveau tie-break"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:65
+#, fuzzy
+msgid "Confrontations"
+msgstr "Connexion"
+
+#: app/templates/admin/matches/index.html:70
+#, fuzzy
+msgid "Équipes"
+msgstr "Guides"
+
+#: app/templates/admin/matches/index.html:71
+msgid "Stage"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:73
+msgid "BO"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:74
+msgid "Progression"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:90
+msgid "Phase"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:108
+#, python-format
+msgid "%(wins)s victoire sur %(total)s"
+msgid_plural "%(wins)s victoires sur %(total)s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/templates/admin/matches/index.html:117
+msgid "Aucun match"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:119
+msgid "Confrontation gagnée"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:121
+msgid "Confrontation en cours"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:127
+msgid "Vainqueur :"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:142
+#, python-format
+msgid "%(count)s match joué"
+msgid_plural "%(count)s matchs joués"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/templates/admin/matches/index.html:183
+msgid "Aucune confrontation pour ce tournoi."
+msgstr ""
+
+#: app/templates/admin/matches/index.html:193
+msgid "Tie-breaks / matchs indépendants"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:199
+msgid "Date"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:217
+msgid "À jouer"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:223
+msgid "Saisir les résultats"
+msgstr ""
+
+#: app/templates/admin/matches/index.html:245
+msgid "Aucun tie-break."
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:2
+#: app/templates/admin/matches/match_results.html:15
+msgid "Match"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:10
+msgid "Créer un match"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:17
+msgid "Confrontation :"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:21
+msgid "Tie-break — sélection des équipes"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:24
+msgid "Équipes participantes"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:44
+msgid "Date / heure prévue"
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:49
+#, fuzzy
+msgid "Racetime room"
+msgstr "racetime_room vide"
+
+#: app/templates/admin/matches/match_form.html:58
+msgid "URL de la room racetime (optionnel)."
+msgstr ""
+
+#: app/templates/admin/matches/match_form.html:64
+msgid "Ouvrir la room racetime"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:2
+msgid "Résultats du match"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:12
+msgid "Saisie des résultats"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:20
+msgid "Racetime :"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:32
+msgid "Pré-remplir depuis racetime"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:39
+msgid "Ouvrir racetime"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:51
+#: app/templates/admin/tournaments/teams.html:37
+#: app/templates/admin/tournaments/teams.html:147
+#: app/templates/tournaments/phases/groups.html:17
+msgid "Équipe"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:52
+msgid "Résultat"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:53
+#: app/templates/admin/tournaments/teams.html:40
+msgid "Position"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:87
+msgid "Format accepté :"
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:90
+msgid "Le classement est calculé automatiquement à l’enregistrement."
+msgstr ""
+
+#: app/templates/admin/matches/match_results.html:95
+#, fuzzy
+msgid "Enregistrer les résultats"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/matches/match_results.html:101
+#: app/templates/admin/matches/match_results.html:106
+#: app/templates/main/profile.html:148
+#: app/templates/main/public_profile.html:69
+msgid "Retour"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:2
+#: app/templates/admin/tournaments/teams.html:11
+#, fuzzy
+msgid "Équipes du tournoi"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/tournaments/teams.html:16
+msgid "Les inscriptions sont verrouillées car le tournoi est terminé."
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:32
+msgid "Équipes inscrites"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:39
+msgid "Groupe"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:41
+msgid "Seed"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:57
+msgid "Ex: Groupe A"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:67
+msgid "(tie-break)"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:81
+#, fuzzy
+msgid "Retirer"
+msgstr "Restream"
+
+#: app/templates/admin/tournaments/teams.html:92
+msgid "Aucune équipe inscrite."
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:98
+msgid "Enregistrer groupes"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:116
+#, fuzzy
+msgid "Toutes les équipes"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/tournaments/teams.html:117
+msgid "Solo"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:118
+msgid "Multi"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:119
+msgid "Exactement 2"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:120
+msgid "Exactement 3"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:135
+msgid "taille ="
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:149
+msgid "Nb"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:150
+#: app/templates/admin/translations/tournaments_list.html:34
+msgid "Action"
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:168
+#, fuzzy
+msgid "Inscrire"
+msgstr "S'inscrire"
+
+#: app/templates/admin/tournaments/teams.html:177
+msgid "Aucune équipe disponible avec ces filtres."
+msgstr ""
+
+#: app/templates/admin/tournaments/teams.html:232
+#: app/templates/tournaments/bracket.html:35
+#: app/templates/tournaments/results.html:19
+msgid "Retour au tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/trackers/index.html:18
+#: app/templates/restream/create.html:50 app/templates/restream/edit.html:29
+msgid "Tracker"
+msgstr ""
+
+#: app/templates/admin/trackers/index.html:19
+#: app/templates/admin/trackers/presets_list.html:4
+#: app/templates/admin/trackers/presets_list.html:12
+msgid "Presets"
+msgstr ""
+
+#: app/templates/admin/trackers/index.html:31
+#, fuzzy
+msgid "Gérer les presets"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/trackers/index.html:39
+msgid "Aucun tracker disponible."
+msgstr ""
+
+#: app/templates/admin/trackers/preset_edit.html:6
+#: app/templates/admin/trackers/preset_edit.html:20
+#, python-format
+msgid "Créer un preset – %(label)s"
+msgstr ""
+
+#: app/templates/admin/trackers/preset_edit.html:8
+#: app/templates/admin/trackers/preset_edit.html:22
+#, python-format
+msgid "Éditer un preset – %(label)s"
+msgstr ""
+
+#: app/templates/admin/trackers/preset_edit.html:28
+#: app/templates/admin/trackers/presets_list.html:25
+msgid "Nom du preset"
+msgstr ""
+
+#: app/templates/admin/trackers/preset_edit.html:33
+#: app/templates/admin/trackers/presets_list.html:27
+#: app/templates/restream/tracker_presets.html:21
+msgid "Notes"
+msgstr ""
+
+#: app/templates/admin/trackers/preset_edit.html:40
+msgid "État du tracker (1 slot)"
+msgstr ""
+
+#: app/templates/admin/trackers/presets_list.html:17
+msgid "Créer un preset"
+msgstr ""
+
+#: app/templates/admin/trackers/presets_list.html:26
+msgid "Dernière modification"
+msgstr ""
+
+#: app/templates/admin/trackers/presets_list.html:52
+#: app/templates/admin/translations/tournaments_list.html:55
+#: app/templates/restream/_indices_block.html:22
+msgid "Éditer"
+msgstr ""
+
+#: app/templates/admin/trackers/presets_list.html:73
+msgid "Aucun preset n’existe pour ce tracker."
+msgstr ""
+
+#: app/templates/admin/trackers/presets_list.html:78
+#, fuzzy
+msgid "Retour aux trackers"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/translations/groups_list.html:3
+msgid "Traductions des groupes"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:12
+#: app/templates/admin/translations/hub.html:46
+#: app/templates/admin/translations/tournament_detail.html:14
+#: app/templates/admin/translations/tournaments_list.html:33
+#, fuzzy
+msgid "Groupes"
+msgstr "Guides"
+
+#: app/templates/admin/translations/groups_list.html:20
+#: app/templates/admin/translations/phases_list.html:18
+#: app/templates/admin/translations/tournaments_list.html:18
+msgid "Afficher uniquement les manquants"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:22
+#: app/templates/admin/translations/phases_list.html:20
+#: app/templates/admin/translations/tournaments_list.html:20
+msgid "Filtrer"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:26
+#, fuzzy
+msgid "Retour tournois"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/translations/groups_list.html:38
+msgid "Groupe (DB)"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:39
+#: app/templates/admin/translations/phases_list.html:32
+#: app/templates/admin/translations/tournament_detail.html:40
+#: app/templates/admin/translations/tournament_detail.html:62
+msgid "Traduction"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:40
+#: app/templates/admin/translations/phases_list.html:33
+msgid "État"
+msgstr ""
+
+#: app/templates/admin/translations/groups_list.html:62
+#: app/templates/admin/translations/phases_list.html:56
+#: app/templates/admin/translations/tournament_detail.html:44
+msgid "Laisser vide pour supprimer la traduction (fallback DB)."
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:11
+msgid "Traductions"
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:15
+msgid "Langue :"
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:27
+msgid "Nom :"
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:28
+msgid "Metadata :"
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:36
+msgid "Phases"
+msgstr ""
+
+#: app/templates/admin/translations/hub.html:41
+#, fuzzy
+msgid "Gérer les phases"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/translations/phases_list.html:3
+#, fuzzy
+msgid "Gérer les traductions des phases"
+msgstr "Gérer les restreams"
+
+#: app/templates/admin/translations/phases_list.html:11
+msgid "Traductions – Phases"
+msgstr ""
+
+#: app/templates/admin/translations/phases_list.html:23
+#: app/templates/admin/translations/tournaments_list.html:23
+#, fuzzy
+msgid "Retour hub"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/translations/phases_list.html:31
+msgid "Nom (DB)"
+msgstr ""
+
+#: app/templates/admin/translations/tournament_detail.html:3
+#, fuzzy
+msgid "Traduire un tournoi"
+msgstr "Retour au tournoi"
+
+#: app/templates/admin/translations/tournament_detail.html:11
+#: app/templates/restream/planning.html:21
+#, fuzzy
+msgid "Tournoi"
+msgstr "Tournois"
+
+#: app/templates/admin/translations/tournament_detail.html:26
+#, fuzzy
+msgid "Traduire les groupes"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/translations/tournament_detail.html:31
+#, fuzzy
+msgid "Retour liste"
+msgstr "Tournois"
+
+#: app/templates/admin/translations/tournament_detail.html:38
+#: app/templates/admin/translations/tournament_detail.html:59
+msgid "DB"
+msgstr ""
+
+#: app/templates/admin/translations/tournament_detail.html:51
+msgid "Metadata (JSON)"
+msgstr ""
+
+#: app/templates/admin/translations/tournament_detail.html:55
+msgid "Copier DB → traduction"
+msgstr ""
+
+#: app/templates/admin/translations/tournament_detail.html:66
+msgid ""
+"Doit être un JSON valide. Laisser vide pour supprimer la traduction "
+"(fallback DB)."
+msgstr ""
+
+#: app/templates/admin/translations/tournaments_list.html:3
+#, fuzzy
+msgid "Gérer les traductions de tournois"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/translations/tournaments_list.html:11
+#, fuzzy
+msgid "Traductions – Tournois"
+msgstr "Tous les tournois"
+
+#: app/templates/admin/translations/tournaments_list.html:29
+msgid "Slug"
+msgstr ""
+
+#: app/templates/admin/translations/tournaments_list.html:32
+msgid "Metadata"
+msgstr ""
+
+#: app/templates/auth/login.html:25 app/templates/auth/register.html:31
+msgid "Nom d'utilisateur"
+msgstr ""
+
+#: app/templates/auth/login.html:47
+msgid "Se connecter"
+msgstr ""
+
+#: app/templates/auth/login.html:55 app/templates/auth/register.html:2
+#: app/templates/auth/register.html:9
+msgid "Créer un compte"
+msgstr ""
+
+#: app/templates/auth/register.html:53
+msgid "Créer le compte"
+msgstr ""
+
+#: app/templates/auth/register.html:61
+msgid "J’ai déjà un compte"
+msgstr ""
+
+#: app/templates/errors/404.html:2
+msgid "Page introuvable"
+msgstr ""
+
+#: app/templates/errors/404.html:5
+msgid "La page demandée n’existe pas."
+msgstr ""
+
+#: app/templates/errors/500.html:2
+msgid "Erreur interne"
+msgstr ""
+
+#: app/templates/errors/500.html:4
+msgid "Erreur"
+msgstr ""
+
+#: app/templates/errors/500.html:5
+msgid "Une erreur interne est survenue. Réessayez plus tard."
+msgstr ""
+
+#: app/templates/main/change_password.html:2
+msgid "Modifier mot de passe"
+msgstr ""
+
+#: app/templates/main/change_password.html:9
+#: app/templates/main/profile.html:134
+msgid "Modifier mon mot de passe"
+msgstr ""
+
+#: app/templates/main/change_password.html:10
+msgid "Sécurité du compte"
+msgstr ""
+
+#: app/templates/main/change_password.html:22
+msgid "Ancien mot de passe"
+msgstr ""
+
+#: app/templates/main/change_password.html:27
+msgid "Nouveau mot de passe"
+msgstr ""
+
+#: app/templates/main/change_password.html:32
+msgid "Confirmer le nouveau mot de passe"
+msgstr ""
+
+#: app/templates/main/change_password.html:42
+#, fuzzy
+msgid "Retour au profil"
+msgstr "Retour au tournoi"
+
+#: app/templates/main/index.html:3
+msgid "Accueil"
+msgstr ""
+
+#: app/templates/main/index.html:6
+msgid "Bienvenue !"
+msgstr ""
+
+#: app/templates/main/profile.html:2
+msgid "Profil"
+msgstr ""
+
+#: app/templates/main/profile.html:26
+msgid "Créé le :"
+msgstr ""
+
+#: app/templates/main/profile.html:31
+#, fuzzy
+msgid "Dernière connexion :"
+msgstr "Déconnexion"
+
+#: app/templates/main/profile.html:35
+msgid "Jamais"
+msgstr ""
+
+#: app/templates/main/profile.html:42 app/templates/main/public_profile.html:25
+msgid "À propos"
+msgstr ""
+
+#: app/templates/main/profile.html:48
+msgid "Description"
+msgstr ""
+
+#: app/templates/main/profile.html:58 app/templates/main/public_profile.html:33
+#, fuzzy
+msgid "Liens & contacts"
+msgstr "Contact"
+
+#: app/templates/main/profile.html:87
+msgid "Pseudo ou identifiant Discord (pas un lien)"
+msgstr ""
+
+#: app/templates/main/profile.html:94
+msgid "Enregistrer les changements"
+msgstr ""
+
+#: app/templates/main/profile.html:117
+msgid "Changer l’avatar"
+msgstr ""
+
+#: app/templates/main/profile.html:125
+msgid "Sécurité"
+msgstr ""
+
+#: app/templates/main/profile.html:128
+msgid "Paramètres sensibles de votre compte."
+msgstr ""
+
+#: app/templates/main/profile.html:144
+msgid "Voir mon profil public"
+msgstr ""
+
+#: app/templates/main/public_profile.html:2
+#, python-format
+msgid "Profil de %(username)s"
+msgstr ""
+
+#: app/templates/main/public_profile.html:61
+msgid "Aucun lien externe."
+msgstr ""
+
+#: app/templates/pages/contact.html:6
+msgid "Contacter l’équipe"
+msgstr ""
+
+#: app/templates/pages/contact.html:8
+msgid "Une question, un bug, une idée ? Le plus simple est de passer par Discord."
+msgstr ""
+
+#: app/templates/pages/contact.html:16
+msgid "Rejoindre"
+msgstr ""
+
+#: app/templates/pages/contact.html:20
+msgid "Réponse généralement plus rapide sur Discord."
+msgstr ""
+
+#: app/templates/pages/contact.html:24
+msgid "Le lien Discord n’est pas encore configuré."
+msgstr ""
+
+#: app/templates/pages/contact.html:31
+msgid "Comment ça marche"
+msgstr ""
+
+#: app/templates/pages/contact.html:33
+msgid "Rejoins le Discord"
+msgstr ""
+
+#: app/templates/pages/contact.html:34
+msgid "Explique ton besoin en 2–3 lignes"
+msgstr ""
+
+#: app/templates/pages/contact.html:35
+msgid "On te répond ou on te redirige"
+msgstr ""
+
+#: app/templates/pages/contact.html:37
+msgid "Astuce : ajoute un lien + une capture si c’est visuel."
+msgstr ""
+
+#: app/templates/pages/contact.html:41
+msgid "Tu viens pour quoi ?"
+msgstr ""
+
+#: app/templates/pages/contact.html:44
+msgid "Signaler un bug"
+msgstr ""
+
+#: app/templates/pages/contact.html:46
+msgid "Ce que tu faisais"
+msgstr ""
+
+#: app/templates/pages/contact.html:47
+msgid "Ce que tu attendais"
+msgstr ""
+
+#: app/templates/pages/contact.html:48
+msgid "Ce qui s’est passé"
+msgstr ""
+
+#: app/templates/pages/contact.html:49
+msgid "Lien + capture si possible"
+msgstr ""
+
+#: app/templates/pages/contact.html:54
+msgid "Proposer une amélioration"
+msgstr ""
+
+#: app/templates/pages/contact.html:56
+msgid "L’idée en une phrase"
+msgstr ""
+
+#: app/templates/pages/contact.html:57
+msgid "Pourquoi c’est utile"
+msgstr ""
+
+#: app/templates/pages/contact.html:58
+msgid "Pour qui (joueurs, orga, viewers…)"
+msgstr ""
+
+#: app/templates/pages/contact.html:63
+msgid "Tournoi / restream / overlay"
+msgstr ""
+
+#: app/templates/pages/contact.html:65
+msgid "Nom du tournoi (ou lien)"
+msgstr ""
+
+#: app/templates/pages/contact.html:66
+msgid "Ton pseudo"
+msgstr ""
+
+#: app/templates/pages/contact.html:67
+msgid "Ce que tu veux faire / modifier"
+msgstr ""
+
+#: app/templates/pages/contact.html:74
+msgid "Pas Discord ?"
+msgstr ""
+
+#: app/templates/pages/contact.html:77
+msgid "Tu peux aussi nous contacter par email :"
+msgstr ""
+
+#: app/templates/pages/contact.html:81
+msgid "En v1, le support se fait uniquement via Discord."
+msgstr ""
+
+#: app/templates/restream/_indices_block.html:5
+#: app/templates/restream/create.html:71 app/templates/restream/edit.html:53
+#: app/templates/restream/indices.html:4 app/templates/restream/manage.html:89
+#, fuzzy
+msgid "Indices"
+msgstr "Guides"
+
+#: app/templates/restream/_indices_block.html:84
+msgid "Réinitialiser tous les indices"
+msgstr ""
+
+#: app/templates/restream/_indices_block.html:87
+msgid "Action réservée aux restreamers. Cette opération est irréversible."
+msgstr ""
+
+#: app/templates/restream/create.html:4 app/templates/restream/create.html:11
+#: app/templates/restream/manage.html:18
+#, fuzzy
+msgid "Créer un restream"
+msgstr "Gérer les restreams"
+
+#: app/templates/restream/create.html:15
+msgid "Aucun match à venir éligible pour un restream."
+msgstr ""
+
+#: app/templates/restream/create.html:23
+#, fuzzy
+msgid "Match à restreamer"
+msgstr "Restream"
+
+#: app/templates/restream/create.html:25
+msgid "Sélectionner un match"
+msgstr ""
+
+#: app/templates/restream/create.html:39 app/templates/restream/edit.html:17
+#, fuzzy
+msgid "Titre du restream"
+msgstr "Gérer les restreams"
+
+#: app/templates/restream/create.html:55 app/templates/restream/edit.html:35
+msgid "Aucun tracker"
+msgstr ""
+
+#: app/templates/restream/create.html:76 app/templates/restream/edit.html:59
+msgid "Aucun indice"
+msgstr ""
+
+#: app/templates/restream/create.html:92 app/templates/restream/edit.html:77
+msgid "Lien Twitch"
+msgstr ""
+
+#: app/templates/restream/create.html:113 app/templates/restream/edit.html:101
+msgid "Commentaires"
+msgstr ""
+
+#: app/templates/restream/create.html:123 app/templates/restream/edit.html:111
+#: app/templates/restream/live.html:23
+msgid "Tracking"
+msgstr ""
+
+#: app/templates/restream/create.html:135
+#, fuzzy
+msgid "Créer le restream"
+msgstr "Gérer les restreams"
+
+#: app/templates/restream/edit.html:4 app/templates/restream/edit.html:11
+#, fuzzy
+msgid "Modifier le restream"
+msgstr "Gérer les restreams"
+
+#: app/templates/restream/edit.html:87 app/templates/restream/view.html:53
+#, fuzzy
+msgid "Équipe du restream"
+msgstr "Gérer les restreams"
+
+#: app/templates/restream/live.html:4
+msgid "Live"
+msgstr ""
+
+#: app/templates/restream/live.html:31
+#: app/templates/restream/tracker_presets.html:4
+#: app/templates/restream/tracker_presets.html:10
+msgid "Charger un preset"
+msgstr ""
+
+#: app/templates/restream/live.html:37
+msgid "Reset tracker"
+msgstr ""
+
+#: app/templates/restream/live.html:47
+#, python-format
+msgid "Temps final J%(slot)s : %(state)s"
+msgstr ""
+
+#: app/templates/restream/live.html:47
+msgid "ON"
+msgstr ""
+
+#: app/templates/restream/live.html:47
+msgid "OFF"
+msgstr ""
+
+#: app/templates/restream/live.html:58
+#, fuzzy
+msgid "Room racetime"
+msgstr "racetime_room vide"
+
+#: app/templates/restream/manage.html:45
+msgid "Match :"
+msgstr ""
+
+#: app/templates/restream/manage.html:59
+msgid "Passé"
+msgstr ""
+
+#: app/templates/restream/manage.html:63
+msgid "Inactif"
+msgstr ""
+
+#: app/templates/restream/manage.html:77
+msgid "Voir"
+msgstr ""
+
+#: app/templates/restream/manage.html:104
+msgid "Désactiver"
+msgstr ""
+
+#: app/templates/restream/manage.html:116
+msgid "Réactiver"
+msgstr ""
+
+#: app/templates/restream/manage.html:130
+msgid "Aucun restream n’a encore été créé."
+msgstr ""
+
+#: app/templates/restream/overlay_next.html:27
+msgid "Merci d'avoir suivi - Prochain Match"
+msgstr ""
+
+#: app/templates/restream/overlay_next.html:43
+msgid "(heure française)"
+msgstr ""
+
+#: app/templates/restream/overlay_next.html:49
+msgid "Merci d'avoir suivi"
+msgstr ""
+
+#: app/templates/restream/overlay_next.html:53
+msgid "Prochain match en attente de programmation"
+msgstr ""
+
+#: app/templates/restream/planning.html:4
+#: app/templates/restream/planning.html:10
+#, fuzzy
+msgid "Planning des matchs"
+msgstr "Planning des restream"
+
+#: app/templates/restream/planning.html:47
+msgid "Afficher les matchs passés"
+msgstr ""
+
+#: app/templates/restream/planning.html:53
+#: app/templates/restream/tracker_presets.html:42
+msgid "Appliquer"
+msgstr ""
+
+#: app/templates/restream/planning.html:66
+msgid "Aucun match à afficher."
+msgstr ""
+
+#: app/templates/restream/planning.html:133
+#, fuzzy
+msgid "Restream prévu"
+msgstr "Restream réactivé."
+
+#: app/templates/restream/planning.html:137
+#, fuzzy
+msgid "Pas de restream"
+msgstr "Planning des restream"
+
+#: app/templates/restream/tracker_presets.html:22
+msgid "Mis à jour"
+msgstr ""
+
+#: app/templates/restream/view.html:16
+msgid "Créé par"
+msgstr ""
+
+#: app/templates/restream/view.html:27
+msgid "Accéder aux indices"
+msgstr ""
+
+#: app/templates/restream/view.html:34
+msgid "Gestion en direct"
+msgstr ""
+
+#: app/templates/restream/view.html:42
+msgid "Chaîne Twitch"
+msgstr ""
+
+#: app/templates/restream/view.html:57
+#, fuzzy
+msgid "Restream :"
+msgstr "Restream"
+
+#: app/templates/restream/view.html:61
+msgid "Commentaires :"
+msgstr ""
+
+#: app/templates/restream/view.html:65
+msgid "Tracking :"
+msgstr ""
+
+#: app/templates/restream/view.html:76
+msgid "Cette page sert de point d’accès au restream."
+msgstr ""
+
+#: app/templates/restream/view.html:77
+msgid "Les indices sont mis à jour en temps réel."
+msgstr ""
+
+#: app/templates/tournaments/archive_base.html:18
+#, python-format
+msgid "Édition %(year)s"
+msgstr ""
+
+#: app/templates/tournaments/archive_base.html:41
+#: app/templates/tournaments/internal.html:60
+msgid "Organisateurs"
+msgstr ""
+
+#: app/templates/tournaments/archive_base.html:52
+#: app/templates/tournaments/internal.html:78
+msgid "Participants"
+msgstr ""
+
+#: app/templates/tournaments/archive_base.html:64
+#: app/templates/tournaments/internal.html:105
+msgid "Résultats marquants"
+msgstr ""
+
+#: app/templates/tournaments/bracket.html:4
+msgid "Progression du tournoi"
+msgstr ""
+
+#: app/templates/tournaments/bracket.html:46
+msgid "Aucune phase à afficher pour ce tournoi."
+msgstr ""
+
+#: app/templates/tournaments/bracket.html:58
+#, python-format
+msgid "Les %(count)s premiers se qualifient"
+msgstr ""
+
+#: app/templates/tournaments/bracket.html:70
+msgid "Type de phase non supporté."
+msgstr ""
+
+#: app/templates/tournaments/external.html:5
+msgid "Ressources"
+msgstr ""
+
+#: app/templates/tournaments/external.html:18
+msgid "Aucune ressource n’est disponible pour ce tournoi."
+msgstr ""
+
+#: app/templates/tournaments/index.html:3
+msgid "Tournois – Team Baguette"
+msgstr ""
+
+#: app/templates/tournaments/index.html:12
+msgid "Archives"
+msgstr ""
+
+#: app/templates/tournaments/index.html:21
+msgid "Aucun tournoi dans cette section."
+msgstr ""
+
+#: app/templates/tournaments/internal.html:93
+msgid "Les participants seront affichés prochainement."
+msgstr ""
+
+#: app/templates/tournaments/internal.html:124
+msgid "Consulter le tournoi"
+msgstr "Consulter le tournoi"
+
+#: app/templates/tournaments/internal.html:132
+msgid "Résultats complets"
+msgstr ""
+
+#: app/templates/tournaments/internal.html:139
+msgid "Bracket & groupes"
+msgstr ""
+
+#: app/templates/tournaments/internal.html:152
+msgid "Liens externes"
+msgstr ""
+
+#: app/templates/tournaments/results.html:4
+#: app/templates/tournaments/results.html:24
+msgid "Résultats"
+msgstr ""
+
+#: app/templates/tournaments/results.html:35
+msgid "Aucune confrontation dans cette phase."
+msgstr ""
+
+#: app/templates/tournaments/results.html:82
+msgid "Tie-breaks"
+msgstr ""
+
+#: app/templates/tournaments/phases/bracket_simple_elim.html:38
+#: app/templates/tournaments/phases/bracket_simple_elim.html:62
+#, python-format
+msgid "Vainqueur de %(series)s"
+msgstr ""
+
+#: app/templates/tournaments/phases/bracket_simple_elim.html:38
+#: app/templates/tournaments/phases/bracket_simple_elim.html:40
+#: app/templates/tournaments/phases/bracket_simple_elim.html:42
+#: app/templates/tournaments/phases/bracket_simple_elim.html:62
+#: app/templates/tournaments/phases/bracket_simple_elim.html:64
+#: app/templates/tournaments/phases/bracket_simple_elim.html:66
+#, python-format
+msgid "Série #%(id)s"
+msgstr ""
+
+#: app/templates/tournaments/phases/bracket_simple_elim.html:40
+#: app/templates/tournaments/phases/bracket_simple_elim.html:64
+#, python-format
+msgid "Perdant de %(series)s"
+msgstr ""
+
+#: app/templates/tournaments/phases/bracket_simple_elim.html:42
+#: app/templates/tournaments/phases/bracket_simple_elim.html:66
+#, python-format
+msgid "De %(series)s"
+msgstr ""
+
+#: app/templates/tournaments/phases/groups.html:18
+msgid "J"
+msgstr ""
+
+#: app/templates/tournaments/phases/groups.html:19
+msgid "V"
+msgstr ""
+
+#: app/templates/tournaments/phases/groups.html:46
+msgid "Aucun groupe à afficher pour cette phase."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/_termui_impl.py:613
+#, python-brace-format
+msgid "{editor}: Editing failed"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/_termui_impl.py:617
+#, python-brace-format
+msgid "{editor}: Editing failed: {e}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1114
+#: venv/lib/python3.13/site-packages/click/core.py:1151
+#, python-brace-format
+msgid "{text} {deprecated_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1170
+msgid "Options"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1245
+#, python-brace-format
+msgid "Got unexpected extra argument ({args})"
+msgid_plural "Got unexpected extra arguments ({args})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1264
+#, python-brace-format
+msgid "DeprecationWarning: The command {name!r} is deprecated.{extra_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1448
+msgid "Aborted!"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1822
+msgid "Commands"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1853
+msgid "Missing command."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1931
+#, python-brace-format
+msgid "No such command {name!r}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2355
+msgid "Value must be an iterable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2378
+#, python-brace-format
+msgid "Takes {nargs} values but 1 was given."
+msgid_plural "Takes {nargs} values but {len} were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2567
+#, python-brace-format
+msgid ""
+"DeprecationWarning: The {param_type} {name!r} is "
+"deprecated.{extra_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:3015
+#, python-brace-format
+msgid "env var: {var}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:3018
+#, python-brace-format
+msgid "default: {default}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:3022
+msgid "required"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:3082
+msgid "(dynamic)"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:465
+#, python-format
+msgid "%(prog)s, version %(version)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:522
+msgid "Show the version and exit."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:548
+msgid "Show this message and exit."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:50
+#: venv/lib/python3.13/site-packages/click/exceptions.py:89
+#, python-brace-format
+msgid "Error: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:81
+#, python-brace-format
+msgid "Try '{command} {option}' for help."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:130
+#, python-brace-format
+msgid "Invalid value: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:132
+#, python-brace-format
+msgid "Invalid value for {param_hint}: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:190
+msgid "Missing argument"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:192
+msgid "Missing option"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:194
+msgid "Missing parameter"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:196
+#, python-brace-format
+msgid "Missing {param_type}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:203
+#, python-brace-format
+msgid "Missing parameter: {param_name}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:223
+#, python-brace-format
+msgid "No such option: {name}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:235
+#, python-brace-format
+msgid "Did you mean {possibility}?"
+msgid_plural "(Possible options: {possibilities})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:282
+msgid "unknown error"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:289
+#, python-brace-format
+msgid "Could not open file {filename!r}: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/formatting.py:156
+msgid "Usage:"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:199
+#, python-brace-format
+msgid "Argument {name!r} takes {nargs} values."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:381
+#, python-brace-format
+msgid "Option {name!r} does not take a value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:444
+#, python-brace-format
+msgid "Option {name!r} requires an argument."
+msgid_plural "Option {name!r} requires {nargs} arguments."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/shell_completion.py:332
+msgid "Shell completion is not supported for Bash versions older than 4.4."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/shell_completion.py:339
+msgid "Couldn't detect Bash version, shell completion is not supported."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:165
+msgid "Repeat for confirmation"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:181
+msgid "Error: The value you entered was invalid."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:183
+#, python-brace-format
+msgid "Error: {e.message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:194
+msgid "Error: The two entered values do not match."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:253
+msgid "Error: invalid input"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:872
+msgid "Press any key to continue..."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:332
+#, python-brace-format
+msgid ""
+"Choose from:\n"
+"\t{choices}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:369
+#, python-brace-format
+msgid "{value!r} is not {choice}."
+msgid_plural "{value!r} is not one of {choices}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:460
+#, python-brace-format
+msgid "{value!r} does not match the format {format}."
+msgid_plural "{value!r} does not match the formats {formats}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:482
+#, python-brace-format
+msgid "{value!r} is not a valid {number_type}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:538
+#, python-brace-format
+msgid "{value} is not in the range {range}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:719
+#, python-brace-format
+msgid "{value!r} is not a valid boolean. Recognized values: {states}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:747
+#, python-brace-format
+msgid "{value!r} is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:937
+msgid "file"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:939
+msgid "directory"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:941
+msgid "path"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:988
+#, python-brace-format
+msgid "{name} {filename!r} does not exist."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:997
+#, python-brace-format
+msgid "{name} {filename!r} is a file."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1005
+#, python-brace-format
+msgid "{name} {filename!r} is a directory."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1014
+#, python-brace-format
+msgid "{name} {filename!r} is not readable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1023
+#, python-brace-format
+msgid "{name} {filename!r} is not writable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1032
+#, python-brace-format
+msgid "{name} {filename!r} is not executable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1099
+#, python-brace-format
+msgid "{len_type} values are required, but {len_value} was given."
+msgid_plural "{len_type} values are required, but {len_value} were given."
+msgstr[0] ""
+msgstr[1] ""
+

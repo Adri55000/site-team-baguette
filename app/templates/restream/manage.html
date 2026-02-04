@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Gérer les restreams
+{{ _("Gérer les restreams") }}
 {% endblock %}
 
 {% block content %}
@@ -12,10 +12,10 @@ Gérer les restreams
     <!-- HEADER -->
     <!-- ========================= -->
     <div class="restream-manage-header">
-        <h1>Gérer les restreams</h1>
+        <h1>{{ _("Gérer les restreams") }}</h1>
 
         <a href="{{ url_for('restream.create') }}" class="btn btn-primary">
-            + Créer un restream
+            + {{ _("Créer un restream") }}
         </a>
     </div>
 
@@ -42,7 +42,7 @@ Gérer les restreams
                         </p>
 
                         <p class="restream-manage-meta">
-                            Match :
+                            {{ _("Match :") }}
                             {{ r.scheduled_at | format_datetime }}
                         </p>
 
@@ -52,15 +52,15 @@ Gérer les restreams
                         <p class="restream-manage-status">
                             {% if r.status == "upcoming" %}
                                 <span class="badge badge-upcoming">
-                                    À venir
+                                    {{ _("À venir") }}
                                 </span>
                             {% elif r.status == "past" %}
                                 <span class="badge badge-past">
-                                    Passé
+                                    {{ _("Passé") }}
                                 </span>
                             {% else %}
                                 <span class="badge badge-inactive">
-                                    Inactif
+                                    {{ _("Inactif") }}
                                 </span>
                             {% endif %}
                         </p>
@@ -74,19 +74,19 @@ Gérer les restreams
                         <!-- Voir page publique -->
                         <a href="{{ url_for('restream.view', slug=r.slug) }}"
                            class="btn btn-secondary">
-                            Voir
+                            {{ _("Voir") }}
                         </a>
 						
 						<a href="{{ url_for('restream.edit', slug=r.slug) }}"
 							class="btn btn-secondary btn-sm">
-							Modifier
+							{{ _("Modifier") }}
 						</a>
 
 
                         <!-- Accès aux indices -->
                         <a href="{{ url_for('restream.restream_indices', slug=r.slug) }}"
                            class="btn btn-primary">
-                            Indices
+                            {{ _("Indices") }}
                         </a>
 
                         {% if r.is_active %}
@@ -101,7 +101,7 @@ Gérer les restreams
                                   style="display:inline;">
                                 <button type="submit"
                                         class="btn btn-danger btn-sm">
-                                    Désactiver
+                                    {{ _("Désactiver") }}
                                 </button>
                             </form>
                         {% else %}
@@ -113,7 +113,7 @@ Gérer les restreams
                                   style="display:inline;">
                                 <button type="submit"
                                         class="btn btn-success btn-sm">
-                                    Réactiver
+                                    {{ _("Réactiver") }}
                                 </button>
                             </form>
                         {% endif %}
@@ -127,7 +127,7 @@ Gérer les restreams
         </div>
     {% else %}
         <p class="empty-state">
-            Aucun restream n’a encore été créé.
+            {{ _("Aucun restream n’a encore été créé.") }}
         </p>
     {% endif %}
 

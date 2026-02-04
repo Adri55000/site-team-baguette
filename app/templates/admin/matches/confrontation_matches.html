@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Matchs de la confrontation{% endblock %}
+{% block title %}{{ _("Matchs de la confrontation") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -8,15 +8,15 @@
 {% block content %}
 <div class="admin-dashboard">
 
-<h1>Matchs de la confrontation</h1>
+<h1>{{ _("Matchs de la confrontation") }}</h1>
 <div class="admin-card">
 <p class="admin-subtitle">
-    {{ (series.team1_name or "À déterminer") | team_name }} vs {{ (series.team2_name or "À déterminer") | team_name }}
+    {{ (series.team1_name or {{ _("À déterminer") }}) | team_name }} vs {{ (series.team2_name or {{ _("À déterminer") }}) | team_name }}
     {% if series.stage %} — {{ series.stage }}{% endif %}
 </p>
 
 <p class="text-muted">
-    Phase : <strong>{{ series.phase_name }}</strong>
+    {{ _("Phase :") }} <strong>{{ series.phase_name }}</strong>
 </p>
 
 
@@ -28,28 +28,32 @@
 </p>
 
 <p class="text-muted">
-    {{ wins }} victoire{{ 's' if wins != 1 }} sur {{ series.best_of }}
+    {{ ngettext(
+		"%(wins)s victoire sur %(total)s",
+		"%(wins)s victoires sur %(total)s",
+		wins
+	) | format(wins=wins, total=series.best_of) }}
 </p>
 {% else %}
 <p class="text-muted">
-    BO{{ series.best_of }} — confrontation prévisionnelle (équipes à définir)
+    BO{{ series.best_of }} — {{ _("confrontation prévisionnelle (équipes à définir)") }}
 </p>
 {% endif %}
 
 {% if series.winner_team_id %}
     <p>
-        <span class="badge badge-success">Confrontation gagnée</span>
+        <span class="badge badge-success">{{ _("Confrontation gagnée") }}</span>
     </p>
 {% elif matches %}
     <p>
-        <span class="badge badge-warning">Confrontation en cours</span>
+        <span class="badge badge-warning">{{ _("Confrontation en cours") }}</span>
     </p>
 {% else %}
     <p>
         {% if not series.team1_id or not series.team2_id %}
-            <span class="badge badge-muted">Confrontation prévisionnelle</span>
+            <span class="badge badge-muted">{{ _("Confrontation prévisionnelle") }}</span>
         {% else %}
-            <span class="badge badge-muted">Aucun match</span>
+            <span class="badge badge-muted">{{ _("Aucun match") }}</span>
         {% endif %}
     </p>
 {% endif %}
@@ -57,8 +61,8 @@
 
 {% if series.winner_team_id %}
 <p class="text-muted">
-    Cette confrontation est gagnée.  
-    Les résultats peuvent toujours être modifiés en cas de correction ou disqualification.
+    {{ _("Cette confrontation est gagnée.") }}
+    {{ _("Les résultats peuvent toujours être modifiés en cas de correction ou disqualification.") }}
 </p>
 {% endif %}
 </div>
@@ -67,7 +71,7 @@
     {% if not series.winner_team_id %}
     <a class="btn btn-primary"
        href="{{ url_for('admin.admin_match_create', series_id=series.id) }}">
-        Ajouter un match
+        {{ _("Ajouter un match") }}
     </a>
     {% endif %}
 </div>
@@ -77,10 +81,10 @@
 <table class="admin-table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Statut</th>
-            <th class="actions">Actions</th>
+            <th>{{ _("ID") }}</th>
+            <th>{{ _("Date") }}</th>
+            <th>{{ _("Statut") }}</th>
+            <th class="actions">{{ _("Actions") }}</th>
         </tr>
     </thead>
     <tbody>
@@ -93,19 +97,19 @@
             </td>
             <td>
                 {% if m.is_completed %}
-                    <span class="badge badge-success">Terminé</span>
+                    <span class="badge badge-success">{{ _("Terminé") }}</span>
                 {% else %}
-                    <span class="badge badge-muted">À jouer</span>
+                    <span class="badge badge-muted">{{ _("À jouer") }}</span>
                 {% endif %}
             </td>
             <td class="actions">
                 <a class="btn btn-primary-small"
                    href="{{ url_for('admin.admin_match_results', match_id=m.id) }}">
-                    Saisir les résultats
+                    {{ _("Saisir les résultats") }}
                 </a>
                 <a class="btn btn-secondary-small"
                    href="{{ url_for('admin.admin_match_edit', match_id=m.id) }}">
-                    Modifier
+                    {{ _("Modifier") }}
                 </a>
                 {% if series.tournament_status != "finished" and not m.is_completed %}
                 <form method="post"
@@ -113,7 +117,7 @@
                       class="inline-form">
                     <button class="btn btn-danger-small"
                             onclick="return confirm('Supprimer ce match ?')">
-                        Supprimer
+                        {{ _("Supprimer") }}
                     </button>
                 </form>
                 {% endif %}
@@ -123,7 +127,7 @@
     {% else %}
         <tr>
             <td colspan="4" class="admin-empty">
-                Aucun match pour cette confrontation.
+                {{ _("Aucun match pour cette confrontation.") }}
             </td>
         </tr>
     {% endif %}
@@ -135,7 +139,7 @@
     <a class="btn btn-secondary"
        href="{{ url_for('admin.admin_matches',
                         tournament_id=series.tournament_id) }}">
-        ← Retour aux confrontations
+        ← {{ _("Retour aux confrontations") }}
     </a>
 </div>
 

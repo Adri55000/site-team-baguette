@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block title %}
-Résultats – {{ tournament.name }}
+{{ _("Résultats") }} – {{ tournament.display_name or tournament.name }}
 {% endblock %}
 
 {% block content %}
 
 <header class="tournament-header">
     <h1>
-        {{ tournament.name }}
+        {{ tournament.display_name or tournament.name }}
         {% if metadata.edition %}
             <span class="tournament-edition">{{ metadata.edition }}</span>
         {% endif %}
@@ -16,12 +16,12 @@ Résultats – {{ tournament.name }}
 </header>
 
 <section class="tournament-section">
-    <a href="{{ url_for('main.tournament', slug=tournament.slug) }}">← Retour au tournoi</a>
+    <a href="{{ url_for('main.tournament', slug=tournament.slug) }}">← {{ _("Retour au tournoi") }}</a>
 </section>
 
 <section class="tournament-section">
 
-    <h2>Résultats</h2>
+    <h2>{{ _("Résultats") }}</h2>
 
     {% for phase in phases %}
         <div class="tournament-phase">
@@ -32,7 +32,7 @@ Résultats – {{ tournament.name }}
 
             {% if not series_list %}
                 <p class="tournament-placeholder">
-                    Aucune confrontation dans cette phase.
+                    {{ _("Aucune confrontation dans cette phase.") }}
                 </p>
             {% else %}
                 <ul class="tournament-series-list">
@@ -79,7 +79,7 @@ Résultats – {{ tournament.name }}
 {% if tiebreaks %}
 <section class="tournament-section">
 
-    <h2>Tie-breaks</h2>
+    <h2>{{ _("Tie-breaks") }}</h2>
 
     <ul class="tournament-series-list">
         {% for m in tiebreaks %}
@@ -97,9 +97,9 @@ Résultats – {{ tournament.name }}
 
                 <span class="tournament-series-score tournament-muted">
                     {% if m.is_completed %}
-                        Terminé
+                        {{ _("Terminé") }}
                     {% else %}
-                        À venir
+                        {{ _("À venir") }}
                     {% endif %}
                 </span>
 

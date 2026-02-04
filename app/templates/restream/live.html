@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Live – {{ restream.title }}
+{{ _("Live") }} – {{ restream.title }}
 {% endblock %}
 
 {% block head %}
@@ -20,7 +20,7 @@ Live – {{ restream.title }}
 
 {% if can_edit and tracker and tracker.session %}
   <div class="container" style="margin-top: 18px;">
-    <h2>Tracking</h2>
+    <h2>{{ _("Tracking") }}</h2>
 
     {% if can_manage_tracker %}
 	  <section class="live-actions">
@@ -28,13 +28,13 @@ Live – {{ restream.title }}
 		<div class="live-actions__left">
 		  <a class="btn btn-primary"
 			 href="{{ url_for('restream.restream_tracker_presets', slug=restream_slug) }}">
-			Charger un preset
+			{{ _("Charger un preset") }}
 		  </a>
 
 		  <form method="post"
 				action="{{ url_for('restream.restream_tracker_reset', slug=restream_slug) }}"
 				onsubmit="return confirm('Reset le tracker (preset par défaut) ?');">
-			<button class="btn btn-danger" type="submit">Reset tracker</button>
+			<button class="btn btn-danger" type="submit">{{ _("Reset tracker") }}</button>
 		  </form>
 
 		  {% if tracker and tracker.session %}
@@ -44,7 +44,7 @@ Live – {{ restream.title }}
 					  action="{{ url_for('restream.restream_toggle_final_time', slug=restream_slug, slot=p.slot) }}">
 				  <button class="btn {% if p.show_final_time %}btn-success{% else %}btn-secondary{% endif %}"
 						  type="submit">
-					Temps final J{{ p.slot }} : {% if p.show_final_time %}ON{% else %}OFF{% endif %}
+					{{ _("Temps final J%(slot)s : %(state)s", slot=p.slot, state=_("ON") if p.show_final_time else _("OFF")) }}
 				  </button>
 				</form>
 			  {% endfor %}
@@ -55,19 +55,19 @@ Live – {{ restream.title }}
 		<form method="post"
 			  action="{{ url_for('restream.live_set_room_racetime', slug=restream.slug) }}"
 			  class="live-actions__racetime">
-		  <label class="live-actions__label" for="racetime_room">Room racetime</label>
+		  <label class="live-actions__label" for="racetime_room">{{ _("Room racetime") }}</label>
 
 		  <input
 			id="racetime_room"
 			name="racetime_room"
 			type="text"
 			value="{{ match.racetime_room or '' }}"
-			placeholder="lozssr/puzzled-pumpkin-1332"
+			placeholder="https://racetime.gg/lozssr/cunning-crystals-3960"
 			autocomplete="off"
 			spellcheck="false"
 		  >
 
-		  <button type="submit" class="btn btn-secondary">Enregistrer</button>
+		  <button type="submit" class="btn btn-secondary">{{ _("Enregistrer") }}</button>
 		</form>
 
 	  </section>

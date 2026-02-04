@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Tableau de bord Admin{% endblock %}
+{% block title %}{{ _("Tableau de bord Admin") }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
@@ -8,43 +8,46 @@
 {% block content %}
 <div class="admin-dashboard">
 
-    <h1>Tableau de bord administrateur</h1>
+    <h1>{{ _("Tableau de bord administrateur") }}</h1>
 
     <div class="admin-grid">
 		<a href="{{ url_for('admin.users_list') }}" class="admin-tile">
 			<div class="tile-icon">🧑‍💼</div>
-			<div class="tile-label">Gérer les utilisateurs</div>
+			<div class="tile-label">{{ _("Gérer les utilisateurs") }}</div>
 		</a>
 
         <a href="{{ url_for('admin.games_list') }}" class="admin-tile">
             <div class="tile-icon">🎮</div>
-            <div class="tile-label">Gérer les jeux</div>
+            <div class="tile-label">{{ _("Gérer les jeux") }}</div>
         </a>
 
         <a href="{{ url_for('admin.players_list') }}" class="admin-tile">
             <div class="tile-icon">👤</div>
-            <div class="tile-label">Gérer les joueurs</div>
+            <div class="tile-label">{{ _("Gérer les joueurs") }}</div>
         </a>
 
         <a href="{{ url_for('admin.teams_list') }}" class="admin-tile">
             <div class="tile-icon">👥</div>
-            <div class="tile-label">Gérer les équipes</div>
+            <div class="tile-label">{{ _("Gérer les équipes") }}</div>
         </a>
 
         <a href="{{ url_for('admin.tournaments_list') }}" class="admin-tile">
             <div class="tile-icon">🏆</div>
-            <div class="tile-label">Gérer les tournois</div>
+            <div class="tile-label">{{ _("Gérer les tournois") }}</div>
         </a>
 
         <a href="{{ url_for('admin.admin_matches') }}" class="admin-tile">
             <div class="tile-icon">📊</div>
-            <div class="tile-label">Gérer les matchs</div>
+            <div class="tile-label">{{ _("Gérer les matchs") }}</div>
         </a>
 		<a href="{{ url_for('admin.admin_trackers_index') }}" class="admin-tile">
             <div class="tile-icon">🧭</div>
-            <div class="tile-label">Gérer les trackers</div>
+            <div class="tile-label">{{ _("Gérer les trackers") }}</div>
         </a>
-
+		<a href="{{ url_for('admin.translations_hub') }}" class="admin-tile">
+            <div class="tile-icon">🌐</div>
+            <div class="tile-label">{{ _("Gérer les traductions") }}</div>
+        </a>
 
     </div>
 

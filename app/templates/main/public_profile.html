@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Profil de {{ user["username"] }}{% endblock %}
+{% block title %} {{ _("Profil de %(username)s", username=user["username"]) }}{% endblock %}
 
 {% block content %}
 
@@ -22,7 +22,7 @@
 
     {% if user["description"] %}
     <section class="profile-section">
-      <h2>À propos</h2>
+      <h2>{{ _("À propos") }}</h2>
       <div class="profile-description">
         {{ user["description"] }}
       </div>
@@ -30,7 +30,7 @@
     {% endif %}
 
     <section class="profile-section">
-	  <h2>Liens & contacts</h2>
+	  <h2>{{ _("Liens & contacts") }}</h2>
 
 	  {% if links %}
 		<div class="profile-socials profile-socials--buttons">
@@ -58,7 +58,7 @@
 
 		</div>
 	  {% else %}
-		<p>Aucun lien externe.</p>
+		<p>{{ _("Aucun lien externe.") }}</p>
 	  {% endif %}
 	</section>
 
@@ -66,7 +66,7 @@
 
     <div class="profile-actions">
       <a href="{{ url_for('main.home') }}" class="btn btn-secondary">
-        Retour
+        {{ _("Retour") }}
       </a>
     </div>
 

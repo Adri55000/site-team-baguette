@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, abort, jsonify
+from flask_babel import gettext as _
 from . import admin_bp
 from app.database import get_db
 from app.auth.utils import login_required
@@ -17,6 +18,7 @@ from app.modules.tracker.registry import get_available_trackers, get_tracker_def
 from app.modules.tracker.presets import list_presets, create_preset, load_preset, save_preset, rename_preset, delete_preset
 from app.modules.tracker.games.ssr.preset import build_default_preset as ssr_default_preset
 from app.modules import racetime as racetime_mod
+from app.modules.i18n import get_translation
 
 @admin_bp.route("/")
 @login_required
@@ -91,7 +93,7 @@ def edit_user(user_id):
     """, (user_id,)).fetchone()
 
     if not user:
-        flash("Utilisateur introuvable.", "error")
+        flash(_("Utilisateur introuvable."), "error")
         return redirect(url_for("admin.users_list"))
 
     return render_template("admin/edit_user.html", user=user)
@@ -104,7 +106,7 @@ def edit_user(user_id):
 def edit_user_post(user_id):
     new_role = request.form.get("role")
     if not is_valid_role(new_role):
-        flash("Rôle invalide.", "error")
+        flash(_("Rôle invalide."), "error")
         abort(400)
     active = 1 if request.form.get("is_active") == "on" else 0
 
@@ -116,7 +118,7 @@ def edit_user_post(user_id):
     """, (new_role, active, user_id))
     db.commit()
 
-    flash("Modifications enregistrées.", "success")
+    flash(_("Modifications enregistrées."), "success")
     return redirect(url_for("admin.users_list"))
 
 @admin_bp.route("/users/<int:user_id>/reset_avatar", methods=["POST"])
@@ -132,7 +134,7 @@ def reset_avatar(user_id):
     ).fetchone()
 
     if not user:
-        flash("Utilisateur introuvable.", "error")
+        flash(_("Utilisateur introuvable."), "error")
         return redirect(url_for("admin.users_list"))
 
     # Supprimer le fichier s’il existe
@@ -152,7 +154,7 @@ def reset_avatar(user_id):
     )
     db.commit()
 
-    flash("Avatar réinitialisé.", "success")
+    flash(_("Avatar réinitialisé."), "success")
     return redirect(url_for("admin.edit_user", user_id=user_id))
 
 @admin_bp.route("/users/<int:user_id>/reset_password", methods=["POST"])
@@ -172,9 +174,7 @@ def reset_password(user_id):
     )
     db.commit()
 
-    flash(
-    f"Mot de passe temporaire généré : {new_password} — "
-    "l’utilisateur devra le changer à la prochaine connexion.",
+    flash(_("Mot de passe temporaire généré : %(pswd)s — l’utilisateur devra le changer à la prochaine connexion.", pswd=new_password),
     "warning"
     )
 
@@ -201,7 +201,7 @@ def games_add():
     color = request.form.get("color", "").strip() or None
 
     if not name or not short_name:
-        flash("Nom et abréviation obligatoires.", "error")
+        flash(_("Nom et abréviation obligatoires."), "error")
         return redirect(url_for("admin.games_list"))
 
     db = get_db()
@@ -251,7 +251,7 @@ def games_add():
 
     db.commit()
 
-    flash("Jeu ajouté avec succès.", "success")
+    flash(_("Jeu ajouté avec succès."), "success")
     return redirect(url_for("admin.games_list"))
 
 
@@ -264,13 +264,13 @@ def games_delete(game_id):
     # Empêcher la suppression d'un jeu utilisé
     ref = db.execute("SELECT 1 FROM tournaments WHERE game_id = ?", (game_id,)).fetchone()
     if ref:
-        flash("Impossible de supprimer ce jeu : il est utilisé par un tournoi.", "error")
+        flash(_("Impossible de supprimer ce jeu : il est utilisé par un tournoi."), "error")
         return redirect(url_for("admin.games_list"))
 
     db.execute("DELETE FROM games WHERE id = ?", (game_id,))
     db.commit()
 
-    flash("Jeu supprimé.", "success")
+    flash(_("Jeu supprimé."), "success")
     return redirect(url_for("admin.games_list"))
 
 @admin_bp.route("/games/edit/<int:game_id>")
@@ -284,7 +284,7 @@ def game_edit(game_id):
     ).fetchone()
 
     if not game:
-        flash("Jeu introuvable.", "error")
+        flash(_("Jeu introuvable."), "error")
         return redirect(url_for("admin.games_list"))
 
     return render_template("admin/edit_game.html", game=game)
@@ -304,7 +304,7 @@ def game_edit_post(game_id):
     )
     db.commit()
 
-    flash("Jeu modifié avec succès.", "success")
+    flash(_("Jeu modifié avec succès."), "success")
     return redirect(url_for("admin.games_list"))
 
 @admin_bp.route("/players")
@@ -371,7 +371,7 @@ def players_create():
                 (name, racetime_user)
             )
             conn.commit()
-            flash("Joueur créé avec succès.", "success")
+            flash(_("Joueur créé avec succès."), "success")
             return redirect(url_for("admin.players_list"))
 
     return render_template("admin/players_form.html")
@@ -467,7 +467,7 @@ def players_delete(player_id):
     )
 
     conn.commit()
-    flash("Joueur supprimé.", "success")
+    flash(_("Joueur supprimé."), "success")
 
     return redirect(url_for("admin.players_list"))
 
@@ -558,7 +558,7 @@ def teams_create():
                 )
 
             conn.commit()
-            flash("Équipe créée avec succès.", "success")
+            flash(_("Équipe créée avec succès."), "success")
 
             return redirect(url_for("admin.teams_list"))
 
@@ -582,7 +582,7 @@ def teams_delete(team_id):
     conn.execute("DELETE FROM team_players WHERE team_id = ?", (team_id,))
     conn.execute("DELETE FROM teams WHERE id = ?", (team_id,))
     conn.commit()
-    flash("Équipe supprimée.", "success")
+    flash(_("Équipe supprimée."), "success")
 
     return redirect(url_for("admin.teams_list"))
 
@@ -697,6 +697,7 @@ def tournaments_list():
         f"""
         SELECT
             t.id,
+            t.slug,
             t.name,
             t.status,
             t.source,
@@ -714,6 +715,14 @@ def tournaments_list():
         (*params, per_page, offset)
     ).fetchall()
 
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournaments = [dict(t) for t in tournaments]
+    for t in tournaments:
+        if t.get("slug"):
+            tr = get_translation("tournament", t["slug"], "name", lang)
+            if tr:
+                t["name"] = tr
 
     return render_template(
         "admin/tournaments_list.html",
@@ -743,16 +752,16 @@ def tournaments_create():
         metadata = request.form.get("metadata", "").strip()
 
         if not name:
-            errors["name"] = "Le nom du tournoi est obligatoire."
+            errors["name"] = _("Le nom du tournoi est obligatoire.")
             
         if name and is_reserved_casual_prefix(name):
-            errors["name"] = "Le préfixe [CASUAL] est réservé aux tournois système."
+            errors["name"] = _("Le préfixe [CASUAL] est réservé aux tournois système.")
 
         if not game_id:
-            errors["game_id"] = "Un jeu doit être sélectionné."
+            errors["game_id"] = _("Un jeu doit être sélectionné.")
 
         if status not in ("draft", "active", "finished"):
-            flash("Statut de tournoi invalide.", "error")
+            flash(_("Statut de tournoi invalide."), "error")
             abort(400)
 
         if not errors:
@@ -768,7 +777,7 @@ def tournaments_create():
             )
             db.commit()
 
-            flash("Tournoi créé avec succès.", "success")
+            flash(_("Tournoi créé avec succès."), "success")
             return redirect(url_for("admin.tournaments_list"))
 
     return render_template(
@@ -822,14 +831,14 @@ def admin_tournament_edit(tournament_id):
             errors["game_id"] = "Un jeu doit être sélectionné."
 
         if status not in ("draft", "active", "finished"):
-            flash("Statut de tournoi invalide.", "error")
+            flash(_("Statut de tournoi invalide."), "error")
             abort(400)
 
         # 🔒 Règle métier existante
         if not errors :
             if tournament["status"] == "finished" and status != "finished":
                 flash(
-                    "Un tournoi terminé ne peut pas être réactivé.",
+                    _("Un tournoi terminé ne peut pas être réactivé."),
                     "error"
                 )
                 return redirect(
@@ -839,7 +848,7 @@ def admin_tournament_edit(tournament_id):
             # 🔒 NOUVELLE règle métier (Phase 6)
             if status == "active" and not phases:
                 flash(
-                    "Impossible d'activer le tournoi : aucune phase n'est définie.",
+                    _("Impossible d'activer le tournoi : aucune phase n'est définie."),
                     "error"
                 )
                 return redirect(
@@ -856,7 +865,7 @@ def admin_tournament_edit(tournament_id):
             )
             db.commit()
 
-            flash("Tournoi mis à jour.", "success")
+            flash(_("Tournoi mis à jour."), "success")
             return redirect(url_for("admin.tournaments_list"))
 
     return render_template(
@@ -881,7 +890,7 @@ def admin_tournament_teams(tournament_id):
     ).fetchone()
 
     if not tournament:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.tournaments_list"))
 
     # --- Pagination & filtres (PATTERN EXISTANT) ---
@@ -1034,11 +1043,11 @@ def admin_tournament_add_team(tournament_id):
     ).fetchone()
 
     if tournament is None:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.tournaments_list"))
 
     if tournament["status"] != "draft":
-        flash("Impossible de modifier les équipes d’un tournoi actif ou terminé.", "error")
+        flash(_("Impossible de modifier les équipes d’un tournoi actif ou terminé."), "error")
         return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
     team = db.execute(
@@ -1047,7 +1056,7 @@ def admin_tournament_add_team(tournament_id):
     ).fetchone()
 
     if team is None:
-        flash("Équipe introuvable.", "error")
+        flash(_("Équipe introuvable."), "error")
         return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
     already = db.execute(
@@ -1059,7 +1068,7 @@ def admin_tournament_add_team(tournament_id):
     ).fetchone()
 
     if already:
-        flash("Cette équipe est déjà inscrite à ce tournoi.", "error")
+        flash(_("Cette équipe est déjà inscrite à ce tournoi."), "error")
         return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
     db.execute(
@@ -1071,7 +1080,7 @@ def admin_tournament_add_team(tournament_id):
     )
     db.commit()
 
-    flash("Équipe inscrite avec succès.", "success")
+    flash(_("Équipe inscrite avec succès."), "success")
     return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
 @admin_bp.route(
@@ -1089,11 +1098,11 @@ def admin_tournament_remove_team(tournament_id, team_id):
     ).fetchone()
 
     if tournament is None:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.tournaments_list"))
 
     if tournament["status"] != "draft":
-        flash("Impossible de modifier les équipes d’un tournoi actif ou terminé.", "error")
+        flash(_("Impossible de modifier les équipes d’un tournoi actif ou terminé."), "error")
         return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
     db.execute(
@@ -1105,7 +1114,7 @@ def admin_tournament_remove_team(tournament_id, team_id):
     )
     db.commit()
 
-    flash("Équipe retirée du tournoi.", "success")
+    flash(_("Équipe retirée du tournoi."), "success")
     return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
     
 
@@ -1121,13 +1130,13 @@ def admin_tournament_teams_update_groups(tournament_id):
     ).fetchone()
 
     if not tournament:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.admin_tournaments"))
 
     # v1: tu peux décider si c'est draft-only.
     # Je te mets draft-only par défaut (cohérent avec 'teams modifiables seulement en draft').
     if tournament["status"] != "draft":
-        flash("Modification des groupes impossible : tournoi non en draft.", "warning")
+        flash(_("Modification des groupes impossible : tournoi non en draft."), "warning")
         return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
     # Liste des groupes existants (pour normaliser vers un nom déjà connu)
@@ -1164,7 +1173,7 @@ def admin_tournament_teams_update_groups(tournament_id):
             try:
                 position = int(raw_pos)
             except ValueError:
-                flash(f"Position invalide pour l'équipe {team_id}.", "error")
+                flash(_("Position invalide pour l'équipe %(name)s.",name=team_id), "error")
                 return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
         db.execute(
@@ -1178,7 +1187,7 @@ def admin_tournament_teams_update_groups(tournament_id):
         updated += 1
 
     db.commit()
-    flash(f"Groupes enregistrés ({updated} équipes).", "success")
+    flash(_("Groupes enregistrés (%(name)s équipes).",name=updated), "success")
     return redirect(url_for("admin.admin_tournament_teams", tournament_id=tournament_id))
 
 
@@ -1209,7 +1218,7 @@ def admin_matches():
     ).fetchone()
 
     if not tournament:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
         
     # ✅ Phases du tournoi (toutes, même si aucune série n'existe encore)
@@ -1329,7 +1338,7 @@ def admin_confrontation_create():
     tournament_id = request.args.get("tournament_id", type=int)
     prefill_phase_id = request.args.get("phase_id", type=int)  # ✅ préfill depuis le filtre
     if not tournament_id:
-        flash("Tournoi manquant.", "error")
+        flash(_("Tournoi manquant."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     tournament = db.execute(
@@ -1338,7 +1347,7 @@ def admin_confrontation_create():
     ).fetchone()
 
     if not tournament:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     # 🔹 Récupération des phases du tournoi
@@ -1346,7 +1355,7 @@ def admin_confrontation_create():
 
     if not phases:
         flash(
-            "Impossible de créer une confrontation : aucune phase n'est définie pour ce tournoi.",
+            _("Impossible de créer une confrontation : aucune phase n'est définie pour ce tournoi."),
             "error"
         )
         return redirect(url_for("admin.admin_matches", tournament_id=tournament_id))
@@ -1369,7 +1378,7 @@ def admin_confrontation_create():
 
         # 🔒 Validation phase
         if not phase_id:
-            flash("Une phase doit être sélectionnée.", "error")
+            flash(_("Une phase doit être sélectionnée."), "error")
             return redirect(request.url)
 
         phase = db.execute(
@@ -1382,7 +1391,7 @@ def admin_confrontation_create():
         ).fetchone()
 
         if not phase:
-            flash("Phase invalide pour ce tournoi.", "error")
+            flash(_("Phase invalide pour ce tournoi."), "error")
             return redirect(request.url)
 
         phase_type = phase["type"]
@@ -1409,41 +1418,41 @@ def admin_confrontation_create():
         # - non-bracket : 2 équipes obligatoires + règles existantes
         if not is_bracket:
             if not team1_id or not team2_id:
-                flash("Les deux équipes doivent être sélectionnées.", "error")
+                flash(_("Les deux équipes doivent être sélectionnées."), "error")
                 return redirect(request.url)
 
             if team1_id == team2_id:
-                flash("Les deux équipes doivent être différentes.", "error")
+                flash(_("Les deux équipes doivent être différentes."), "error")
                 return redirect(request.url)
 
             if team1_id not in team_ids or team2_id not in team_ids:
-                flash("Les équipes doivent être inscrites au tournoi.", "error")
+                flash(_("Les équipes doivent être inscrites au tournoi."), "error")
                 return redirect(request.url)
         else:
             # bracket : si une équipe est renseignée, elle doit être inscrite
             if team1_id and team1_id not in team_ids:
-                flash("Équipe A invalide (non inscrite au tournoi).", "error")
+                flash(_("Équipe A invalide (non inscrite au tournoi)."), "error")
                 return redirect(request.url)
             if team2_id and team2_id not in team_ids:
-                flash("Équipe B invalide (non inscrite au tournoi).", "error")
+                flash(_("Équipe B invalide (non inscrite au tournoi)."), "error")
                 return redirect(request.url)
             if team1_id and team2_id and team1_id == team2_id:
-                flash("Les deux équipes doivent être différentes.", "error")
+                flash(_("Les deux équipes doivent être différentes."), "error")
                 return redirect(request.url)
 
             # ✅ Validation sources : uniquement bracket
             if team1_id and source_team1_series_id:
-                flash("Équipe A : choisissez une équipe OU une source, pas les deux.", "error")
+                flash(_("Équipe A : choisissez une équipe OU une source, pas les deux."), "error")
                 return redirect(request.url)
             if team2_id and source_team2_series_id:
-                flash("Équipe B : choisissez une équipe OU une source, pas les deux.", "error")
+                flash(_("Équipe B : choisissez une équipe OU une source, pas les deux."), "error")
                 return redirect(request.url)
 
             if source_team1_series_id and source_team1_type not in ("winner", "loser"):
-                flash("Équipe A : le type de source doit être winner ou loser.", "error")
+                flash(_("Équipe A : le type de source doit être winner ou loser."), "error")
                 return redirect(request.url)
             if source_team2_series_id and source_team2_type not in ("winner", "loser"):
-                flash("Équipe B : le type de source doit être winner ou loser.", "error")
+                flash(_("Équipe B : le type de source doit être winner ou loser."), "error")
                 return redirect(request.url)
 
             # sources doivent appartenir au même tournoi + même phase (cohérence bracket)
@@ -1457,7 +1466,7 @@ def admin_confrontation_create():
                     (source_team1_series_id, tournament_id, phase_id)
                 ).fetchone()
                 if not ok:
-                    flash("Source A invalide (doit être dans la même phase et le même tournoi).", "error")
+                    flash(_("Source A invalide (doit être dans la même phase et le même tournoi)."), "error")
                     return redirect(request.url)
 
             if source_team2_series_id:
@@ -1470,7 +1479,7 @@ def admin_confrontation_create():
                     (source_team2_series_id, tournament_id, phase_id)
                 ).fetchone()
                 if not ok:
-                    flash("Source B invalide (doit être dans la même phase et le même tournoi).", "error")
+                    flash(_("Source B invalide (doit être dans la même phase et le même tournoi)."), "error")
                     return redirect(request.url)
 
         db.execute(
@@ -1506,7 +1515,7 @@ def admin_confrontation_create():
         )
         db.commit()
 
-        flash("Confrontation créée.", "success")
+        flash(_("Confrontation créée."), "success")
         return redirect(url_for("admin.admin_matches", tournament_id=tournament_id, phase_id=phase_id))
 
     # --- GET : affichage du formulaire ---
@@ -1559,7 +1568,7 @@ def admin_confrontation_edit(series_id):
     ).fetchone()
 
     if not series:
-        flash("Confrontation introuvable.", "error")
+        flash(_("Confrontation introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     tournament = db.execute(
@@ -1568,7 +1577,7 @@ def admin_confrontation_edit(series_id):
     ).fetchone()
 
     if tournament["status"] == "finished":
-        flash("Tournoi terminé : modification impossible.", "error")
+        flash(_("Tournoi terminé : modification impossible."), "error")
         return redirect(url_for("admin.admin_matches", tournament_id=tournament["id"]))
 
     phases = get_tournament_phases(db, tournament["id"])
@@ -1604,7 +1613,7 @@ def admin_confrontation_edit(series_id):
         source_team2_type = (request.form.get("source_team2_type") or "").strip() or None
 
         if not phase_id:
-            flash("Une phase doit être sélectionnée.", "error")
+            flash(_("Une phase doit être sélectionnée."), "error")
             return redirect(request.url)
 
         phase = db.execute(
@@ -1617,7 +1626,7 @@ def admin_confrontation_edit(series_id):
         ).fetchone()
 
         if not phase:
-            flash("Phase invalide pour ce tournoi.", "error")
+            flash(_("Phase invalide pour ce tournoi."), "error")
             return redirect(request.url)
 
         phase_type = phase["type"]
@@ -1635,15 +1644,15 @@ def admin_confrontation_edit(series_id):
             if not is_bracket:
                 # non-bracket : 2 équipes obligatoires
                 if not team1_id or not team2_id:
-                    flash("Les deux équipes doivent être sélectionnées.", "error")
+                    flash(_("Les deux équipes doivent être sélectionnées."), "error")
                     return redirect(request.url)
 
                 if team1_id == team2_id:
-                    flash("Les deux équipes doivent être différentes.", "error")
+                    flash(_("Les deux équipes doivent être différentes."), "error")
                     return redirect(request.url)
 
                 if team1_id not in team_ids or team2_id not in team_ids:
-                    flash("Les équipes doivent être inscrites au tournoi.", "error")
+                    flash(_("Les équipes doivent être inscrites au tournoi."), "error")
                     return redirect(request.url)
 
                 # non-bracket : on ignore les sources, par sécurité
@@ -1655,33 +1664,33 @@ def admin_confrontation_edit(series_id):
             else:
                 # bracket : équipes optionnelles
                 if team1_id and team1_id not in team_ids:
-                    flash("Équipe A invalide (non inscrite au tournoi).", "error")
+                    flash(_("Équipe A invalide (non inscrite au tournoi)."), "error")
                     return redirect(request.url)
                 if team2_id and team2_id not in team_ids:
-                    flash("Équipe B invalide (non inscrite au tournoi).", "error")
+                    flash(_("Équipe B invalide (non inscrite au tournoi)."), "error")
                     return redirect(request.url)
                 if team1_id and team2_id and team1_id == team2_id:
-                    flash("Les deux équipes doivent être différentes.", "error")
+                    flash(_("Les deux équipes doivent être différentes."), "error")
                     return redirect(request.url)
 
                 # ✅ Validation sources
                 if team1_id and source_team1_series_id:
-                    flash("Équipe A : choisissez une équipe OU une source, pas les deux.", "error")
+                    flash(_("Équipe A : choisissez une équipe OU une source, pas les deux."), "error")
                     return redirect(request.url)
                 if team2_id and source_team2_series_id:
-                    flash("Équipe B : choisissez une équipe OU une source, pas les deux.", "error")
+                    flash(_("Équipe B : choisissez une équipe OU une source, pas les deux."), "error")
                     return redirect(request.url)
 
                 if source_team1_series_id and source_team1_type not in ("winner", "loser"):
-                    flash("Équipe A : le type de source doit être winner ou loser.", "error")
+                    flash(_("Équipe A : le type de source doit être winner ou loser."), "error")
                     return redirect(request.url)
                 if source_team2_series_id and source_team2_type not in ("winner", "loser"):
-                    flash("Équipe B : le type de source doit être winner ou loser.", "error")
+                    flash(_("Équipe B : le type de source doit être winner ou loser."), "error")
                     return redirect(request.url)
 
                 # pas d'auto-référence
                 if source_team1_series_id == series_id or source_team2_series_id == series_id:
-                    flash("Une confrontation ne peut pas dépendre d'elle-même.", "error")
+                    flash(_("Une confrontation ne peut pas dépendre d'elle-même."), "error")
                     return redirect(request.url)
 
                 # sources doivent appartenir au même tournoi + même phase
@@ -1695,7 +1704,7 @@ def admin_confrontation_edit(series_id):
                         (source_team1_series_id, tournament["id"], phase_id)
                     ).fetchone()
                     if not ok:
-                        flash("Source A invalide (doit être dans la même phase et le même tournoi).", "error")
+                        flash(_("Source A invalide (doit être dans la même phase et le même tournoi)."), "error")
                         return redirect(request.url)
 
                 if source_team2_series_id:
@@ -1708,7 +1717,7 @@ def admin_confrontation_edit(series_id):
                         (source_team2_series_id, tournament["id"], phase_id)
                     ).fetchone()
                     if not ok:
-                        flash("Source B invalide (doit être dans la même phase et le même tournoi).", "error")
+                        flash(_("Source B invalide (doit être dans la même phase et le même tournoi)."), "error")
                         return redirect(request.url)
 
             db.execute(
@@ -1753,7 +1762,7 @@ def admin_confrontation_edit(series_id):
             )
 
         db.commit()
-        flash("Confrontation mise à jour.", "success")
+        flash(_("Confrontation mise à jour."), "success")
         return redirect(url_for("admin.admin_matches", tournament_id=tournament["id"], phase_id=phase_id))
 
     # ✅ candidats sources pour le template (même phase que la série)
@@ -1813,7 +1822,7 @@ def admin_match_create():
         ).fetchone()
 
         if not series:
-            flash("Confrontation introuvable.", "error")
+            flash(_("Confrontation introuvable."), "error")
             return redirect(url_for("admin.admin_matches"))
 
         tournament = db.execute(
@@ -1829,11 +1838,11 @@ def admin_match_create():
         ).fetchone()
 
         if not tournament:
-            flash("Tournoi introuvable.", "error")
+            flash(_("Tournoi introuvable."), "error")
             return redirect(url_for("admin.admin_matches"))
 
     if tournament["status"] == "finished":
-        flash("Tournoi terminé : création impossible.", "error")
+        flash(_("Tournoi terminé : création impossible."), "error")
         return redirect(url_for("admin.admin_matches", tournament_id=tournament_id))
 
     # Équipes disponibles (pour tie-break)
@@ -1888,13 +1897,13 @@ def admin_match_create():
             selected_teams = [int(t) for t in selected_teams if t.isdigit()]
 
             if len(selected_teams) < 2:
-                flash("Un tie-break doit contenir au moins 2 équipes.", "error")
+                flash(_("Un tie-break doit contenir au moins 2 équipes."), "error")
                 db.execute("DELETE FROM matches WHERE id = ?", (match_id,))
                 db.commit()
                 return redirect(request.url)
 
             if not all(tid in team_ids for tid in selected_teams):
-                flash("Toutes les équipes doivent être inscrites au tournoi.", "error")
+                flash(_("Toutes les équipes doivent être inscrites au tournoi."), "error")
                 db.execute("DELETE FROM matches WHERE id = ?", (match_id,))
                 db.commit()
                 return redirect(request.url)
@@ -1909,7 +1918,7 @@ def admin_match_create():
                 )
 
         db.commit()
-        flash("Match créé.", "success")
+        flash(_("Match créé."), "success")
 
         if series_id:
             return redirect(
@@ -1979,7 +1988,7 @@ def admin_confrontation_matches(series_id):
 
 
     if not series:
-        flash("Confrontation introuvable.", "error")
+        flash(_("Confrontation introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     matches = db.execute(
@@ -2014,7 +2023,7 @@ def admin_match_edit(match_id):
     ).fetchone()
 
     if not match:
-        flash("Match introuvable.", "error")
+        flash(_("Match introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     tournament = db.execute(
@@ -2023,7 +2032,7 @@ def admin_match_edit(match_id):
     ).fetchone()
 
     if tournament["status"] == "finished":
-        flash("Tournoi terminé : modification impossible.", "error")
+        flash(_("Tournoi terminé : modification impossible."), "error")
         return redirect(
             url_for("admin.admin_matches", tournament_id=tournament["id"])
         )
@@ -2059,7 +2068,7 @@ def admin_match_edit(match_id):
         )
         db.commit()
 
-        flash("Match mis à jour.", "success")
+        flash(_("Match mis à jour."), "success")
         return redirect(
             url_for("admin.admin_matches", tournament_id=tournament["id"])
         )
@@ -2087,13 +2096,13 @@ def admin_confrontation_delete(series_id):
     ).fetchone()[0]
 
     if match_count > 0:
-        flash("Impossible de supprimer une confrontation avec des matchs.", "error")
+        flash(_("Impossible de supprimer une confrontation avec des matchs."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     db.execute("DELETE FROM series WHERE id = ?", (series_id,))
     db.commit()
 
-    flash("Confrontation supprimée.", "success")
+    flash(_("Confrontation supprimée."), "success")
     return redirect(url_for("admin.admin_matches"))
 
 @admin_bp.route(
@@ -2111,7 +2120,7 @@ def admin_match_delete(match_id):
     ).fetchone()
 
     if not match:
-        flash("Match introuvable.", "error")
+        flash(_("Match introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     series_id = match["series_id"]
@@ -2125,7 +2134,7 @@ def admin_match_delete(match_id):
         from app.modules.results import update_series_result
         update_series_result(series_id)
 
-    flash("Match supprimé.", "success")
+    flash(_("Match supprimé."), "success")
 
     if series_id:
         return redirect(
@@ -2158,7 +2167,7 @@ def admin_match_results(match_id):
     ).fetchone()
 
     if not match:
-        flash("Match introuvable.", "error")
+        flash(_("Match introuvable."), "error")
         return redirect(url_for("admin.admin_matches"))
 
     # --- Équipes du match ---
@@ -2261,7 +2270,7 @@ def admin_match_results(match_id):
             update_series_result(match["series_id"])
 
 
-        flash("Résultats enregistrés.", "success")
+        flash(_("Résultats enregistrés."), "success")
         if match["series_id"]:
             return redirect(
                 url_for(
@@ -2387,7 +2396,7 @@ def admin_tournament_phase_create(tournament_id):
     ).fetchone()
 
     if not tournament:
-        flash("Tournoi introuvable.", "error")
+        flash(_("Tournoi introuvable."), "error")
         return redirect(url_for("admin.tournaments_list"))
 
     name = request.form.get("name", "").strip()
@@ -2395,13 +2404,13 @@ def admin_tournament_phase_create(tournament_id):
     position = request.form.get("position", type=int)
 
     if not name:
-        flash("Le nom de la phase est obligatoire.", "error")
+        flash(_("Le nom de la phase est obligatoire."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
 
     if position is None or position < 1:
-        flash("La position de la phase est invalide.", "error")
+        flash(_("La position de la phase est invalide."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
@@ -2420,7 +2429,7 @@ def admin_tournament_phase_create(tournament_id):
                     raise ValueError()
                 details_obj["qualifiers_per_group"] = q
             except ValueError:
-                flash("Le nombre de qualifiés par groupe est invalide.", "error")
+                flash(_("Le nombre de qualifiés par groupe est invalide."), "error")
                 return redirect(url_for("admin.admin_tournament_edit", tournament_id=tournament_id))
 
         details_json = json.dumps(details_obj, ensure_ascii=False) if details_obj else None
@@ -2437,7 +2446,7 @@ def admin_tournament_phase_create(tournament_id):
     )
     db.commit()
 
-    flash("Phase créée.", "success")
+    flash(_("Phase créée."), "success")
     return redirect(
         url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
     )
@@ -2461,7 +2470,7 @@ def admin_tournament_phase_edit(tournament_id, phase_id):
     ).fetchone()
 
     if not phase:
-        flash("Phase introuvable pour ce tournoi.", "error")
+        flash(_("Phase introuvable pour ce tournoi."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
@@ -2471,13 +2480,13 @@ def admin_tournament_phase_edit(tournament_id, phase_id):
     position = request.form.get("position", type=int)
 
     if not name:
-        flash("Le nom de la phase est obligatoire.", "error")
+        flash(_("Le nom de la phase est obligatoire."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
 
     if position is None or position < 1:
-        flash("La position de la phase est invalide.", "error")
+        flash(_("La position de la phase est invalide."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
@@ -2495,7 +2504,7 @@ def admin_tournament_phase_edit(tournament_id, phase_id):
                     raise ValueError()
                 details_obj["qualifiers_per_group"] = q
             except ValueError:
-                flash("Le nombre de qualifiés par groupe est invalide.", "error")
+                flash(_("Le nombre de qualifiés par groupe est invalide."), "error")
                 return redirect(url_for("admin.admin_tournament_edit", tournament_id=tournament_id))
     
         # Si on a au moins une clé, on stocke du JSON, sinon on laisse NULL
@@ -2514,7 +2523,7 @@ def admin_tournament_phase_edit(tournament_id, phase_id):
     )
     db.commit()
 
-    flash("Phase mise à jour.", "success")
+    flash(_("Phase mise à jour."), "success")
     return redirect(
         url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
     )
@@ -2538,7 +2547,7 @@ def admin_tournament_phase_delete(tournament_id, phase_id):
     ).fetchone()
 
     if not phase:
-        flash("Phase introuvable pour ce tournoi.", "error")
+        flash(_("Phase introuvable pour ce tournoi."), "error")
         return redirect(
             url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
         )
@@ -2555,7 +2564,7 @@ def admin_tournament_phase_delete(tournament_id, phase_id):
 
     if used:
         flash(
-            "Impossible de supprimer cette phase : des confrontations y sont rattachées.",
+            _("Impossible de supprimer cette phase : des confrontations y sont rattachées."),
             "error"
         )
         return redirect(
@@ -2568,7 +2577,7 @@ def admin_tournament_phase_delete(tournament_id, phase_id):
     )
     db.commit()
 
-    flash("Phase supprimée.", "success")
+    flash(_("Phase supprimée."), "success")
     return redirect(
         url_for("admin.admin_tournament_edit", tournament_id=tournament_id)
     )
@@ -2666,7 +2675,7 @@ def admin_trackers_preset_new(tracker_type):
         participant_json = request.form.get("participant_json") or "{}"
 
         if not label:
-            flash("Le nom du preset est obligatoire.", "error")
+            flash(_("Le nom du preset est obligatoire."), "error")
         else:
             try:
                 participant = json.loads(participant_json)
@@ -2679,7 +2688,7 @@ def admin_trackers_preset_new(tracker_type):
                 participant=participant,
                 notes=notes,
             )
-            flash("Preset créé.", "success")
+            flash(_("Preset créé."), "success")
             return redirect(url_for(
                 "admin.admin_trackers_preset_edit",
                 tracker_type=tracker_type,
@@ -2716,7 +2725,7 @@ def admin_trackers_preset_edit(tracker_type, preset_slug):
         participant_json = request.form.get("participant_json") or "{}"
 
         if not new_label:
-            flash("Le nom du preset est obligatoire.", "error")
+            flash(_("Le nom du preset est obligatoire."), "error")
         else:
             try:
                 participant = json.loads(participant_json)
@@ -2736,7 +2745,7 @@ def admin_trackers_preset_edit(tracker_type, preset_slug):
 
             save_preset(tracker_type, preset_slug, data)
 
-            flash("Preset enregistré.", "success")
+            flash(_("Preset enregistré."), "success")
             return redirect(url_for(
                 "admin.admin_trackers_preset_edit",
                 tracker_type=tracker_type,
@@ -2772,9 +2781,9 @@ def admin_trackers_preset_delete(tracker_type, preset_slug):
 
     try:
         delete_preset(tracker_type, preset_slug)
-        flash("Preset supprimé.", "success")
+        flash(_("Preset supprimé."), "success")
     except FileNotFoundError:
-        flash("Preset introuvable.", "error")
+        flash(_("Preset introuvable."), "error")
 
     return redirect(
         url_for(
@@ -2783,3 +2792,472 @@ def admin_trackers_preset_delete(tracker_type, preset_slug):
         )
     )
     
+@admin_bp.route("/translations")
+@login_required
+@role_required("admin")
+def translations_hub():
+    db = get_db()
+
+    # Langue cible (par défaut en)
+    lang = (request.args.get("lang") or "en").strip().lower()
+
+    # --- TOURNOIS ---
+    tournaments_total = db.execute(
+        "SELECT COUNT(*) AS n FROM tournaments"
+    ).fetchone()["n"]
+
+    tournaments_name_done = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM tournaments t
+        JOIN translations tr
+          ON tr.entity_type='tournament'
+         AND tr.entity_key=t.slug
+         AND tr.field='name'
+         AND tr.lang=?
+        """,
+        (lang,)
+    ).fetchone()["n"]
+
+    tournaments_metadata_done = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM tournaments t
+        JOIN translations tr
+          ON tr.entity_type='tournament'
+         AND tr.entity_key=t.slug
+         AND tr.field='metadata'
+         AND tr.lang=?
+        """,
+        (lang,)
+    ).fetchone()["n"]
+
+    # --- PHASES ---
+    phases_total = db.execute(
+        "SELECT COUNT(*) AS n FROM tournament_phases"
+    ).fetchone()["n"]
+
+    phases_done = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM tournament_phases p
+        JOIN translations tr
+          ON tr.entity_type='tournament_phase'
+         AND tr.entity_key=CAST(p.id AS TEXT)
+         AND tr.field='name'
+         AND tr.lang=?
+        """,
+        (lang,)
+    ).fetchone()["n"]
+
+    # --- GROUPES (distinct) ---
+    groups_total = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM (
+          SELECT DISTINCT (t.slug || '|' || tt.group_name) AS k
+          FROM tournament_teams tt
+          JOIN tournaments t ON t.id = tt.tournament_id
+          WHERE t.slug IS NOT NULL AND t.slug <> ''
+            AND tt.group_name IS NOT NULL AND tt.group_name <> ''
+        )
+        """
+    ).fetchone()["n"]
+
+    groups_done = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM (
+          SELECT DISTINCT (t.slug || '|' || tt.group_name) AS k
+          FROM tournament_teams tt
+          JOIN tournaments t ON t.id = tt.tournament_id
+          WHERE t.slug IS NOT NULL AND t.slug <> ''
+            AND tt.group_name IS NOT NULL AND tt.group_name <> ''
+        ) g
+        JOIN translations tr
+          ON tr.entity_type='tournament_group'
+         AND tr.entity_key=g.k
+         AND tr.field='name'
+         AND tr.lang=?
+        """,
+        (lang,)
+    ).fetchone()["n"]
+
+    stats = {
+        "lang": lang,
+        "tournaments": {
+            "total": tournaments_total,
+            "name_done": tournaments_name_done,
+            "metadata_done": tournaments_metadata_done,
+        },
+        "phases": {
+            "total": phases_total,
+            "done": phases_done,
+        },
+        "groups": {
+            "total": groups_total,
+            "done": groups_done,
+        },
+    }
+
+    return render_template("admin/translations/hub.html", stats=stats)
+
+@admin_bp.route("/translations/tournaments")
+@login_required
+@role_required("admin")
+def translations_tournaments():
+    db = get_db()
+    lang = (request.args.get("lang") or "en").strip().lower()
+    only_missing = (request.args.get("only_missing") == "1")
+
+    tournaments = db.execute(
+        "SELECT id, slug, name, metadata FROM tournaments ORDER BY id DESC"
+    ).fetchall()
+
+    rows = []
+    for t in tournaments:
+        slug = t["slug"]
+
+        # Traductions existantes
+        name_tr = get_translation("tournament", slug, "name", lang) if slug else None
+        meta_tr = get_translation("tournament", slug, "metadata", lang) if slug else None
+
+        name_done = bool(name_tr)
+        metadata_done = bool(meta_tr)
+
+        # Groupes (distinct) pour ce tournoi : total + traduits
+        groups_total = db.execute(
+            """
+            SELECT COUNT(*) AS n
+            FROM (
+              SELECT DISTINCT group_name
+              FROM tournament_teams
+              WHERE tournament_id = ?
+                AND group_name IS NOT NULL
+                AND group_name <> ''
+            )
+            """,
+            (t["id"],)
+        ).fetchone()["n"]
+
+        if groups_total > 0 and slug:
+            groups_done = db.execute(
+                """
+                SELECT COUNT(*) AS n
+                FROM (
+                  SELECT DISTINCT (? || '|' || group_name) AS k
+                  FROM tournament_teams
+                  WHERE tournament_id = ?
+                    AND group_name IS NOT NULL
+                    AND group_name <> ''
+                ) g
+                JOIN translations tr
+                  ON tr.entity_type='tournament_group'
+                 AND tr.entity_key=g.k
+                 AND tr.field='name'
+                 AND tr.lang=?
+                """,
+                (slug, t["id"], lang)
+            ).fetchone()["n"]
+        else:
+            groups_done = 0
+
+        # Filtre "manquants seulement"
+        # Ici : on considère "traduit" si NAME + METADATA sont traduits (groupes séparés)
+        if only_missing and name_done and metadata_done:
+            continue
+
+        rows.append({
+            "id": t["id"],
+            "slug": slug,
+            "name_db": t["name"],
+            "name_done": name_done,
+            "metadata_done": metadata_done,
+            "groups_total": groups_total,
+            "groups_done": groups_done,
+        })
+
+    return render_template(
+        "admin/translations/tournaments_list.html",
+        lang=lang,
+        only_missing=only_missing,
+        rows=rows
+    )
+
+
+@admin_bp.route("/translations/tournaments/<slug>", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def translations_tournament_detail(slug):
+    db = get_db()
+    lang = (request.args.get("lang") or "en").strip().lower()
+
+    tournament = db.execute(
+        "SELECT id, slug, name, metadata FROM tournaments WHERE slug = ?",
+        (slug,)
+    ).fetchone()
+
+    if not tournament:
+        abort(404)
+
+    # Stats groupes pour ce tournoi (distinct group_name)
+    groups_total = db.execute(
+        """
+        SELECT COUNT(*) AS n
+        FROM (
+          SELECT DISTINCT group_name
+          FROM tournament_teams
+          WHERE tournament_id = ?
+            AND group_name IS NOT NULL
+            AND group_name <> ''
+        )
+        """,
+        (tournament["id"],)
+    ).fetchone()["n"]
+
+    if groups_total > 0:
+        groups_done = db.execute(
+            """
+            SELECT COUNT(*) AS n
+            FROM (
+              SELECT DISTINCT (? || '|' || group_name) AS k
+              FROM tournament_teams
+              WHERE tournament_id = ?
+                AND group_name IS NOT NULL
+                AND group_name <> ''
+            ) g
+            JOIN translations tr
+              ON tr.entity_type='tournament_group'
+             AND tr.entity_key=g.k
+             AND tr.field='name'
+             AND tr.lang=?
+            """,
+            (slug, tournament["id"], lang)
+        ).fetchone()["n"]
+    else:
+        groups_done = 0
+
+    if request.method == "POST":
+        name_tr = request.form.get("name_tr", "")
+        metadata_tr = request.form.get("metadata_tr", "")
+
+        name_tr_clean = name_tr.strip()
+        metadata_tr_clean = metadata_tr.strip()
+
+        # Validation JSON si metadata non vide
+        if metadata_tr_clean:
+            try:
+                json.loads(metadata_tr_clean)
+            except Exception:
+                flash(_("Metadata invalide : JSON incorrect."), "error")
+                return render_template(
+                    "admin/translations/tournament_detail.html",
+                    lang=lang,
+                    tournament={
+                        "id": tournament["id"],
+                        "slug": tournament["slug"],
+                        "name_db": tournament["name"],
+                        "metadata_db": tournament["metadata"],
+                    },
+                    translation={
+                        "name": name_tr,
+                        "metadata": metadata_tr,
+                    },
+                    groups_total=groups_total,
+                    groups_done=groups_done,
+                )
+
+        from app.modules.i18n import upsert_translation
+
+        upsert_translation("tournament", slug, "name", lang, name_tr_clean if name_tr_clean else None)
+        upsert_translation("tournament", slug, "metadata", lang, metadata_tr_clean if metadata_tr_clean else None)
+
+        flash(_("Traductions enregistrées."), "success")
+        return redirect(url_for("admin.translations_tournament_detail", slug=slug, lang=lang))
+
+    # GET
+    name_tr = get_translation("tournament", slug, "name", lang) or ""
+    metadata_tr = get_translation("tournament", slug, "metadata", lang) or ""
+
+    return render_template(
+        "admin/translations/tournament_detail.html",
+        lang=lang,
+        tournament={
+            "id": tournament["id"],
+            "slug": tournament["slug"],
+            "name_db": tournament["name"],
+            "metadata_db": tournament["metadata"],
+        },
+        translation={
+            "name": name_tr,
+            "metadata": metadata_tr,
+        },
+        groups_total=groups_total,
+        groups_done=groups_done,
+    )
+
+
+
+@admin_bp.route("/translations/phases", methods=["GET"])
+@login_required
+@role_required("admin")
+def translations_phases():
+    db = get_db()
+    lang = (request.args.get("lang") or "en").strip().lower()
+    only_missing = (request.args.get("only_missing") == "1")
+
+    phases = db.execute(
+        "SELECT id, name FROM tournament_phases ORDER BY id ASC"
+    ).fetchall()
+
+    rows = []
+    for p in phases:
+        phase_id = p["id"]
+        phase_key = str(phase_id)
+
+        tr = get_translation("tournament_phase", phase_key, "name", lang)
+        done = bool(tr)
+
+        if only_missing and done:
+            continue
+
+        rows.append({
+            "id": phase_id,
+            "name_db": p["name"],
+            "name_tr": tr or "",
+            "done": done,
+        })
+
+    return render_template(
+        "admin/translations/phases_list.html",
+        lang=lang,
+        only_missing=only_missing,
+        rows=rows
+    )
+
+
+@admin_bp.route("/translations/phases", methods=["POST"])
+@login_required
+@role_required("admin")
+def translations_phases_save():
+    db = get_db()
+    lang = (request.args.get("lang") or "en").strip().lower()
+    only_missing = (request.args.get("only_missing") == "1")
+
+    # On relit toutes les phases pour savoir quelles clés attendre
+    phases = db.execute(
+        "SELECT id FROM tournament_phases"
+    ).fetchall()
+
+    from app.modules.i18n import upsert_translation
+
+    # Bulk save : chaque input s'appelle phase_<id>
+    for p in phases:
+        phase_id = p["id"]
+        key = str(phase_id)
+        field_name = f"phase_{phase_id}"
+
+        # Si l’input n’est pas dans le form, on ignore (robuste)
+        if field_name not in request.form:
+            continue
+
+        value = request.form.get(field_name, "")
+        value_clean = value.strip()
+
+        # upsert_translation: doit delete si vide (comme tu l’as mis)
+        upsert_translation("tournament_phase", key, "name", lang, value_clean if value_clean else None)
+
+    flash(_("Traductions des phases enregistrées."), "success")
+    return redirect(url_for("admin.translations_phases", lang=lang, only_missing=("1" if only_missing else None)))
+
+@admin_bp.route("/translations/tournaments/<slug>/groups", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def translations_tournament_groups(slug):
+    db = get_db()
+    lang = (request.args.get("lang") or "en").strip().lower()
+    only_missing = (request.args.get("only_missing") == "1")
+
+    # Vérifier que le tournoi existe
+    tournament = db.execute(
+        "SELECT id, slug, name FROM tournaments WHERE slug = ?",
+        (slug,)
+    ).fetchone()
+
+    if not tournament:
+        abort(404)
+
+    # Récupérer les group_name distincts pour ce tournoi
+    groups = db.execute(
+        """
+        SELECT DISTINCT group_name
+        FROM tournament_teams
+        WHERE tournament_id = ?
+          AND group_name IS NOT NULL
+          AND group_name <> ''
+        ORDER BY group_name ASC
+        """,
+        (tournament["id"],)
+    ).fetchall()
+
+    from app.modules.i18n import get_translation, upsert_translation
+
+    rows = []
+
+    if request.method == "POST":
+        # Bulk save
+        for g in groups:
+            group_name = g["group_name"]
+            field_name = f"group_{group_name}"
+
+            if field_name not in request.form:
+                continue
+
+            value = request.form.get(field_name, "")
+            value_clean = value.strip()
+
+            key = f"{slug}|{group_name}"
+
+            # value vide => suppression (fallback DB)
+            upsert_translation(
+                "tournament_group",
+                key,
+                "name",
+                lang,
+                value_clean if value_clean else None
+            )
+
+        flash(_("Traductions des groupes enregistrées."), "success")
+        return redirect(
+            url_for(
+                "admin.translations_tournament_groups",
+                slug=slug,
+                lang=lang,
+                only_missing=("1" if only_missing else None)
+            )
+        )
+
+    # GET : construire les lignes
+    for g in groups:
+        group_name = g["group_name"]
+        key = f"{slug}|{group_name}"
+
+        tr = get_translation("tournament_group", key, "name", lang)
+        done = bool(tr)
+
+        if only_missing and done:
+            continue
+
+        rows.append({
+            "group_name": group_name,
+            "translation": tr or "",
+            "done": done,
+        })
+
+    return render_template(
+        "admin/translations/groups_list.html",
+        lang=lang,
+        only_missing=only_missing,
+        tournament=tournament,
+        rows=rows
+    )

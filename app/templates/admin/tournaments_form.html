@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-    {{ "Modifier" if tournament else "Créer" }} un tournoi
+    {{ _("Modifier un tournoi") if tournament else _("Créer un tournoi") }}
 {% endblock %}
 
 {% block head %}
@@ -9,7 +9,7 @@
 
 {% block content %}
 <h1>
-    {{ "Modifier" if tournament else "Créer" }} un tournoi
+    {{ _("Modifier un tournoi") if tournament else _("Créer un tournoi") }}
 </h1>
 
 <!-- ========================= -->
@@ -20,7 +20,7 @@
 <form method="post" class="admin-form">
 
     <div class="admin-form-group">
-        <label for="name">Nom du tournoi</label>
+        <label for="name">{{ _("Nom du tournoi") }}</label>
         <input type="text"
                name="name"
                id="name"
@@ -33,9 +33,9 @@
     </div>
 
     <div class="admin-form-group">
-        <label for="game_id">Jeu</label>
+        <label for="game_id">{{ _("Jeu") }}</label>
         <select name="game_id" id="game_id" class="admin-input" required>
-            <option value="">— Sélectionner —</option>
+            <option value="">— {{ _("Sélectionner") }} —</option>
             {% for g in games %}
                 <option value="{{ g.id }}"
                     {% if tournament and g.id == tournament.game_id %}selected{% endif %}>
@@ -49,18 +49,18 @@
     </div>
 
     <div class="admin-form-group">
-        <label for="status">Statut</label>
+        <label for="status">{{ _("Statut") }}</label>
         <select name="status" id="status" class="admin-input">
-            <option value="draft" {{ 'selected' if tournament and tournament.status == 'draft' }}>Brouillon</option>
-            <option value="active" {{ 'selected' if tournament and tournament.status == 'active' }}>En cours</option>
-            <option value="finished" {{ 'selected' if tournament and tournament.status == 'finished' }}>Terminé</option>
+            <option value="draft" {{ 'selected' if tournament and tournament.status == 'draft' }}>{{ _("Brouillon") }}</option>
+            <option value="active" {{ 'selected' if tournament and tournament.status == 'active' }}>{{ _("En cours") }}</option>
+            <option value="finished" {{ 'selected' if tournament and tournament.status == 'finished' }}>{{ _("Terminé") }}</option>
         </select>
     </div>
 
     <div class="admin-form-group">
-        <label for="metadata">Informations complémentaires</label>
+        <label for="metadata">{{ _("Informations complémentaires") }}</label>
         <p class="admin-form-help">
-            Informations libres (joueurs marquants, contexte, lien externe, etc.)
+            {{ _("Informations libres (joueurs marquants, contexte, lien externe, etc.)") }}
         </p>
         <textarea name="metadata"
                   id="metadata"
@@ -70,12 +70,12 @@
 
     <div class="admin-form-actions">
         <button type="submit" class="btn btn-primary">
-            Enregistrer
+            {{ _("Enregistrer") }}
         </button>
 
         <a href="{{ url_for('admin.tournaments_list') }}"
            class="btn btn-secondary">
-            Annuler
+            {{ _("Annuler") }}
         </a>
     </div>
 
@@ -89,23 +89,23 @@
 {% if tournament %}
 <div class="admin-card admin-section">
 
-<h2>Structure du tournoi</h2>
+<h2>{{ _("Structure du tournoi") }}</h2>
 
 {% if not phases %}
     <p class="text-warning">
-        Aucune phase définie.  
-        Le tournoi ne pourra pas être activé tant qu'au moins une phase n'est pas créée.
+        {{ _("Aucune phase définie.") }} 
+        {{ _("Le tournoi ne pourra pas être activé tant qu'au moins une phase n'est pas créée.") }}
     </p>
 {% endif %}
 
 <table class="admin-table">
     <thead>
         <tr>
-            <th>Ordre</th>
-            <th>Nom</th>
-            <th>Type</th>
-			<th>Qualifiés / groupe</th>
-            <th class="actions">Actions</th>
+            <th>{{ _("Ordre") }}</th>
+            <th>{{ _("Nom") }}</th>
+            <th>{{ _("Type") }}</th>
+			<th>{{ _("Qualifiés / groupe") }}</th>
+            <th class="actions">{{ _("Actions") }}</th>
         </tr>
     </thead>
     <tbody>
@@ -149,7 +149,7 @@
 
                 <td class="actions">
                     <button class="btn btn-secondary-small">
-                        Modifier
+                        {{ _("Modifier") }}
                     </button>
             </form>
 
@@ -160,7 +160,7 @@
                   class="inline-form">
                 <button class="btn btn-danger-small"
                         onclick="return confirm('Supprimer cette phase ?')">
-                    Supprimer
+                    {{ _("Supprimer") }}
                 </button>
             </form>
                 </td>
@@ -171,7 +171,7 @@
 
 <hr>
 
-<h3>Ajouter une phase</h3>
+<h3>{{ _("Ajouter une phase") }}</h3>
 
 <form method="post"
       action="{{ url_for('admin.admin_tournament_phase_create',
@@ -180,14 +180,14 @@
 
     <input type="number"
            name="position"
-           placeholder="Ordre"
+           placeholder="{{ _('Ordre') }}"
            min="1"
            class="admin-input admin-input-small"
            required>
 
     <input type="text"
            name="name"
-           placeholder="Nom de la phase"
+           placeholder="{{ _('Nom de la phase') }}"
            class="admin-input"
            required>
 
@@ -199,14 +199,14 @@
 	
 	<input type="number"
        name="qualifiers_per_group"
-       placeholder="Qualifiés"
+       placeholder="{{ _('Qualifiés') }}"
        min="1"
        class="admin-input admin-input-small"
        data-qualifiers-input>
 
 
     <button class="btn btn-primary-small">
-        Ajouter
+        {{ _("Ajouter") }}
     </button>
 
 </form>

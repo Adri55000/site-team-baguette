@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _("Gérer les traductions") }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/features/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ _("Traductions") }}</h1>
+
+<form method="get">
+  <label>
+    {{ _("Langue :") }}
+    <select name="lang" onchange="this.form.submit()">
+      <option value="fr" {{ 'selected' if stats.lang == 'fr' }}>FR</option>
+      <option value="en" {{ 'selected' if stats.lang == 'en' }}>EN</option>
+    </select>
+  </label>
+</form>
+
+<hr>
+
+<h2>{{ _("Tournois") }}</h2>
+<p>
+  {{ _("Nom :") }} {{ stats.tournaments.name_done }} / {{ stats.tournaments.total }}<br>
+  {{ _("Metadata :") }} {{ stats.tournaments.metadata_done }} / {{ stats.tournaments.total }}
+</p>
+<a href="{{ url_for('admin.translations_tournaments', lang=stats.lang) }}">
+  {{ _("Gérer les tournois") }}
+</a>
+
+<hr>
+
+<h2>{{ _("Phases") }}</h2>
+<p>
+  {{ stats.phases.done }} / {{ stats.phases.total }}
+</p>
+<a href="{{ url_for('admin.translations_phases', lang=stats.lang) }}">
+  {{ _("Gérer les phases") }}
+</a>
+
+<hr>
+
+<h2>{{ _("Groupes") }}</h2>
+<p>
+  {{ stats.groups.done }} / {{ stats.groups.total }}
+</p>
+<!-- Lien groupes viendra après -->
+
+{% endblock %}

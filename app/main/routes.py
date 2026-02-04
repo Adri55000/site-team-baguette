@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, make_response
+from flask_babel import gettext as _
 from flask_login import current_user
 from app.database import get_db
 from app.auth.utils import login_required
@@ -7,6 +8,9 @@ import json
 import math
 from app.modules.tournaments import ensure_public_tournament
 from collections import defaultdict
+from flask_babel import get_locale as babel_get_locale
+from app.modules.i18n import get_translation
+
 
 main_bp = Blueprint("main", __name__)
 
@@ -14,8 +18,26 @@ main_bp = Blueprint("main", __name__)
 @main_bp.route("/")
 def home():
     return render_template("main/index.html")
+    
+@main_bp.get("/lang/<lang>")
+def set_lang(lang):
+    if lang not in ("fr", "en"):
+        abort(404)
 
+    resp = make_response(
+        redirect(request.referrer or url_for("main.index"))
+    )
 
+    # cookie long terme, comme le thème
+    resp.set_cookie(
+        "lang",
+        lang,
+        max_age=60 * 60 * 24 * 365,  # 1 an
+        samesite="Lax"
+    )
+
+    return resp
+    
 @main_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -44,7 +66,7 @@ def profile():
         )
         db.commit()
 
-        flash("Profil mis à jour !", "success")
+        flash(_("Profil mis à jour !"), "success")
         return redirect(url_for("main.profile"))
 
     user = db.execute(
@@ -104,7 +126,7 @@ def change_password():
         )
         db.commit()
 
-        flash("Mot de passe mis à jour avec succès !", "success")
+        flash(_("Mot de passe mis à jour avec succès !"), "success")
         return redirect(url_for("main.profile"))
 
     return render_template("main/change_password.html")
@@ -124,7 +146,7 @@ def public_profile(user_id):
     ).fetchone()
 
     if not user:
-        flash("Utilisateur introuvable.", "error")
+        flash(_("Utilisateur introuvable."), "error")
         return redirect(url_for("main.home"))
 
     links = json.loads(user["social_links"]) if user["social_links"] else {}
@@ -141,7 +163,7 @@ def public_profile_by_name(username):
     ).fetchone()
 
     if not user:
-        flash("Utilisateur introuvable.", "error")
+        flash(_("Utilisateur introuvable."), "error")
         return redirect(url_for("main.home"))
 
     return redirect(url_for("main.public_profile", user_id=user["id"]))
@@ -175,6 +197,20 @@ def tournament(slug):
     ).fetchone()
 
     if tournament:
+        # -----------------------------
+        # Traductions (name + metadata JSON complet)
+        # -----------------------------
+        lang = str(babel_get_locale() or "fr").strip().lower()
+
+        # Important: sqlite Row -> dict si tu veux modifier proprement
+        tournament = dict(tournament)
+
+        name_tr = get_translation("tournament", slug, "name", lang)
+        tournament["display_name"] = name_tr if name_tr else tournament["name"]
+
+        metadata_tr = get_translation("tournament", slug, "metadata", lang)
+        metadata_json_raw = metadata_tr if metadata_tr else tournament["metadata"]
+
         ensure_public_tournament(tournament)
         # -----------------------------
         # Statut PUBLIC (mapping v1)
@@ -189,9 +225,9 @@ def tournament(slug):
         # -----------------------------
         metadata = {}
 
-        if tournament["metadata"]:
+        if metadata_json_raw:
             try:
-                metadata = json.loads(tournament["metadata"])
+                metadata = json.loads(metadata_json_raw)
             except ValueError:
                 metadata = {}
 
@@ -245,9 +281,6 @@ def tournament(slug):
 
 
 
-import json
-from flask import render_template, abort
-from app.database import get_db
 
 @main_bp.route("/tournament/<slug>/results")
 def tournament_results(slug):
@@ -277,18 +310,34 @@ def tournament_results(slug):
         abort(404)
         
     ensure_public_tournament(tournament)
+    
+    # -------------------------------------------------
+    # Traductions (tournoi + metadata)
+    # -------------------------------------------------
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    # sqlite Row -> dict pour pouvoir enrichir
+    tournament = dict(tournament)
+
+    name_tr = get_translation("tournament", slug, "name", lang)
+    tournament["display_name"] = name_tr if name_tr else tournament["name"]
+
+    metadata_tr = get_translation("tournament", slug, "metadata", lang)
+    metadata_json_raw = metadata_tr if metadata_tr else tournament["metadata"]
+
 
     # -------------------------------------------------
     # Metadata JSON
     # -------------------------------------------------
     metadata = {}
-    if tournament["metadata"]:
+    if metadata_json_raw:
         try:
-            metadata = json.loads(tournament["metadata"])
+            metadata = json.loads(metadata_json_raw)
         except ValueError:
             metadata = {}
 
     metadata.setdefault("edition", None)
+
 
     # -------------------------------------------------
     # Phases
@@ -302,6 +351,16 @@ def tournament_results(slug):
         """,
         (tournament["id"],)
     ).fetchall()
+    
+    # -------------------------------------------------
+    # Traductions phases
+    # -------------------------------------------------
+    phases = [dict(p) for p in phases]
+    for p in phases:
+        phase_key = str(p["id"])
+        phase_tr = get_translation("tournament_phase", phase_key, "name", lang)
+        p["display_name"] = phase_tr if phase_tr else p["name"]
+
 
     phase_ids = [p["id"] for p in phases]
 
@@ -467,9 +526,7 @@ def tournament_results(slug):
 
 
 
-import json
-from flask import render_template, abort
-from app.database import get_db
+
 
 @main_bp.route("/tournament/<slug>/bracket")
 def tournament_bracket(slug):
@@ -499,16 +556,31 @@ def tournament_bracket(slug):
         abort(404)
 
     ensure_public_tournament(tournament)
+    
+    # -------------------------------------------------
+    # Traductions (tournoi + metadata)
+    # -------------------------------------------------
+    lang = str(babel_get_locale() or "fr").strip().lower()
+
+    tournament = dict(tournament)
+
+    name_tr = get_translation("tournament", slug, "name", lang)
+    tournament["display_name"] = name_tr if name_tr else tournament["name"]
+
+    metadata_tr = get_translation("tournament", slug, "metadata", lang)
+    metadata_json_raw = metadata_tr if metadata_tr else tournament["metadata"]
+
 
     # -------------------------------------------------
     # Metadata
     # -------------------------------------------------
     metadata = {}
-    if tournament["metadata"]:
+    if metadata_json_raw:
         try:
-            metadata = json.loads(tournament["metadata"])
+            metadata = json.loads(metadata_json_raw)
         except ValueError:
             metadata = {}
+
 
     # -------------------------------------------------
     # Phases du tournoi (ordre officiel)
@@ -535,6 +607,10 @@ def tournament_bracket(slug):
     # -------------------------------------------------
     for phase_row in phases_rows:
         phase = dict(phase_row)
+        # Traduction du nom de la phase
+        phase_tr = get_translation("tournament_phase", str(phase["id"]), "name", lang)
+        phase_display_name = phase_tr if phase_tr else phase["name"]
+
         ptype = (phase["type"] or "").strip().lower()
 
         if ptype == "groups":
@@ -608,11 +684,18 @@ def tournament_bracket(slug):
             played_by_team = {r["team_id"]: r["played"] for r in played_rows}
 
             groups_map = {}
+            group_display_by_name = {}
+
             for r in teams_rows:
                 gname = r["group_name"]
                 team_id = r["team_id"]
                 wins = int(wins_by_team.get(team_id, 0))
                 played = int(played_by_team.get(team_id, 0))
+
+                # Traduction du nom de groupe (tir groupé)
+                gkey = f"{slug}|{gname}"
+                g_tr = get_translation("tournament_group", gkey, "name", lang)
+                group_display_by_name[gname] = g_tr if g_tr else gname
 
                 groups_map.setdefault(gname, []).append({
                     "team_id": team_id,
@@ -638,9 +721,12 @@ def tournament_bracket(slug):
                 )
                 groups.append({
                     "id": phase["id"],
-                    "name": gname,
+                    "name": group_display_by_name.get(gname, gname),
                     "standings": rows_sorted,
                 })
+
+            groups.sort(key=lambda g: (g["name"] or "").lower())
+
 
             groups.sort(key=lambda g: g["name"].lower())
 
@@ -656,7 +742,7 @@ def tournament_bracket(slug):
 
             processed_phases.append({
                 "id": phase["id"],
-                "name": phase["name"],
+                "name": phase_display_name,
                 "display_type": "groups",
                 "data": {
                     "groups": groups,
@@ -732,6 +818,8 @@ def tournament_bracket(slug):
             for row in series_rows:
                 src1 = row["source_team1_series_id"]
                 src2 = row["source_team2_series_id"]
+                name1 = row["team1_name"]
+                name2 = row["team2_name"]
 
                 s_obj = {
                     "id": str(row["id"]),
@@ -740,7 +828,8 @@ def tournament_bracket(slug):
                     "label": row["stage"],
                     "team1": {
                         "id": row["team1_id"],
-                        "name": row["team1_name"] or "À déterminer",
+                        "name": name1 if name1 else None,
+                        "is_tbd": (not name1),   # True si pas de nom réel
                         "wins": row["team1_wins"] or 0,
                         "source_series_id": str(src1) if src1 is not None else None,
                         "source_type": row["source_team1_type"],
@@ -748,7 +837,8 @@ def tournament_bracket(slug):
                     },
                     "team2": {
                         "id": row["team2_id"],
-                        "name": row["team2_name"] or "À déterminer",
+                        "name": name2 if name2 else None,
+                        "is_tbd": (not name2),
                         "wins": row["team2_wins"] or 0,
                         "source_series_id": str(src2) if src2 is not None else None,
                         "source_type": row["source_team2_type"],
@@ -862,7 +952,7 @@ def tournament_bracket(slug):
 
             processed_phases.append({
                 "id": phase["id"],
-                "name": phase["name"],
+                "name": phase_display_name,
                 "display_type": "bracket_simple_elim",
                 "data": {
                     "bracket": {
@@ -911,10 +1001,17 @@ def tournaments():
         GROUP BY t.id
         """
     ).fetchall()
+    
+    lang = str(babel_get_locale() or "fr").strip().lower()
 
     internal = []
     for r in rows:
         item = dict(r)
+
+        # Traduction nom tournoi (interne)
+        slug = item.get("slug")
+        name_tr = get_translation("tournament", slug, "name", lang) if slug else None
+        item["display_name"] = name_tr if name_tr else item.get("name")
 
         # Statut public v1 : draft -> upcoming
         status = (item.get("status") or "").strip().lower()
@@ -926,6 +1023,7 @@ def tournaments():
         item["game_name"] = item.get("game_name") or "Autre"
 
         internal.append(item)
+
 
     # -------------------------------------------------
     # Tournois externes (config) : SSR uniquement
@@ -942,6 +1040,7 @@ def tournaments():
         external.append({
             "id": None,
             "name": t.get("name"),
+            "display_name": t.get("name"),
             "slug": t.get("slug"),
             "public_status": status,
             "game_name": "The Legend of Zelda : Skyward Sword Randomizer",
@@ -979,7 +1078,7 @@ def tournaments():
     # -------------------------------------------------
     def sort_active_or_upcoming(lst):
         # tri par nom (dans chaque jeu)
-        return sorted(lst, key=lambda x: (x.get("name") or "").lower())
+        return sorted(lst, key=lambda x: (x.get("display_name") or x.get("name") or "").lower())
 
     def sort_finished(lst):
         # 1) Split : avec date / sans date
@@ -997,7 +1096,7 @@ def tournaments():
         with_date.sort(
             key=lambda t: (
                 t["last_match_at"],
-                (t.get("name") or "").lower()
+                (t.get("display_name") or t.get("name") or "").lower()
             ),
             reverse=True
         )
