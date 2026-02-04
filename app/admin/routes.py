@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, current_app, abort, jsonify
-from flask_babel import gettext as _
+from flask_babel import get_locale as babel_get_locale, gettext as _
 from . import admin_bp
 from app.database import get_db
 from app.auth.utils import login_required
