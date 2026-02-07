@@ -80,7 +80,7 @@
 {% if confrontations %}
     {% set ns = namespace(current_phase=None) %}
 	{% for c in confrontations %}
-        {% set wins = c.matches_played or 0 %}
+        {% set wins = [c.team1_wins or 0, c.team2_wins or 0] | max %}
 
         {% if ns.current_phase != c.phase_id %}
 			{% set ns.current_phase = c.phase_id %}
@@ -106,10 +106,12 @@
 
                 <div class="text-muted">
                     {{ ngettext(
-						"%(wins)s victoire sur %(total)s",
-						"%(wins)s victoires sur %(total)s",
-						wins
-					) | format(wins=wins, total=c.best_of) }}
+						  "%(wins)s victoire sur %(total)s",
+						  "%(wins)s victoires sur %(total)s",
+						  wins,
+						  wins=wins,
+						  total=(c.best_of//2 + 1)
+					  ) }}
                 </div>
 
                 <div class="admin-series-status">
@@ -138,12 +140,13 @@
 
             <td>
                 <span class="text-muted">
-                    {{ wins }} / {{ c.match_count }}
+                    {{ c.matches_played }} / 
                     {{ ngettext(
 						"%(count)s match joué",
 						"%(count)s matchs joués",
-						c.match_count
-					) | format(count=c.match_count) }}
+						c.match_count,
+						count=c.match_count
+					) }}
 
                 </span>
             </td>

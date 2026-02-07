@@ -7,4 +7,5 @@ admin_bp = Blueprint(
     template_folder="templates"
 )
 
-from . import routes
+from . import routes_legacy
+from .routes import *

@@ -11,7 +11,7 @@
 <h1>{{ _("Matchs de la confrontation") }}</h1>
 <div class="admin-card">
 <p class="admin-subtitle">
-    {{ (series.team1_name or {{ _("À déterminer") }}) | team_name }} vs {{ (series.team2_name or {{ _("À déterminer") }}) | team_name }}
+    {{ (series.team1_name or _("À déterminer") ) | team_name }} vs {{ (series.team2_name or  _("À déterminer") ) | team_name }}
     {% if series.stage %} — {{ series.stage }}{% endif %}
 </p>
 
@@ -20,7 +20,7 @@
 </p>
 
 
-{% set wins = (series.team1_wins or 0) + (series.team2_wins or 0) %}
+{% set wins = [series.team1_wins or 0, series.team2_wins or 0] | max %}
 
 {% if series.team1_id and series.team2_id %}
 <p class="text-muted">
@@ -31,8 +31,10 @@
     {{ ngettext(
 		"%(wins)s victoire sur %(total)s",
 		"%(wins)s victoires sur %(total)s",
-		wins
-	) | format(wins=wins, total=series.best_of) }}
+		wins,
+		wins=wins,
+		total=((series.best_of//2) +1)
+	) }}
 </p>
 {% else %}
 <p class="text-muted">
