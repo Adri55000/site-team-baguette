@@ -8,4 +8,4 @@ admin_bp = Blueprint(
 )
 
 from . import routes_legacy
-from .routes import *
+from . import routes
