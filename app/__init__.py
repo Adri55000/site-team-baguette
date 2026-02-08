@@ -129,8 +129,8 @@ def create_app():
 
     # Import des blueprints
     from .auth.routes import auth_bp
-    from .main.routes import main_bp
     from app.restream import restream_bp
+    from app.main import main_bp
     from app.admin import admin_bp
 
     # Enregistrement des blueprints
