@@ -6,3 +6,5 @@ from . import teams
 from . import tournaments
 from . import phases
 from . import translations
+from . import trackers
+from . import matches
