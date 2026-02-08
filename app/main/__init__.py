@@ -1,1 +1,6 @@
-## placeholder
+from flask import 
+from . import homepage, user_profile, public_profile, tournaments_display
+
+main_bp = Blueprint("main", __name__)
+
+from . import main_routes
