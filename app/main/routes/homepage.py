@@ -1,8 +1,8 @@
 from flask import render_template, abort, make_response, redirect, url_for, request
-from . import main_bp
+from .. import main_bp
 
 @main_bp.route("/")
-def homepage():
+def home():
     return render_template("main/index.html")
 
 @main_bp.get("/lang/<lang>")
