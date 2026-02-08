@@ -1,10 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash
 from flask_babel import gettext as _
-from flask_login import current_user
 from app.database import get_db
-from app.auth.utils import login_required
 import json
-from . import main_bp
+from app.main import main_bp
 
 @main_bp.route("/user/<int:user_id>")
 def public_profile(user_id):

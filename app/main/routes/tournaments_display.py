@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
-from flask_babel import gettext as _
-from flask_login import current_user
+from flask import render_template, abort, current_app
 from app.database import get_db
-from app.auth.utils import login_required
 import json
+from collections import defaultdict
 from app.modules.tournaments import ensure_public_tournament
 from app.modules.i18n import get_translation
 from flask_babel import get_locale as babel_get_locale
-from . import main_bp
+from app.main import main_bp
 
 @main_bp.route("/tournament/<slug>")
 def tournament(slug):
