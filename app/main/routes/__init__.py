@@ -1,1 +1,1 @@
-from . import homepage, user_profile, public_profile, tournaments_display
+from . import homepage, user_profile, public_profile, tournaments_display, contact
