@@ -1,21 +1,12 @@
 from flask import render_template, redirect, url_for, flash
 from flask_babel import gettext as _
-from app.database import get_db
+from app.main.repo import get_user_by_id, get_user_by_username
 import json
 from app.main import main_bp
 
 @main_bp.route("/user/<int:user_id>")
 def public_profile(user_id):
-    db = get_db()
-    user = db.execute(
-        """
-        SELECT username, role, created_at,
-               avatar_filename, description, social_links
-        FROM users
-        WHERE id = ?
-        """,
-        (user_id,)
-    ).fetchone()
+    user = get_user_by_id(user_id)
 
     if not user:
         flash(_("Utilisateur introuvable."), "error")
@@ -27,11 +18,7 @@ def public_profile(user_id):
 
 @main_bp.route("/u/<username>")
 def public_profile_by_name(username):
-    db = get_db()
-    user = db.execute(
-        "SELECT id FROM users WHERE username = ?",
-        (username,)
-    ).fetchone()
+    user = get_user_by_username(username)
 
     if not user:
         flash(_("Utilisateur introuvable."), "error")

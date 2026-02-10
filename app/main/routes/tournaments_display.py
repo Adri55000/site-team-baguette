@@ -1,5 +1,9 @@
 from flask import render_template, abort, current_app
 from app.database import get_db
+from app.main.repo import get_internal_tournament_by_slug, get_teams_by_tournament_id, get_phases_by_tournament_id
+from app.main.repo import get_series_by_phases_ids, get_teams_by_series_ids, get_scores_by_series_ids, get_tiebreaks_by_tournament
+from app.main.repo import get_teams_by_matches_ids, get_groupteams_by_tournament_id, get_winnerteams_by_phase_id
+from app.main.repo import get_playedmatches_by_phase_id, get_bracketseries_by_phase_id, get_tournaments
 import json
 from collections import defaultdict
 from app.modules.tournaments import ensure_public_tournament
@@ -9,28 +13,10 @@ from app.main import main_bp
 
 @main_bp.route("/tournament/<slug>")
 def tournament(slug):
-    db = get_db()
-
     # -------------------------------------------------
     # Tournoi interne (BDD)
     # -------------------------------------------------
-    tournament = db.execute(
-        """
-        SELECT
-            t.id,
-            t.name,
-            t.slug,
-            t.status,
-            t.metadata,
-            t.created_at,
-            g.name AS game_name
-        FROM tournaments t
-        LEFT JOIN games g ON g.id = t.game_id
-        WHERE t.slug = ?
-          AND t.source = 'internal'
-        """,
-        (slug,)
-    ).fetchone()
+    tournament = get_internal_tournament_by_slug(slug)
 
     if tournament:
         # -----------------------------
@@ -77,17 +63,7 @@ def tournament(slug):
         # -----------------------------
         # Équipes participantes
         # -----------------------------
-        teams = db.execute(
-            """
-            SELECT DISTINCT tm.id, tm.name
-            FROM teams tm
-            JOIN match_teams mt ON mt.team_id = tm.id
-            JOIN matches m ON m.id = mt.match_id
-            WHERE m.tournament_id = ?
-            ORDER BY tm.name ASC
-            """,
-            (tournament["id"],)
-        ).fetchall()
+        teams = get_teams_by_tournament_id(tournament["id"])
 
         return render_template(
             "tournaments/internal.html",
@@ -117,27 +93,10 @@ def tournament(slug):
 
 @main_bp.route("/tournament/<slug>/results")
 def tournament_results(slug):
-    db = get_db()
-
     # -------------------------------------------------
     # Tournoi
     # -------------------------------------------------
-    tournament = db.execute(
-        """
-        SELECT
-            t.id,
-            t.name,
-            t.slug,
-            t.status,
-            t.metadata,
-            g.name AS game_name
-        FROM tournaments t
-        LEFT JOIN games g ON g.id = t.game_id
-        WHERE t.slug = ?
-          AND t.source = 'internal'
-        """,
-        (slug,)
-    ).fetchone()
+    tournament = get_internal_tournament_by_slug(slug)
 
     if not tournament:
         abort(404)
@@ -175,15 +134,7 @@ def tournament_results(slug):
     # -------------------------------------------------
     # Phases
     # -------------------------------------------------
-    phases = db.execute(
-        """
-        SELECT id, name, position
-        FROM tournament_phases
-        WHERE tournament_id = ?
-        ORDER BY position ASC
-        """,
-        (tournament["id"],)
-    ).fetchall()
+    phases = get_phases_by_tournament_id(tournament["id"])
     
     # -------------------------------------------------
     # Traductions phases
@@ -203,22 +154,7 @@ def tournament_results(slug):
     series_rows = []
     if phase_ids:
         placeholders = ",".join("?" for _ in phase_ids)
-        series_rows = db.execute(
-            f"""
-            SELECT
-                s.id,
-                s.phase_id,
-                s.stage,
-                s.team1_id,
-                s.team2_id,
-                tw.name AS winner_name
-            FROM series s
-            LEFT JOIN teams tw ON tw.id = s.winner_team_id
-            WHERE s.phase_id IN ({placeholders})
-            ORDER BY s.id ASC
-            """,
-            phase_ids
-        ).fetchall()
+        series_rows = get_series_by_phases_ids(phase_ids, placeholders)
 
     series_ids = [s["id"] for s in series_rows]
 
@@ -229,19 +165,7 @@ def tournament_results(slug):
 
     if series_ids:
         placeholders = ",".join("?" for _ in series_ids)
-        rows = db.execute(
-            f"""
-            SELECT DISTINCT
-                m.series_id,
-                tm.name AS team_name
-            FROM matches m
-            JOIN match_teams mt ON mt.match_id = m.id
-            JOIN teams tm ON tm.id = mt.team_id
-            WHERE m.series_id IN ({placeholders})
-            ORDER BY tm.name ASC
-            """,
-            series_ids
-        ).fetchall()
+        rows = get_teams_by_series_ids(series_ids,placeholders)
 
         for r in rows:
             teams_by_series.setdefault(r["series_id"], []).append(r["team_name"])
@@ -253,36 +177,7 @@ def tournament_results(slug):
 
     if series_ids:
         placeholders = ",".join("?" for _ in series_ids)
-        rows = db.execute(
-            f"""
-            SELECT
-                s.id AS series_id,
-
-                SUM(
-                    CASE
-                        WHEN mt.team_id = s.team1_id AND mt.is_winner = 1 THEN 1
-                        ELSE 0
-                    END
-                ) AS team1_wins,
-
-                SUM(
-                    CASE
-                        WHEN mt.team_id = s.team2_id AND mt.is_winner = 1 THEN 1
-                        ELSE 0
-                    END
-                ) AS team2_wins
-
-            FROM series s
-            LEFT JOIN matches m
-                ON m.series_id = s.id
-                AND m.is_completed = 1
-            LEFT JOIN match_teams mt
-                ON mt.match_id = m.id
-            WHERE s.id IN ({placeholders})
-            GROUP BY s.id
-            """,
-            series_ids
-        ).fetchall()
+        rows = get_scores_by_series_ids(series_ids,placeholders)
 
         for r in rows:
             if r["team1_wins"] or r["team2_wins"]:
@@ -308,34 +203,14 @@ def tournament_results(slug):
     # -------------------------------------------------
     tiebreaks = []
 
-    tb_matches = db.execute(
-        """
-        SELECT id, is_completed
-        FROM matches
-        WHERE tournament_id = ?
-          AND series_id IS NULL
-        ORDER BY id ASC
-        """,
-        (tournament["id"],)
-    ).fetchall()
+    tb_matches = get_tiebreaks_by_tournament(tournament["id"])
 
     tb_ids = [m["id"] for m in tb_matches]
 
     teams_by_match = {}
     if tb_ids:
         placeholders = ",".join("?" for _ in tb_ids)
-        rows = db.execute(
-            f"""
-            SELECT
-                mt.match_id,
-                tm.name AS team_name
-            FROM match_teams mt
-            JOIN teams tm ON tm.id = mt.team_id
-            WHERE mt.match_id IN ({placeholders})
-            ORDER BY mt.team_id ASC
-            """,
-            tb_ids
-        ).fetchall()
+        rows = get_teams_by_matches_id(tb_ids, placeholders)
 
         for r in rows:
             teams_by_match.setdefault(r["match_id"], []).append(r["team_name"])
@@ -358,27 +233,10 @@ def tournament_results(slug):
 
 @main_bp.route("/tournament/<slug>/bracket")
 def tournament_bracket(slug):
-    db = get_db()
-
     # -------------------------------------------------
     # Tournoi
     # -------------------------------------------------
-    tournament = db.execute(
-        """
-        SELECT
-            t.id,
-            t.name,
-            t.slug,
-            t.status,
-            t.metadata,
-            g.name AS game_name
-        FROM tournaments t
-        LEFT JOIN games g ON g.id = t.game_id
-        WHERE t.slug = ?
-          AND t.source = 'internal'
-        """,
-        (slug,)
-    ).fetchone()
+    tournament = get_internal_tournament_by_slug(slug)
 
     if not tournament:
         abort(404)
@@ -413,20 +271,7 @@ def tournament_bracket(slug):
     # -------------------------------------------------
     # Phases du tournoi (ordre officiel)
     # -------------------------------------------------
-    phases_rows = db.execute(
-        """
-        SELECT
-            id,
-            name,
-            type,
-            position,
-            details
-        FROM tournament_phases
-        WHERE tournament_id = ?
-        ORDER BY position ASC
-        """,
-        (tournament["id"],)
-    ).fetchall()
+    phases_rows = get_phases_by_tournament_id(tournament["id"])
 
     processed_phases = []
 
@@ -453,61 +298,13 @@ def tournament_bracket(slug):
         # =============================
         if display_type == "groups":
 
-            teams_rows = db.execute(
-                """
-                SELECT
-                    tt.team_id,
-                    tm.name AS team_name,
-                    tt.group_name,
-                    tt.seed,
-                    tt.position
-                FROM tournament_teams tt
-                JOIN teams tm ON tm.id = tt.team_id
-                WHERE tt.tournament_id = ?
-                  AND tt.group_name IS NOT NULL
-                  AND TRIM(tt.group_name) != ''
-                ORDER BY tt.group_name COLLATE NOCASE, tm.name COLLATE NOCASE
-                """,
-                (tournament["id"],)
-            ).fetchall()
+            teams_rows = get_groupteams_by_tournament_id(tournament["id"])
 
-            wins_rows = db.execute(
-                """
-                SELECT
-                    winner_team_id AS team_id,
-                    COUNT(*) AS wins
-                FROM series
-                WHERE phase_id = ?
-                  AND winner_team_id IS NOT NULL
-                GROUP BY winner_team_id
-                """,
-                (phase["id"],)
-            ).fetchall()
+            wins_rows = get_winnerteams_by_phase_id(phase["id"])
 
             wins_by_team = {r["team_id"]: r["wins"] for r in wins_rows}
 
-            played_rows = db.execute(
-                """
-                SELECT
-                    x.team_id,
-                    COUNT(*) AS played
-                FROM (
-                    SELECT team1_id AS team_id
-                    FROM series
-                    WHERE phase_id = ?
-                      AND team1_id IS NOT NULL
-                      AND team2_id IS NOT NULL
-                    UNION ALL
-                    SELECT team2_id AS team_id
-                    FROM series
-                    WHERE phase_id = ?
-                      AND team1_id IS NOT NULL
-                      AND team2_id IS NOT NULL
-                ) x
-                GROUP BY x.team_id
-                """,
-                (phase["id"], phase["id"])
-            ).fetchall()
+            played_rows = get_playedmatches_by_phase_id(phase["id"])
 
             played_by_team = {r["team_id"]: r["played"] for r in played_rows}
 
@@ -583,47 +380,7 @@ def tournament_bracket(slug):
         # =============================
         elif display_type == "bracket_simple_elim":
 
-            series_rows = db.execute(
-                """
-                SELECT
-                    s.id,
-                    s.round,
-                    s.stage,
-                    s.best_of,
-                    s.team1_id,
-                    s.team2_id,
-                    t1.name AS team1_name,
-                    t2.name AS team2_name,
-                    s.source_team1_series_id,
-                    s.source_team1_type,
-                    s.source_team2_series_id,
-                    s.source_team2_type,
-                    SUM(
-                        CASE
-                            WHEN mt.team_id = s.team1_id AND mt.is_winner = 1 THEN 1
-                            ELSE 0
-                        END
-                    ) AS team1_wins,
-                    SUM(
-                        CASE
-                            WHEN mt.team_id = s.team2_id AND mt.is_winner = 1 THEN 1
-                            ELSE 0
-                        END
-                    ) AS team2_wins
-                FROM series s
-                LEFT JOIN teams t1 ON t1.id = s.team1_id
-                LEFT JOIN teams t2 ON t2.id = s.team2_id
-                LEFT JOIN matches m
-                    ON m.series_id = s.id
-                    AND m.is_completed = 1
-                LEFT JOIN match_teams mt
-                    ON mt.match_id = m.id
-                WHERE s.phase_id = ?
-                GROUP BY s.id
-                ORDER BY s.round ASC, s.stage ASC
-                """,
-                (phase["id"],)
-            ).fetchall()
+            series_rows = get_bracketseries_by_phase_id(phase["id"])
 
             source_label_by_id = {
                 str(r["id"]): (r["stage"] or f"Série #{r['id']}")
@@ -809,26 +566,7 @@ def tournaments():
     # -------------------------------------------------
     # Tournois internes (BDD) + infos de jeu + last_match_at
     # -------------------------------------------------
-    rows = db.execute(
-        """
-        SELECT
-            t.id,
-            t.name,
-            t.slug,
-            t.status,
-            t.game_id,
-            g.name AS game_name,
-            MAX(m.scheduled_at) AS last_match_at
-        FROM tournaments t
-        LEFT JOIN games g
-            ON g.id = t.game_id
-        LEFT JOIN matches m
-            ON m.tournament_id = t.id
-        WHERE t.source = 'internal'
-          AND UPPER(TRIM(t.name)) NOT LIKE '[CASUAL%'
-        GROUP BY t.id
-        """
-    ).fetchall()
+    rows = get_tournaments()
     
     lang = str(babel_get_locale() or "fr").strip().lower()
 
