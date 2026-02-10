@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import current_user
-from app.database import get_db
+from app.main.repo import get_user_by_id, update_user_infos, get_user_password_hash, update_user_password
 from app.auth.utils import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
@@ -11,8 +11,6 @@ from flask_babel import gettext as _
 @main_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    db = get_db()
-
     if request.method == "POST":
         description = request.form.get("description", "").strip()
 
@@ -26,27 +24,12 @@ def profile():
         links = {k: v for k, v in links.items() if v}
         links_json = json.dumps(links)
 
-        db.execute(
-            """
-            UPDATE users
-            SET description = ?, social_links = ?
-            WHERE id = ?
-            """,
-            (description, links_json, current_user.id)
-        )
-        db.commit()
+        update_user_infos(current_user.id, description, links_json)
 
         flash(_("Profil mis à jour !"), "success")
         return redirect(url_for("main.profile"))
 
-    user = db.execute(
-        """
-        SELECT username, role, created_at, last_login,
-               avatar_filename, description, social_links
-        FROM users WHERE id = ?
-        """,
-        (current_user.id,)
-    ).fetchone()
+    user = get_user_by_id(current_user.id)
 
     links = json.loads(user["social_links"]) if user["social_links"] else {}
 
@@ -55,17 +38,12 @@ def profile():
 @main_bp.route("/profile/password", methods=["GET", "POST"])
 @login_required
 def change_password():
-    db = get_db()
-
     if request.method == "POST":
         old_password = request.form.get("old_password")
         new_password = request.form.get("new_password")
         confirm_password = request.form.get("confirm_password")
 
-        row = db.execute(
-            "SELECT password_hash FROM users WHERE id = ?",
-            (current_user.id,)
-        ).fetchone()
+        row = get_user_password_hash(current_user.id)
 
         errors = []
         if not row:
@@ -88,12 +66,7 @@ def change_password():
 
 
         new_hash = generate_password_hash(new_password)
-
-        db.execute(
-            "UPDATE users SET password_hash = ? WHERE id = ?",
-            (new_hash, current_user.id)
-        )
-        db.commit()
+        update_user_password(current_user.id, new_hash)
 
         flash(_("Mot de passe mis à jour avec succès !"), "success")
         return redirect(url_for("main.profile"))
